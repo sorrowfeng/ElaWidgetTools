@@ -57,3 +57,8 @@ compile_commands.json
 /.idea
 *.clang-format
 /install
+
+# temp files
+install/
+Install/
+build/

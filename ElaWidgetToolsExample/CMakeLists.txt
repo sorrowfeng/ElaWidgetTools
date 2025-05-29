@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.14)
 
 project(ElaWidgetToolsExample VERSION 0.1 LANGUAGES CXX)
 
@@ -113,7 +113,7 @@ if (WIN32)
             FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
             DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME} OPTIONAL)
     endif ()
-    # QT依赖安装 只做Release安装 Debug自行打包
+    # QT依赖安装
     install(FILES ${QT_SDK_DIR}/plugins/platforms/qwindows.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/platforms)
     install(FILES ${QT_SDK_DIR}/plugins/generic/qtuiotouchplugin.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/generic)
     install(
@@ -127,7 +127,6 @@ if (WIN32)
         FILES ${QT_SDK_DIR}/plugins/imageformats/qwebp.dll
         DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/imageformats
     )
-    install(FILES ${QT_SDK_DIR}/plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/styles)
     FILE(GLOB TRANSLATIONS ${QT_SDK_DIR}/translations_install/*.qm)
     install(FILES ${TRANSLATIONS} DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/translations)
     install(

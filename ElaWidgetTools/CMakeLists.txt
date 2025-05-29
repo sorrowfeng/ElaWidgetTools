@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.14)
 
 project(ElaWidgetTools VERSION 2.0.0 LANGUAGES CXX)
 
@@ -95,7 +95,7 @@ if (MSVC AND NOT LIB_TYPE STREQUAL "STATIC")
         DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample OPTIONAL)
 endif ()
 
-install(FILES ${EXPORT_HEADERS} DESTINATION ${PROJECT_NAME}/include)
+install(FILES ${EXPORT_HEADERS} DESTINATION ${PROJECT_NAME}/include/${PROJECT_NAME})
 
 set(INCLUDE_DIRS include)
 set(LIBRARIES ${PROJECT_NAME})

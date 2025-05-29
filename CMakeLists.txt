@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.14)
 
 project(ElaFramework VERSION 0.1 LANGUAGES CXX)
 
@@ -11,7 +11,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 #在这里配置QT路径 例如 D:/Qt/6.6.2/msvc2019_64
-SET(QT_SDK_DIR D:/Qt/6.6.2/msvc2019_64 CACHE PATH "QT SDK DIR" FORCE)
+if(NOT DEFINED QT_SDK_DIR)
+    set(QT_SDK_DIR "" CACHE PATH "Qt SDK Root Directory (e.g., C:/Qt/6.9.0/msvc2022_64)")
+endif()
+
 SET(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install CACHE PATH "Installation path" FORCE)
 
 option(BUILD_ELAPACKETIO "Build ElaPacketIO" OFF)
