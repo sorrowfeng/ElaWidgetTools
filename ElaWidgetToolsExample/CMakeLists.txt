@@ -101,6 +101,22 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if (QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
 endif ()
+    
+set(DEBUG_DLLS
+    "${CMAKE_BINARY_DIR}/ElaWidgetTools/Debug/ElaWidgetToolsd.dll"
+)
+
+if(WIN32 AND MSVC)
+    foreach(DLL_PATH ${DEBUG_DLLS})
+        get_filename_component(DLL_NAME ${DLL_PATH} NAME)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "$<IF:$<CONFIG:Debug>,${DLL_PATH},>"
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/${DLL_NAME}"
+        )
+    endforeach()
+endif()
+
 
 if (WIN32)
     include(GNUInstallDirs)
