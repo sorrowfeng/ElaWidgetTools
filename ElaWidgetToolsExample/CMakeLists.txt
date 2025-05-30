@@ -102,11 +102,10 @@ if (QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
 endif ()
     
-set(DEBUG_DLLS
-    "${CMAKE_BINARY_DIR}/ElaWidgetTools/Debug/ElaWidgetToolsd.dll"
-)
 
-if(WIN32 AND MSVC)
+
+if(WIN32 AND MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(DEBUG_DLLS "${CMAKE_BINARY_DIR}/ElaWidgetTools/Debug/ElaWidgetToolsd.dll")
     foreach(DLL_PATH ${DEBUG_DLLS})
         get_filename_component(DLL_NAME ${DLL_PATH} NAME)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
