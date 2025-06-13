@@ -132,6 +132,11 @@ void ElaContentDialog::setCentralWidget(QWidget* centralWidget) {
 	d->_mainLayout->addWidget(d->_buttonWidget);
 }
 
+void ElaContentDialog::setButtonLayoutVisible(bool visible) {
+	Q_D(ElaContentDialog);
+	d->_buttonWidget->setFixedHeight(visible ? 60 : 0);
+}
+
 void ElaContentDialog::setLeftButtonVisible(bool visible) {
 	Q_D(ElaContentDialog);
 	d->_leftButton->setVisible(visible);

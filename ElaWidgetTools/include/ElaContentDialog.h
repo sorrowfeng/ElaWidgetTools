@@ -17,6 +17,7 @@ public:
 	Q_SLOT virtual void onRightButtonClicked();
 	void setCentralWidget(QWidget* centralWidget);
 
+	void setButtonLayoutVisible(bool visible);
 	void setLeftButtonVisible(bool visible);
 	void setMiddleButtonVisible(bool visible);
 	void setRightButtonVisible(bool visible);
