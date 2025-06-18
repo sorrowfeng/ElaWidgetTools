@@ -24,7 +24,7 @@ private:
     bool _isAllowHidePopup{false};
     ElaComboBoxStyle* _comboBoxStyle{nullptr};
     ElaThemeType::ThemeMode _themeMode;
-    void _changeTheme(QLineEdit* lineEdit);
+    void _changeTheme();
 };
 
 #endif // ELACOMBOBOXPRIVATE_H

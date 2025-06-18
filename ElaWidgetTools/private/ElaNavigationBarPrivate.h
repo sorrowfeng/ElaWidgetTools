@@ -31,6 +31,7 @@ class ElaNavigationBarPrivate : public QObject
     Q_D_CREATE(ElaNavigationBar)
     Q_PROPERTY_CREATE_D(bool, IsTransparent)
     Q_PROPERTY_CREATE_D(bool, IsAllowPageOpenInNewWindow)
+    Q_PROPERTY_CREATE_D(int, NavigationBarWidth)
     Q_PROPERTY_CREATE(int, NavigationViewWidth);
 
 public:
@@ -42,11 +43,12 @@ public:
     Q_INVOKABLE void onNavigationRouteBack(QVariantMap routeData);
 
     //核心跳转逻辑
-    void onTreeViewClicked(const QModelIndex& index, bool isLogRoute = true);
-    void onFooterViewClicked(const QModelIndex& index, bool isLogRoute = true);
+    void onTreeViewClicked(const QModelIndex& index, bool isLogRoute = true, bool isRouteBack = false);
+    void onFooterViewClicked(const QModelIndex& index, bool isLogRoute = true, bool isRouteBack = false);
 
 private:
     friend class ElaNavigationView;
+    friend class ElaNavigationStyle;
     ElaThemeType::ThemeMode _themeMode;
     QMap<QString, QString> _suggestKeyMap;
     QMap<QString, const QMetaObject*> _pageMetaMap;

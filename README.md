@@ -1,11 +1,5 @@
 # ElaWidgetTools
 
-## 新增
-
-1. 适配高版本CMake工具
-2. 优化ElaContextDialog，替代部分QMessageBox功能
-3. 增加ElaInputDialog，用于快速输入文本与数值
-
 ## 简介
 
 本项目是基于QT-Widget开发的FluentUI风格的组件库，同时提供不限于组件的常用集成功能；目前Main分支支持QT5.12以上所有版本(

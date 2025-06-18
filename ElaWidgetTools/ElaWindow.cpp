@@ -24,13 +24,14 @@
 #include <QVBoxLayout>
 Q_PROPERTY_CREATE_Q_CPP(ElaWindow, int, ThemeChangeTime)
 Q_PROPERTY_CREATE_Q_CPP(ElaWindow, ElaNavigationType::NavigationDisplayMode, NavigationBarDisplayMode)
+Q_PROPERTY_CREATE_Q_CPP(ElaWindow, ElaWindowType::StackSwitchMode, StackSwitchMode)
 Q_TAKEOVER_NATIVEEVENT_CPP(ElaWindow, d_func()->_appBar);
 ElaWindow::ElaWindow(QWidget* parent)
     : QMainWindow{parent}, d_ptr(new ElaWindowPrivate())
 {
     Q_D(ElaWindow);
     d->q_ptr = this;
-
+    d->_pStackSwitchMode = ElaWindowType::StackSwitchMode::Popup;
     setProperty("ElaBaseClassName", "ElaWindow");
     resize(1020, 680); // 默认宽高
 
@@ -202,6 +203,19 @@ bool ElaWindow::getIsAllowPageOpenInNewWindow() const
 {
     Q_D(const ElaWindow);
     return d->_navigationBar->getIsAllowPageOpenInNewWindow();
+}
+
+void ElaWindow::setNavigationBarWidth(int navigationBarWidth)
+{
+    Q_D(ElaWindow);
+    d->_navigationBar->setNavigationBarWidth(navigationBarWidth);
+    Q_EMIT pNavigationBarWidthChanged();
+}
+
+int ElaWindow::getNavigationBarWidth() const
+{
+    Q_D(const ElaWindow);
+    return d->_navigationBar->getNavigationBarWidth();
 }
 
 void ElaWindow::moveToCenter()

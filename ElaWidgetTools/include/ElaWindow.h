@@ -5,7 +5,7 @@
 
 #include "Def.h"
 #include "ElaAppBar.h"
-#include "stdafx.h"
+
 class ElaWindowPrivate;
 class ELA_EXPORT ElaWindow : public QMainWindow
 {
@@ -19,7 +19,10 @@ class ELA_EXPORT ElaWindow : public QMainWindow
     Q_PROPERTY_CREATE_Q_H(int, ThemeChangeTime)
     Q_PROPERTY_CREATE_Q_H(bool, IsCentralStackedWidgetTransparent)
     Q_PROPERTY_CREATE_Q_H(bool, IsAllowPageOpenInNewWindow)
+    Q_PROPERTY_CREATE_Q_H(bool, IsNavigationBarEnable)
+    Q_PROPERTY_CREATE_Q_H(int, NavigationBarWidth)
     Q_PROPERTY_CREATE_Q_H(ElaNavigationType::NavigationDisplayMode, NavigationBarDisplayMode)
+    Q_PROPERTY_CREATE_Q_H(ElaWindowType::StackSwitchMode, StackSwitchMode)
     Q_TAKEOVER_NATIVEEVENT_H
 public:
     explicit ElaWindow(QWidget* parent = nullptr);
@@ -29,8 +32,6 @@ public:
 
     void setCustomWidget(ElaAppBarType::CustomArea customArea, QWidget* customWidget);
     QWidget* getCustomWidget() const;
-    void setIsNavigationBarEnable(bool isEnable);
-    bool getIsNavigationBarEnable() const;
     void setUserInfoCardVisible(bool isVisible);
     void setUserInfoCardPixmap(QPixmap pix);
     void setUserInfoCardTitle(QString title);
