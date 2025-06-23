@@ -31,7 +31,7 @@ ElaSpinBox::~ElaSpinBox()
 void ElaSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
 {
     Q_D(ElaSpinBox);
-    if (minimumWidth() < 90)
+    if (buttonMode != ElaSpinBoxType::NoButtons && minimumWidth() < 90)
     {
         setMinimumWidth(90);
     }
@@ -52,6 +52,8 @@ void ElaSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
         lineEdit()->setStyleSheet("background-color:transparent;padding-bottom:3px;");
         break;
     }
+    case ElaSpinBoxType::NoButtons:
+      break;
     }
     setFrame(hasFrame());
     Q_EMIT pButtonModeChanged();

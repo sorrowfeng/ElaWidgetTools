@@ -272,6 +272,7 @@ enum ButtonMode
     Compact = 0x0001,
     Side = 0x0002,
     PMSide = 0x0003,
+    NoButtons = 0x0004,
 };
 Q_ENUM_CREATE(ButtonMode)
 Q_END_ENUM_CREATE(ElaSpinBoxType)

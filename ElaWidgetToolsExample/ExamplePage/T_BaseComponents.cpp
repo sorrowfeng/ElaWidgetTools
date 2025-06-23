@@ -189,6 +189,7 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaRadioButton* compactButton = new ElaRadioButton("Compact", this);
     ElaRadioButton* sideButton = new ElaRadioButton("Side", this);
     ElaRadioButton* pmSideButton = new ElaRadioButton("PMSide", this);
+    ElaRadioButton* noButtonsButton = new ElaRadioButton("NoButtons", this);
     inlineButton->setChecked(true);
     QHBoxLayout* buttonModeLayout = new QHBoxLayout();
     ElaText* buttonModeText = new ElaText("按钮模式切换", this);
@@ -199,6 +200,7 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     buttonModeLayout->addWidget(compactButton);
     buttonModeLayout->addWidget(sideButton);
     buttonModeLayout->addWidget(pmSideButton);
+    buttonModeLayout->addWidget(noButtonsButton);
 
     spinBoxLayout->addLayout(buttonModeLayout);
 
@@ -207,10 +209,12 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     spinButtonGroup->addButton(compactButton, 1);
     spinButtonGroup->addButton(sideButton, 2);
     spinButtonGroup->addButton(pmSideButton, 3);
+    spinButtonGroup->addButton(noButtonsButton, 4);
     connect(spinButtonGroup, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled), this, [=](QAbstractButton* button, bool isToggled) {
         if (isToggled)
         {
-            _spinBox->setButtonMode((ElaSpinBoxType::ButtonMode)spinButtonGroup->id(button));
+            auto mode = (ElaSpinBoxType::ButtonMode)spinButtonGroup->id(button);
+            _spinBox->setButtonMode(mode);
         }
     });
 
