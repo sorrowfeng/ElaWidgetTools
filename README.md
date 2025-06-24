@@ -5,6 +5,9 @@
 1. 适配高版本CMake工具
 2. 优化ElaContextDialog，替代部分QMessageBox功能
 3. 增加ElaInputDialog，用于快速输入文本与数值
+4. 为SpinBox添加NoButtons的模式
+5. 给ListView和TableView增加选中后的高亮效果切换
+6. 修复ComboBox在夜间模式下文本颜色显示不对的问题
 
 
 ## 简介
