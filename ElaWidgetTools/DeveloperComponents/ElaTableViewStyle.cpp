@@ -10,6 +10,7 @@ ElaTableViewStyle::ElaTableViewStyle(QStyle* style)
 {
     _pHeaderMargin = 6;
     _pCurrentHoverRow = -1;
+    _pSelectMode = ElaViewType::Header;
     _themeMode = eTheme->getThemeMode();
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) {
         _themeMode = themeMode;
@@ -72,6 +73,16 @@ void ElaTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOpti
             {
                 // 选中
                 painter->setBrush(ElaThemeColor(_themeMode, BasicSelectedAlpha));
+                switch (_pSelectMode) 
+                { 
+                case ElaViewType::Fill:
+                    painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                    break;
+                case ElaViewType::FillDanger:
+                    painter->setBrush(ElaThemeColor(_themeMode, StatusDanger));
+                    break;
+                }
+
                 painter->drawRect(itemRect);
             }
             else
@@ -186,6 +197,34 @@ void ElaTableViewStyle::drawControl(ControlElement element, const QStyleOption* 
             QRect itemRect = option->rect;
             painter->save();
             painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
+
+            // 判断当前行是否被选中
+            bool isRowSelected = vopt->state.testFlag(QStyle::State_Selected);
+
+            // 选中特效
+            if (isRowSelected)
+            {
+                if (selectionBehavior == QAbstractItemView::SelectRows && vopt->index.column() == 0)
+                {
+                    int heightOffset = itemRect.height() / 4;
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                    //painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                
+                    switch (_pSelectMode) 
+                    { 
+                    case ElaViewType::Header:
+                        painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                        painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                        break;
+                    case ElaViewType::HeaderDanger:
+                        painter->setBrush(ElaThemeColor(_themeMode, StatusDanger));
+                        painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                        break;
+                    }
+                }
+            }
+            
             // QRect checkRect = proxy()->subElementRect(SE_ItemViewItemCheckIndicator, vopt, widget);
             QRect iconRect = proxy()->subElementRect(SE_ItemViewItemDecoration, vopt, widget);
             QRect textRect = proxy()->subElementRect(SE_ItemViewItemText, vopt, widget);
@@ -212,19 +251,14 @@ void ElaTableViewStyle::drawControl(ControlElement element, const QStyleOption* 
             // 文字绘制
             if (!vopt->text.isEmpty())
             {
+                // 默认颜色
                 painter->setPen(ElaThemeColor(_themeMode, BasicText));
-                painter->drawText(textRect, vopt->displayAlignment, vopt->text);
-            }
-            // 选中特效
-            int heightOffset = itemRect.height() / 4;
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
-            if (vopt->state.testFlag(QStyle::State_Selected))
-            {
-                if (selectionBehavior == QAbstractItemView::SelectRows && vopt->index.column() == 0)
+                if (isRowSelected && (_pSelectMode == ElaViewType::Fill || _pSelectMode == ElaViewType::FillDanger))
                 {
-                    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                     painter->setPen(ElaThemeColor(_themeMode, BasicTextInvert));
                 }
+                // 文字
+                painter->drawText(textRect, vopt->displayAlignment, vopt->text);
             }
             painter->restore();
         }

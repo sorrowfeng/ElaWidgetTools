@@ -10,6 +10,7 @@ ElaListViewStyle::ElaListViewStyle(QStyle* style)
 {
     _pItemHeight = 35;
     _pIsTransparent = false;
+    _pSelectMode = ElaViewType::Header;
     _themeMode = eTheme->getThemeMode();
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) {
         _themeMode = themeMode;
@@ -142,19 +143,41 @@ void ElaListViewStyle::drawControl(ControlElement element, const QStyleOption* o
                 QIcon::State state = vopt->state & QStyle::State_Open ? QIcon::On : QIcon::Off;
                 vopt->icon.paint(painter, iconRect, vopt->decorationAlignment, mode, state);
             }
-            // 文字绘制
-            if (!vopt->text.isEmpty())
-            {
-                painter->setPen(ElaThemeColor(_themeMode, BasicText));
-                painter->drawText(textRect, vopt->displayAlignment, vopt->text);
-            }
             // 选中特效
             if (vopt->state.testFlag(QStyle::State_Selected) && viewMode == QListView::ListMode)
             {
                 int heightOffset = itemRect.height() / 4;
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
-                painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                switch (_pSelectMode) 
+                { 
+                case ElaViewType::Header:
+                    painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                    break;
+                case ElaViewType::Fill:
+                    painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                    painter->drawRoundedRect(itemRect, 3, 3);
+                    break;
+                case ElaViewType::HeaderDanger:
+                    painter->setBrush(ElaThemeColor(_themeMode, StatusDanger));
+                    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 3, 3);
+                    break;
+                case ElaViewType::FillDanger:
+                    painter->setBrush(ElaThemeColor(_themeMode, StatusDanger));
+                    painter->drawRoundedRect(itemRect, 3, 3);
+                    break;
+                }
+            }
+            // 文字绘制
+            if (!vopt->text.isEmpty())
+            {
+                painter->setPen(ElaThemeColor(_themeMode, BasicText));
+                if (_pSelectMode == ElaViewType::Fill || _pSelectMode == ElaViewType::FillDanger) 
+                { 
+                    if (vopt->state.testFlag(QStyle::State_Selected) && viewMode == QListView::ListMode)
+                        painter->setPen(ElaThemeColor(_themeMode, BasicTextInvert));
+                }
+                painter->drawText(textRect, vopt->displayAlignment, vopt->text);
             }
             painter->restore();
         }

@@ -10,7 +10,8 @@ class ElaTableViewStyle : public QProxyStyle
     Q_OBJECT
     Q_PROPERTY_CREATE(int, HeaderMargin)
     Q_PROPERTY_CREATE(int, CurrentHoverRow)
-public:
+    Q_PRIVATE_CREATE(ElaViewType::SelectMode, SelectMode)
+   public:
     explicit ElaTableViewStyle(QStyle* style = nullptr);
     ~ElaTableViewStyle();
     void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget = nullptr) const override;

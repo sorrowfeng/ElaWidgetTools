@@ -12,7 +12,7 @@ class ELA_EXPORT ElaTreeView : public QTreeView
     Q_Q_CREATE(ElaTreeView)
     Q_PROPERTY_CREATE_Q_H(int, ItemHeight)
     Q_PROPERTY_CREATE_Q_H(int, HeaderMargin)
-public:
+   public:
     explicit ElaTreeView(QWidget* parent = nullptr);
     ~ElaTreeView();
 };

@@ -4,6 +4,7 @@
 #include <QListView>
 
 #include "stdafx.h"
+#include "Def.h"
 
 class ElaListViewPrivate;
 class ELA_EXPORT ElaListView : public QListView
@@ -12,7 +13,8 @@ class ELA_EXPORT ElaListView : public QListView
     Q_Q_CREATE(ElaListView)
     Q_PROPERTY_CREATE_Q_H(int, ItemHeight)
     Q_PROPERTY_CREATE_Q_H(bool, IsTransparent)
-public:
+    Q_PROPERTY_CREATE_Q_H(ElaViewType::SelectMode, SelectMode)
+   public:
     explicit ElaListView(QWidget* parent = nullptr);
     ~ElaListView();
 };

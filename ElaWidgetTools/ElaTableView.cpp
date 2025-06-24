@@ -47,6 +47,18 @@ int ElaTableView::getHeaderMargin() const
     return d->_tableViewStyle->getHeaderMargin();
 }
 
+void ElaTableView::setSelectMode(ElaViewType::SelectMode mode) 
+{
+    Q_D(ElaTableView);
+    d->_tableViewStyle->setSelectMode(mode);
+}
+
+ElaViewType::SelectMode ElaTableView::getSelectMode() const
+{
+    Q_D(const ElaTableView);
+    return d->_tableViewStyle->getSelectMode();
+}
+
 void ElaTableView::showEvent(QShowEvent* event)
 {
     Q_EMIT tableViewShow();

@@ -277,6 +277,16 @@ enum ButtonMode
 Q_ENUM_CREATE(ButtonMode)
 Q_END_ENUM_CREATE(ElaSpinBoxType)
 
+Q_BEGIN_ENUM_CREATE(ElaViewType)
+enum SelectMode {
+  Header = 0x0000,
+  Fill = 0x0001,
+  HeaderDanger = 0x0002,
+  FillDanger = 0x0003,
+};
+Q_ENUM_CREATE(SelectMode)
+Q_END_ENUM_CREATE(ElaViewType)
+
 Q_BEGIN_ENUM_CREATE(ElaIconType)
 enum IconName
 {

@@ -55,3 +55,15 @@ bool ElaListView::getIsTransparent() const
     Q_D(const ElaListView);
     return d->_listViewStyle->getIsTransparent();
 }
+
+void ElaListView::setSelectMode(ElaViewType::SelectMode mode) 
+{
+    Q_D(ElaListView);
+    d->_listViewStyle->setSelectMode(mode);
+}
+
+ElaViewType::SelectMode ElaListView::getSelectMode() const
+{
+    Q_D(const ElaListView);
+    return d->_listViewStyle->getSelectMode();
+}

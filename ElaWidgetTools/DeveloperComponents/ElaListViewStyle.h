@@ -9,7 +9,8 @@ class ElaListViewStyle : public QProxyStyle
     Q_OBJECT
     Q_PROPERTY_CREATE(int, ItemHeight)
     Q_PROPERTY_CREATE(bool, IsTransparent)
-public:
+    Q_PRIVATE_CREATE(ElaViewType::SelectMode, SelectMode)
+   public:
     explicit ElaListViewStyle(QStyle* style = nullptr);
     ~ElaListViewStyle();
     void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget = nullptr) const override;
