@@ -19,9 +19,11 @@
 ### cmake编译库
 
 1. 将QT_DIR路径以及QT_SDK_DIR路径改为本机的路径
+
 ![250626145336003.png](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145336003_1750920877382.png)
 
 2. 指定install目录
+
 ![250626145659237.png](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145659237_1750921019242.png)
 
 3. 点击Configure以及Generate.
