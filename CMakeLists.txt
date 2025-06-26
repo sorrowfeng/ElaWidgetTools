@@ -1,4 +1,8 @@
-﻿cmake_minimum_required(VERSION 3.14)
+﻿if(CMAKE_VERSION VERSION_LESS 3.14)
+	cmake_minimum_required(VERSION 3.5)
+else()
+    cmake_minimum_required(VERSION 3.14)
+endif()
 
 project(ElaFramework VERSION 0.1 LANGUAGES CXX)
 

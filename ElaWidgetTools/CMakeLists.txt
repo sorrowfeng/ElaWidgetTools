@@ -1,4 +1,8 @@
-﻿cmake_minimum_required(VERSION 3.14)
+﻿if(CMAKE_VERSION VERSION_LESS 3.14)
+	cmake_minimum_required(VERSION 3.5)
+else()
+    cmake_minimum_required(VERSION 3.14)
+endif()
 
 project(ElaWidgetTools VERSION 2.0.0 LANGUAGES CXX)
 
