@@ -1,5 +1,10 @@
 # ElaWidgetTools
 
+## 测试环境
+- Qt 6.9.0
+- CMake 4.0.1
+- MSVC2022_64
+
 ## 新增
 
 1. 适配高版本CMake工具
@@ -8,6 +13,52 @@
 4. 为SpinBox添加NoButtons的模式
 5. 给ListView和TableView增加选中后的高亮效果切换
 6. 修复ComboBox在夜间模式下文本颜色显示不对的问题
+
+## 使用说明
+
+### cmake编译库
+
+1. 将QT_DIR路径以及QT_SDK_DIR路径改为本机的路径
+![250626145336003.png](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145336003_1750920877382.png)
+
+2. 指定install目录
+![250626145659237.png](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145659237_1750921019242.png)
+
+3. 点击Configure以及Generate.
+
+4. 完成后Open Project用vs打开项目.
+
+5. ALL_BUILD生成完成后,生成INSTALL即可在指定的install目录下看见库文件
+
+### cmake导入与链接库
+
+```cmake
+find_library(ELAWIDGETTOOL_LIB NAMES ElaWidgetTools PATHS ${THIRDPARTY_DIR}/lib REQUIRED)
+
+add_executable(......)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${ELAWIDGETTOOL_LIB} )
+```
+
+### 使用
+```cpp
+#include <ElaWidgetTools/ElaPushButton.h>
+直接导入控件使用即可
+```
+
+> 如果出现图标乱码情况, 在源码中复制ElaAwesome.ttf字体, 并为Qt程序加载该字体即可解决
+```cpp
+// main.cpp
+// 初始化字体
+QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+QFontDatabase::addApplicationFont("ElaAwesome.ttf");
+QFont font = a.font();
+font.setPixelSize(13);
+font.setFamily("Microsoft YaHei");
+font.setHintingPreference(QFont::PreferNoHinting);
+a.setFont(font);
+```
+
 
 
 ## 简介
