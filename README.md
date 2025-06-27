@@ -1,66 +1,76 @@
-# ElaWidgetTools
+# 🎨 ElaWidgetTools - Qt 增强控件库
 
-## 测试环境
-- Qt 6.9.0
-- CMake 4.0.1
-- MSVC2022_64
+ElaWidgetTools 是一个基于 **Qt** 的自定义控件库，提供了现代化 UI 控件与便捷交互组件，适用于桌面应用程序开发。
 
-## 新增
+## 🧪 测试环境
 
-1. 适配高版本CMake工具
-2. 优化ElaContextDialog，替代部分QMessageBox功能
-3. 增加ElaInputDialog，用于快速输入文本与数值
-4. 为SpinBox添加NoButtons的模式
-5. 给ListView和TableView增加选中后的高亮效果切换
-6. 修复ComboBox在夜间模式下文本颜色显示不对的问题
+![Qt 版本](https://img.shields.io/badge/Qt-6.9.0-green) 
+![CMake 版本](https://img.shields.io/badge/CMake-4.0.1-blue) 
+![编译器](https://img.shields.io/badge/MSVC-2022_64-purple)
 
-## 使用说明
+## ✨ 最新特性
 
-### cmake编译库
+- 🛠️ 适配更高版本的 CMake 工具
+- 💬 优化 ElaContextDialog，替代部分 QMessageBox 功能
+- ✏️ 新增 ElaInputDialog，支持快速文本和数值输入
+- 🔢 为 SpinBox 添加 NoButtons 模式
+- 🎨 为 ListView 和 TableView 增加选中高亮效果切换
+- 🌙 修复 ComboBox 在夜间模式下文本颜色显示问题
 
-1. 将QT_DIR路径以及QT_SDK_DIR路径改为本机的路径
+## 🚀 编译安装指南
 
-![250626145336003.png](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145336003_1750920877382.png)
+### 使用 CMake 编译库
 
-2. 指定install目录
+1. **配置路径**  
+   修改 `QT_DIR` 和 `QT_SDK_DIR` 为您本机的实际路径  
+   ![配置路径截图](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145336003_1750920877382.png)
 
-![250626145659237.png](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145659237_1750921019242.png)
+2. **指定安装目录**  
+   ![安装目录截图](https://fastly.jsdelivr.net/gh/sorrowfeng/ImageHub@main/2025-06/250626145659237_1750921019242.png)
 
-3. 点击Configure以及Generate.
+3. 点击 `Configure` 和 `Generate` 按钮
 
-4. 完成后Open Project用vs打开项目.
+4. 完成后用 VS 打开项目
 
-5. ALL_BUILD生成完成后,生成INSTALL即可在指定的install目录下看见库文件
+5. 生成 `ALL_BUILD` 后，生成 `INSTALL` 目标即可在指定目录找到库文件
 
-### cmake导入与链接库
+### 项目中引入库
 
 ```cmake
-find_library(ELAWIDGETTOOL_LIB NAMES ElaWidgetTools PATHS ${THIRDPARTY_DIR}/lib REQUIRED)
+find_library(ELAWIDGETTOOL_LIB 
+  NAMES ElaWidgetTools 
+  PATHS ${THIRDPARTY_DIR}/lib 
+  REQUIRED)
 
-add_executable(......)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE ${ELAWIDGETTOOL_LIB} )
+target_link_libraries(${PROJECT_NAME} 
+  PRIVATE ${ELAWIDGETTOOL_LIB})
 ```
 
-### 使用
+## 🛠 使用说明
+
 ```cpp
 #include <ElaWidgetTools/ElaPushButton.h>
-直接导入控件使用即可
+// 直接使用增强控件即可
 ```
 
-> 如果出现图标乱码情况, 在源码中复制ElaAwesome.ttf字体, 并为Qt程序加载该字体即可解决
+## 💡 字体问题解决方案
+
+如果出现图标乱码，请按以下步骤操作：
+
+1. 从源码中复制 ElaAwesome.ttf 字体文件
+
+2. 在应用程序启动时加载该字体
+
 ```cpp
-// main.cpp
-// 初始化字体
+// main.cpp 初始化代码
 QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 QFontDatabase::addApplicationFont("ElaAwesome.ttf");
-QFont font = a.font();
+QFont font = QApplication::font();
 font.setPixelSize(13);
 font.setFamily("Microsoft YaHei");
 font.setHintingPreference(QFont::PreferNoHinting);
-a.setFont(font);
+QApplication::setFont(font);
 ```
-
 
 
 ## 简介
