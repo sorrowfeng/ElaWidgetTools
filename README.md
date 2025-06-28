@@ -55,21 +55,22 @@ target_link_libraries(${PROJECT_NAME}
 
 ## 💡 字体问题解决方案
 
-如果出现图标乱码，请按以下步骤操作：
+如果出现图标乱码，请按以下操作：
 
-1. 从源码中复制 ElaAwesome.ttf 字体文件
-
-2. 在应用程序启动时加载该字体
+在应用程序启动时初始化库资源文件
 
 ```cpp
 // main.cpp 初始化代码
-QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
-QFontDatabase::addApplicationFont("ElaAwesome.ttf");
-QFont font = QApplication::font();
-font.setPixelSize(13);
-font.setFamily("Microsoft YaHei");
-font.setHintingPreference(QFont::PreferNoHinting);
-QApplication::setFont(font);
+#include <ElaWidgetTools/ElaApplication.h>
+
+int main(int argc, char* argv[]) {
+  QApplication a(argc, argv);
+  eApp->init(); // 初始化资源文件
+  MainWindow w;
+  w.show();
+  return a.exec();
+}
+
 ```
 
 
