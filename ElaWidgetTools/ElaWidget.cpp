@@ -15,7 +15,7 @@ ElaWidget::ElaWidget(QWidget* parent)
 {
     Q_D(ElaWidget);
     d->q_ptr = this;
-    resize(500, 500); // 默认宽高
+    resize(500, 500);// 默认宽高
     setWindowTitle("ElaWidget");
     setObjectName("ElaWidget");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 5, 3) || QT_VERSION > QT_VERSION_CHECK(6, 6, 1))
@@ -32,16 +32,16 @@ ElaWidget::ElaWidget(QWidget* parent)
 
     // 主题
     d->_themeMode = eTheme->getThemeMode();
-    connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) {
+    connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode)
+            {
         d->_themeMode = themeMode;
-        update();
-    });
+        update(); });
 
     d->_windowDisplayMode = eApp->getWindowDisplayMode();
-    connect(eApp, &ElaApplication::pWindowDisplayModeChanged, this, [=]() {
+    connect(eApp, &ElaApplication::pWindowDisplayModeChanged, this, [=]()
+            {
         d->_windowDisplayMode = eApp->getWindowDisplayMode();
-        update();
-    });
+        update(); });
     eApp->syncWindowDisplayMode(this);
 }
 
@@ -110,6 +110,12 @@ void ElaWidget::moveToCenter()
     auto geometry = qApp->screenAt(this->geometry().center())->geometry();
 #endif
     setGeometry((geometry.left() + geometry.right() - width()) / 2, (geometry.top() + geometry.bottom() - height()) / 2, width(), height());
+}
+
+void ElaWidget::setAppBarVisible(bool visible)
+{
+    Q_D(ElaWidget);
+    d->_appBar->setAppBarHeight(visible ? 45 : 0);
 }
 
 void ElaWidget::setWindowButtonFlag(ElaAppBarType::ButtonType buttonFlag, bool isEnable)

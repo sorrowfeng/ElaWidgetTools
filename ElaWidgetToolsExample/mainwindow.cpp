@@ -270,8 +270,7 @@ void MainWindow::initContent()
 
     _aboutPage->hide();
     connect(this, &ElaWindow::navigationNodeClicked, this, [=](ElaNavigationType::NavigationNodeType nodeType, QString nodeKey) {
-        if (_aboutKey == nodeKey)
-        {
+        if (_aboutKey == nodeKey) {
             _aboutPage->setFixedSize(400, 400);
             _aboutPage->moveToCenter();
             _aboutPage->show();

@@ -1,8 +1,6 @@
-﻿if(CMAKE_VERSION VERSION_LESS 3.14)
-	cmake_minimum_required(VERSION 3.5)
-else()
-    cmake_minimum_required(VERSION 3.14)
-endif()
+﻿# 3.5 is actually available almost everywhere.
+# 3.30 as the upper policy limit avoids CMake deprecation warnings.
+cmake_minimum_required(VERSION 3.5...3.30)
 
 project(ElaFramework VERSION 0.1 LANGUAGES CXX)
 
@@ -19,7 +17,7 @@ if(NOT DEFINED QT_SDK_DIR)
     set(QT_SDK_DIR "" CACHE PATH "Qt SDK Root Directory (e.g., C:/Qt/6.9.0/msvc2022_64)")
 endif()
 
-SET(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/Install CACHE PATH "Installation path" FORCE)
+SET(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install CACHE PATH "Installation path" FORCE)
 
 option(BUILD_ELAPACKETIO "Build ElaPacketIO" OFF)
 list(APPEND CMAKE_PREFIX_PATH ${QT_SDK_DIR})

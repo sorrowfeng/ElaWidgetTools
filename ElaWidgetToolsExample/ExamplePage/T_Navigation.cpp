@@ -6,10 +6,12 @@
 
 #include "ElaBreadcrumbBar.h"
 #include "ElaPivot.h"
+#include "ElaPlainTextEdit.h"
 #include "ElaPushButton.h"
 #include "ElaScrollPageArea.h"
 #include "ElaTabWidget.h"
 #include "ElaText.h"
+
 T_Navigation::T_Navigation(QWidget* parent)
     : T_BasePage(parent)
 {
@@ -32,9 +34,8 @@ T_Navigation::T_Navigation(QWidget* parent)
 
     ElaPushButton* resetButton = new ElaPushButton("还原", this);
     resetButton->setFixedSize(60, 32);
-    connect(resetButton, &ElaPushButton::clicked, this, [=]() {
-        _breadcrumbBar->setBreadcrumbList(breadcrumbBarList);
-    });
+    connect(resetButton, &ElaPushButton::clicked, this, [=]()
+            { _breadcrumbBar->setBreadcrumbList(breadcrumbBarList); });
 
     QHBoxLayout* breadcrumbBarTextLayout = new QHBoxLayout();
     breadcrumbBarTextLayout->addWidget(breadcrumbBarText);
@@ -67,18 +68,17 @@ T_Navigation::T_Navigation(QWidget* parent)
     tabWidgetText->setTextPixelSize(18);
     _tabWidget = new ElaTabWidget(this);
     _tabWidget->setFixedHeight(500);
-    QLabel* page1 = new QLabel("新标签页1", this);
-    page1->setAlignment(Qt::AlignCenter);
+    ElaPlainTextEdit* page1 = new ElaPlainTextEdit("新标签页1", this);
     QFont font = page1->font();
     font.setPixelSize(32);
     page1->setFont(font);
-    QLabel* page2 = new QLabel("新标签页2", this);
+    ElaText* page2 = new ElaText("新标签页2", this);
     page2->setFont(font);
     page2->setAlignment(Qt::AlignCenter);
-    QLabel* page3 = new QLabel("新标签页3", this);
+    ElaText* page3 = new ElaText("新标签页3", this);
     page3->setFont(font);
     page3->setAlignment(Qt::AlignCenter);
-    QLabel* page4 = new QLabel("新标签页4", this);
+    ElaText* page4 = new ElaText("新标签页4", this);
     page4->setFont(font);
     page4->setAlignment(Qt::AlignCenter);
     _tabWidget->addTab(page1, QIcon(":/Resource/Image/Cirno.jpg"), "新标签页1");

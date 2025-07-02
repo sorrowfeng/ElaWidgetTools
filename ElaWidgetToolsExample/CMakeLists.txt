@@ -1,8 +1,6 @@
-﻿if(CMAKE_VERSION VERSION_LESS 3.14)
-	cmake_minimum_required(VERSION 3.5)
-else()
-    cmake_minimum_required(VERSION 3.14)
-endif()
+﻿# 3.5 is actually available almost everywhere.
+# 3.30 as the upper policy limit avoids CMake deprecation warnings.
+cmake_minimum_required(VERSION 3.5...3.30)
 
 project(ElaWidgetToolsExample VERSION 0.1 LANGUAGES CXX)
 
@@ -17,6 +15,11 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 FILE(GLOB ORIGIN *.cpp *.h)
 FILE(GLOB MODELVIEW ModelView/*.h ModelView/*.cpp)
@@ -57,10 +60,6 @@ else ()
         ${PROJECT_SOURCES}
     )
 endif ()
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
 if (WIN32)
     target_include_directories(${PROJECT_NAME} PUBLIC
@@ -105,20 +104,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if (QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
 endif ()
-    
-
-
-if(WIN32 AND MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(DEBUG_DLLS "${CMAKE_BINARY_DIR}/ElaWidgetTools/Debug/ElaWidgetToolsd.dll")
-    foreach(DLL_PATH ${DEBUG_DLLS})
-        get_filename_component(DLL_NAME ${DLL_PATH} NAME)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<IF:$<CONFIG:Debug>,${DLL_PATH},>"
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/${DLL_NAME}"
-        )
-    endforeach()
-endif()
 
 
 if (WIN32)

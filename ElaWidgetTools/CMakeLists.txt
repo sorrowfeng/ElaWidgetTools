@@ -1,8 +1,6 @@
-﻿if(CMAKE_VERSION VERSION_LESS 3.14)
-	cmake_minimum_required(VERSION 3.5)
-else()
-    cmake_minimum_required(VERSION 3.14)
-endif()
+﻿# 3.5 is actually available almost everywhere.
+# 3.30 as the upper policy limit avoids CMake deprecation warnings.
+cmake_minimum_required(VERSION 3.5...3.30)
 
 project(ElaWidgetTools VERSION 2.0.0 LANGUAGES CXX)
 
@@ -17,6 +15,11 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_definitions(-DELAWIDGETTOOLS_LIBRARY)
 option(ELAWIDGETTOOLS_BUILD_STATIC_LIB "Build static library." OFF)
+
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 FILE(GLOB ORIGIN *.h *.cpp)
 FILE(GLOB INCLUDE include/*.h)
@@ -66,9 +69,8 @@ if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 endif ()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+
+
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC
         Qt${QT_VERSION_MAJOR}::Widgets

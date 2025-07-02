@@ -18,18 +18,15 @@ ElaCustomTabWidget::ElaCustomTabWidget(QWidget* parent)
     originTabBar->hide();
     _customTabBar = new ElaTabBar(this);
     _customTabBar->setObjectName("ElaCustomTabBar");
-    connect(_customTabBar, &ElaTabBar::tabMoved, this, [=](int from, int to) {
-        _customTabWidget->tabBar()->moveTab(from, to);
-    });
-    connect(_customTabBar, &ElaTabBar::currentChanged, this, [=](int index) {
-        _customTabWidget->setCurrentIndex(index);
-    });
-    connect(_customTabWidget, &ElaTabWidget::currentChanged, this, [=](int index) {
-        if (index == -1)
-        {
-            close();
-        }
-    });
+    connect(_customTabBar, &ElaTabBar::tabMoved, this, [=](int from, int to)
+            { _customTabWidget->tabBar()->moveTab(from, to); });
+    connect(_customTabBar, &ElaTabBar::currentChanged, this, [=](int index)
+            { _customTabWidget->setCurrentIndex(index); });
+    connect(_customTabWidget, &ElaTabWidget::currentChanged, this, [=](int index)
+            {
+                if (index == -1) {
+                    close();
+                } });
     connect(_customTabBar, &ElaTabBar::tabCloseRequested, originTabBar, &QTabBar::tabCloseRequested);
 
     QWidget* customWidget = new QWidget(this);
