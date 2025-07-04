@@ -27,9 +27,8 @@ void ElaDoubleSpinBoxPrivate::onThemeChanged(ElaThemeType::ThemeMode themeMode)
     }
     else
     {
-        QTimer::singleShot(1, this, [=] {
-            _changeTheme();
-        });
+        QTimer::singleShot(1, this, [=]
+                           { _changeTheme(); });
     }
 }
 
@@ -75,14 +74,14 @@ ElaMenu* ElaDoubleSpinBoxPrivate::_createStandardContextMenu()
     {
         action = menu->addElaIconAction(ElaIconType::DeleteLeft, tr("删除"));
         action->setEnabled(!lineEdit->isReadOnly() && !lineEdit->text().isEmpty() && lineEdit->hasSelectedText());
-        connect(action, &QAction::triggered, this, [=](bool checked) {
+        connect(action, &QAction::triggered, this, [=](bool checked)
+                {
             if (lineEdit->hasSelectedText())
             {
                 int startIndex = lineEdit->selectionStart();
                 int endIndex = lineEdit->selectionEnd();
                 lineEdit->setText(lineEdit->text().remove(startIndex, endIndex - startIndex));
-            }
-        });
+            } });
     }
     if (!menu->isEmpty())
     {
@@ -102,4 +101,5 @@ void ElaDoubleSpinBoxPrivate::_changeTheme()
     palette.setColor(QPalette::Base, Qt::transparent);
     palette.setColor(QPalette::Text, ElaThemeColor(_themeMode, BasicText));
     q->lineEdit()->setPalette(palette);
+    q->update();
 }

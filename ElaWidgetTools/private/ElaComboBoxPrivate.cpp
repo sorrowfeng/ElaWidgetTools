@@ -30,12 +30,16 @@ void ElaComboBoxPrivate::onThemeChanged(ElaThemeType::ThemeMode themeMode)
     //    }
     //}
 
-    
+
     _themeMode = themeMode;
-    if (q->isVisible()) {
-      _changeTheme();
-    } else {
-      QTimer::singleShot(1, this, [=] { _changeTheme(); });
+    if (q->isVisible())
+    {
+        _changeTheme();
+    }
+    else
+    {
+        QTimer::singleShot(1, this, [=]
+                           { _changeTheme(); });
     }
 }
 
@@ -57,12 +61,16 @@ void ElaComboBoxPrivate::_changeTheme()
 
     Q_Q(ElaComboBox);
     QPalette palette = q->palette();
-    if (_themeMode == ElaThemeType::Light) {
-      palette.setColor(QPalette::Text, Qt::black);
-      palette.setColor(QPalette::PlaceholderText, QColor(0x00, 0x00, 0x00, 128));
-    } else {
-      palette.setColor(QPalette::Text, Qt::white);
-      palette.setColor(QPalette::PlaceholderText, QColor(0xBA, 0xBA, 0xBA));
+    if (_themeMode == ElaThemeType::Light)
+    {
+        palette.setColor(QPalette::Text, Qt::black);
+        palette.setColor(QPalette::PlaceholderText, QColor(0x00, 0x00, 0x00, 128));
+    }
+    else
+    {
+        palette.setColor(QPalette::Text, Qt::white);
+        palette.setColor(QPalette::PlaceholderText, QColor(0xBA, 0xBA, 0xBA));
     }
     q->setPalette(palette);
+    q->update();
 }

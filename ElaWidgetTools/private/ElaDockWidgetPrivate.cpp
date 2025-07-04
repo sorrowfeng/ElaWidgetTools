@@ -16,6 +16,6 @@ ElaDockWidgetPrivate::~ElaDockWidgetPrivate()
 void ElaDockWidgetPrivate::onThemeModeChanged(ElaThemeType::ThemeMode themeMode)
 {
     Q_Q(ElaDockWidget);
-    q->update();
     _themeMode = themeMode;
+    q->update();
 }
