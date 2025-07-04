@@ -45,9 +45,8 @@ void ElaPlainTextEditPrivate::onThemeChanged(ElaThemeType::ThemeMode themeMode)
     }
     else
     {
-        QTimer::singleShot(1, this, [=] {
-            _changeTheme();
-        });
+        QTimer::singleShot(1, this, [=]
+                           { _changeTheme(); });
     }
 }
 

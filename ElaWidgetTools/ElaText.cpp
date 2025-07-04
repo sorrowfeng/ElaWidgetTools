@@ -86,50 +86,50 @@ void ElaText::setTextStyle(ElaTextType::TextStyle textStyle)
     d->_pTextStyle = textStyle;
     switch (textStyle)
     {
-    case ElaTextType::NoStyle:
-    {
-        break;
-    }
-    case ElaTextType::Caption:
-    {
-        textFont.setPixelSize(12);
-        break;
-    }
-    case ElaTextType::Body:
-    {
-        textFont.setPixelSize(13);
-        break;
-    }
-    case ElaTextType::BodyStrong:
-    {
-        textFont.setPixelSize(13);
-        textFont.setWeight(QFont::DemiBold);
-        break;
-    }
-    case ElaTextType::Subtitle:
-    {
-        textFont.setPixelSize(20);
-        textFont.setWeight(QFont::DemiBold);
-        break;
-    }
-    case ElaTextType::Title:
-    {
-        textFont.setPixelSize(28);
-        textFont.setWeight(QFont::DemiBold);
-        break;
-    }
-    case ElaTextType::TitleLarge:
-    {
-        textFont.setPixelSize(40);
-        textFont.setWeight(QFont::DemiBold);
-        break;
-    }
-    case ElaTextType::Display:
-    {
-        textFont.setPixelSize(48);
-        textFont.setWeight(QFont::DemiBold);
-        break;
-    }
+        case ElaTextType::NoStyle:
+        {
+            break;
+        }
+        case ElaTextType::Caption:
+        {
+            textFont.setPixelSize(12);
+            break;
+        }
+        case ElaTextType::Body:
+        {
+            textFont.setPixelSize(13);
+            break;
+        }
+        case ElaTextType::BodyStrong:
+        {
+            textFont.setPixelSize(13);
+            textFont.setWeight(QFont::DemiBold);
+            break;
+        }
+        case ElaTextType::Subtitle:
+        {
+            textFont.setPixelSize(20);
+            textFont.setWeight(QFont::DemiBold);
+            break;
+        }
+        case ElaTextType::Title:
+        {
+            textFont.setPixelSize(28);
+            textFont.setWeight(QFont::DemiBold);
+            break;
+        }
+        case ElaTextType::TitleLarge:
+        {
+            textFont.setPixelSize(40);
+            textFont.setWeight(QFont::DemiBold);
+            break;
+        }
+        case ElaTextType::Display:
+        {
+            textFont.setPixelSize(48);
+            textFont.setWeight(QFont::DemiBold);
+            break;
+        }
     }
     setFont(textFont);
 }
@@ -182,7 +182,53 @@ void ElaText::paintEvent(QPaintEvent* event)
         }
         else
         {
-            QLabel::paintEvent(event);
+            QPainter painter(this);
+            painter.save();
+            painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+
+            QPixmap pix;
+            if (!this->pixmap().isNull())
+            {
+                pix = this->pixmap();
+            }
+
+            QRect contentRect = rect().adjusted(
+                contentsMargins().left(),
+                contentsMargins().top(),
+                -contentsMargins().right(),
+                -contentsMargins().bottom());
+
+            if (!pix.isNull())
+            {
+                QRect iconRect;
+                iconRect.setSize(pix.size().scaled(contentRect.size(), Qt::KeepAspectRatio));
+
+                if (alignment() & Qt::AlignLeft)
+                {
+                    iconRect.moveLeft(contentRect.left());
+                }
+                else if (alignment() & Qt::AlignRight)
+                {
+                    iconRect.moveRight(contentRect.right());
+                }
+                else
+                {
+                    iconRect.moveCenter(contentRect.center());
+                }
+
+                painter.drawPixmap(iconRect, pix);
+            }
+
+            if (!text().isEmpty())
+            {
+                painter.setPen(ElaThemeColor(d->_themeMode, BasicText));
+                painter.setFont(font());
+                painter.drawText(contentRect, alignment(), text());
+            }
+
+            painter.restore();
+
+            //QLabel::paintEvent(event);
         }
     }
 }
