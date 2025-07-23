@@ -21,7 +21,13 @@ public:
     Q_SLOT void onTabCloseRequested(int index);
 
 private:
+    ElaTabBar* _tabBar{nullptr};
     ElaTabBar* _customTabBar{nullptr};
+
+    QMetaObject::Connection _tabDragCreateConnection;
+    QMetaObject::Connection _tabDragDropConnection;
+    bool _isTabDragCreateEnabled = true;
+    bool _isTabDragDropEnabled = true;
 };
 
 #endif // ELATABWIDGETPRIVATE_H

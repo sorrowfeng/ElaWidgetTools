@@ -11,6 +11,8 @@
 #include "ElaScrollPageArea.h"
 #include "ElaTabWidget.h"
 #include "ElaText.h"
+#include "ElaWidget.h"
+#include "ElaTabBar.h"
 
 T_Navigation::T_Navigation(QWidget* parent)
     : T_BasePage(parent)
@@ -68,7 +70,11 @@ T_Navigation::T_Navigation(QWidget* parent)
     tabWidgetText->setTextPixelSize(18);
     _tabWidget = new ElaTabWidget(this);
     _tabWidget->setFixedHeight(500);
-    ElaPlainTextEdit* page1 = new ElaPlainTextEdit("新标签页1", this);
+    _tabWidget->setIsTabTransparent(true);
+    _tabWidget->setTabsClosable(false);
+    _tabWidget->setTabsDragCreated(false);
+    //ElaText* page1 = new ElaText("新标签页1", this);
+    ElaWidget* page1 = new ElaWidget(this); 
     QFont font = page1->font();
     font.setPixelSize(32);
     page1->setFont(font);

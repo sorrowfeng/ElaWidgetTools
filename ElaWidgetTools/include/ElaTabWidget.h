@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 
+class ElaTabBar;
 class ElaTabWidgetPrivate;
 class ELA_EXPORT ElaTabWidget : public QTabWidget
 {
@@ -16,6 +17,9 @@ public:
     explicit ElaTabWidget(QWidget* parent = nullptr);
     ~ElaTabWidget();
     void setTabPosition(TabPosition position);
+    void setTabsClosable(bool value);
+    void setTabsDragCreated(bool enabled);
+    void setTabsDragDroped(bool enabled);
 
 protected:
     virtual void paintEvent(QPaintEvent* event) override;

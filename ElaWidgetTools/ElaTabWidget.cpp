@@ -15,12 +15,12 @@ ElaTabWidget::ElaTabWidget(QWidget* parent)
     _pIsTabTransparent = false;
     setObjectName("ElaTabWidget");
     setAcceptDrops(true);
-    ElaTabBar* tabBar = new ElaTabBar(this);
-    setTabBar(tabBar);
-    connect(tabBar, &ElaTabBar::tabBarPress, d, &ElaTabWidgetPrivate::onTabBarPress);
-    connect(tabBar, &ElaTabBar::tabDragCreate, d, &ElaTabWidgetPrivate::onTabDragCreate);
-    connect(tabBar, &ElaTabBar::tabDragDrop, d, &ElaTabWidgetPrivate::onTabDragDrop);
-    connect(tabBar, &ElaTabBar::tabCloseRequested, d, &ElaTabWidgetPrivate::onTabCloseRequested);
+    d->_tabBar = new ElaTabBar(this);
+    setTabBar(d->_tabBar);
+    connect(d->_tabBar, &ElaTabBar::tabBarPress, d, &ElaTabWidgetPrivate::onTabBarPress);
+    d->_tabDragCreateConnection = connect(d->_tabBar, &ElaTabBar::tabDragCreate, d, &ElaTabWidgetPrivate::onTabDragCreate);
+    d->_tabDragDropConnection = connect(d->_tabBar, &ElaTabBar::tabDragDrop, d, &ElaTabWidgetPrivate::onTabDragDrop);
+    connect(d->_tabBar, &ElaTabBar::tabCloseRequested, d, &ElaTabWidgetPrivate::onTabCloseRequested);
 }
 
 ElaTabWidget::~ElaTabWidget()
@@ -32,6 +32,56 @@ void ElaTabWidget::setTabPosition(TabPosition position)
     if (position == QTabWidget::North || position == QTabWidget::South)
     {
         QTabWidget::setTabPosition(position);
+    }
+}
+
+void ElaTabWidget::setTabsClosable(bool value)
+{
+    Q_D(const ElaTabWidget);
+    if (!d->_tabBar)
+        return;
+    d->_tabBar->setTabsClosable(value);
+}
+
+void ElaTabWidget::setTabsDragCreated(bool enabled)
+{
+    Q_D(ElaTabWidget);
+    if (!d->_tabBar)
+        return;
+
+    if (d->_isTabDragCreateEnabled == enabled)
+        return;
+
+    d->_isTabDragCreateEnabled = enabled;
+
+    if (enabled)
+    {
+        d->_tabDragCreateConnection = connect(d->_tabBar, &ElaTabBar::tabDragCreate, d, &ElaTabWidgetPrivate::onTabDragCreate);
+    }
+    else
+    {
+        disconnect(d->_tabDragCreateConnection);
+    }
+}
+
+void ElaTabWidget::setTabsDragDroped(bool enabled)
+{
+    Q_D(ElaTabWidget);
+    if (!d->_tabBar)
+        return;
+
+    if (d->_isTabDragDropEnabled == enabled)
+        return;
+
+    d->_isTabDragDropEnabled = enabled;
+
+    if (enabled)
+    {
+        d->_tabDragDropConnection = connect(d->_tabBar, &ElaTabBar::tabDragDrop, d, &ElaTabWidgetPrivate::onTabDragDrop);
+    }
+    else
+    {
+        disconnect(d->_tabDragDropConnection);
     }
 }
 
