@@ -8,6 +8,7 @@
 #include "ElaCheckBox.h"
 #include "ElaColorDialog.h"
 #include "ElaDrawerArea.h"
+#include "ElaInputDialog.h"
 #include "ElaKeyBinder.h"
 #include "ElaMenu.h"
 #include "ElaPushButton.h"
@@ -16,6 +17,7 @@
 #include "ElaText.h"
 #include "ElaToggleSwitch.h"
 #include "ElaToolButton.h"
+
 T_Popup::T_Popup(QWidget* parent)
     : T_BasePage(parent)
 {
@@ -59,18 +61,18 @@ T_Popup::T_Popup(QWidget* parent)
     colorDialogButton->setDarkDefaultColor(_colorDialog->getCurrentColor());
     colorDialogButton->setDarkHoverColor(_colorDialog->getCurrentColor());
     colorDialogButton->setDarkPressColor(_colorDialog->getCurrentColor());
-    connect(colorDialogButton, &ElaPushButton::clicked, this, [=]() {
-        _colorDialog->exec();
-    });
-    connect(_colorDialog, &ElaColorDialog::colorSelected, this, [=](const QColor& color) {
+    connect(colorDialogButton, &ElaPushButton::clicked, this, [=]()
+            { _colorDialog->exec(); });
+    connect(_colorDialog, &ElaColorDialog::colorSelected, this, [=](const QColor& color)
+            {
         colorDialogButton->setLightDefaultColor(color);
         colorDialogButton->setLightHoverColor(color);
         colorDialogButton->setLightPressColor(color);
         colorDialogButton->setDarkDefaultColor(color);
         colorDialogButton->setDarkHoverColor(color);
         colorDialogButton->setDarkPressColor(color);
-        colorText->setText(_colorDialog->getCurrentColorRGB());
-    });
+        colorText->setText(_colorDialog->getCurrentColorRGB()); });
+
 
     ElaScrollPageArea* colorDialogArea = new ElaScrollPageArea(this);
     QHBoxLayout* colorDialogLayout = new QHBoxLayout(colorDialogArea);
@@ -80,6 +82,30 @@ T_Popup::T_Popup(QWidget* parent)
     colorDialogLayout->addWidget(colorDialogButton);
     colorDialogLayout->addWidget(colorText);
     colorDialogLayout->addStretch();
+
+
+    ElaPushButton* inputTextDialogButton = new ElaPushButton("Text", this);
+    connect(inputTextDialogButton, &ElaPushButton::clicked, this, [=]()
+            { ElaInputDialog::getText(this, "Get text", "input"); });
+
+    ElaPushButton* inputDoubleDialogButton = new ElaPushButton("Double", this);
+    connect(inputDoubleDialogButton, &ElaPushButton::clicked, this, [=]()
+            { ElaInputDialog::getDouble(this, "Get double", "input"); });
+
+    ElaPushButton* inputIntDialogButton = new ElaPushButton("Int", this);
+    connect(inputIntDialogButton, &ElaPushButton::clicked, this, [=]()
+            { ElaInputDialog::getInt(this, "Get int", "input"); });
+
+
+    ElaScrollPageArea* inputDialogArea = new ElaScrollPageArea(this);
+    QHBoxLayout* inputDialogLayout = new QHBoxLayout(inputDialogArea);
+    ElaText* inputDialogText = new ElaText("ElaInputDialog", this);
+    inputDialogText->setTextPixelSize(15);
+    inputDialogLayout->addWidget(inputDialogText);
+    inputDialogLayout->addWidget(inputTextDialogButton);
+    inputDialogLayout->addWidget(inputDoubleDialogButton);
+    inputDialogLayout->addWidget(inputIntDialogButton);
+    inputDialogLayout->addStretch();
 
     _calendar = new ElaCalendar(this);
 
@@ -130,7 +156,8 @@ T_Popup::T_Popup(QWidget* parent)
     ElaToggleSwitch* drawerSwitch = new ElaToggleSwitch(this);
     ElaText* drawerSwitchText = new ElaText("关", this);
     drawerSwitchText->setTextPixelSize(15);
-    connect(drawerSwitch, &ElaToggleSwitch::toggled, this, [=](bool toggled) {
+    connect(drawerSwitch, &ElaToggleSwitch::toggled, this, [=](bool toggled)
+            {
         if (toggled)
         {
             drawerSwitchText->setText("开");
@@ -140,11 +167,9 @@ T_Popup::T_Popup(QWidget* parent)
         {
             drawerSwitchText->setText("关");
             _drawer->collpase();
-        }
-    });
-    connect(_drawer, &ElaDrawerArea::expandStateChanged, this, [=](bool isExpand) {
-        drawerSwitch->setIsToggled(isExpand);
-    });
+        } });
+    connect(_drawer, &ElaDrawerArea::expandStateChanged, this, [=](bool isExpand)
+            { drawerSwitch->setIsToggled(isExpand); });
 
     drawerHeaderLayout->addWidget(drawerIcon);
     drawerHeaderLayout->addWidget(drawerText);
@@ -182,6 +207,7 @@ T_Popup::T_Popup(QWidget* parent)
     centerVLayout->setContentsMargins(0, 0, 0, 0);
     centerVLayout->addWidget(toolButtonArea);
     centerVLayout->addWidget(colorDialogArea);
+    centerVLayout->addWidget(inputDialogArea);
     centerVLayout->addWidget(calendarPickerArea);
     centerVLayout->addWidget(_calendar);
     centerVLayout->addWidget(keyBinderArea);

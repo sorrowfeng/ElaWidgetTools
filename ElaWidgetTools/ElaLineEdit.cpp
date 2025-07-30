@@ -68,9 +68,8 @@ void ElaLineEdit::focusInEvent(QFocusEvent* event)
             setClearButtonEnabled(true);
         }
         QPropertyAnimation* markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
-            update();
-        });
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value)
+                { update(); });
         markAnimation->setDuration(300);
         markAnimation->setEasingCurve(QEasingCurve::InOutSine);
         markAnimation->setStartValue(d->_pExpandMarkWidth);
@@ -91,9 +90,8 @@ void ElaLineEdit::focusOutEvent(QFocusEvent* event)
             setClearButtonEnabled(false);
         }
         QPropertyAnimation* markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
-            update();
-        });
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value)
+                { update(); });
         markAnimation->setDuration(300);
         markAnimation->setEasingCurve(QEasingCurve::InOutSine);
         markAnimation->setStartValue(d->_pExpandMarkWidth);
@@ -157,14 +155,14 @@ void ElaLineEdit::contextMenuEvent(QContextMenuEvent* event)
     {
         action = menu->addElaIconAction(ElaIconType::DeleteLeft, tr("删除"));
         action->setEnabled(!isReadOnly() && !text().isEmpty() && hasSelectedText());
-        connect(action, &QAction::triggered, this, [=](bool checked) {
+        connect(action, &QAction::triggered, this, [=](bool checked)
+                {
             if (hasSelectedText())
             {
                 int startIndex = selectionStart();
                 int endIndex = selectionEnd();
                 setText(text().remove(startIndex, endIndex - startIndex));
-            }
-        });
+            } });
     }
     if (!menu->isEmpty())
     {
