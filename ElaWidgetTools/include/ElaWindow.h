@@ -24,7 +24,7 @@ class ELA_EXPORT ElaWindow : public QMainWindow
     Q_PROPERTY_CREATE_Q_H(ElaNavigationType::NavigationDisplayMode, NavigationBarDisplayMode)
     Q_PROPERTY_CREATE_Q_H(ElaWindowType::StackSwitchMode, StackSwitchMode)
     Q_TAKEOVER_NATIVEEVENT_H
-public:
+  public:
     explicit ElaWindow(QWidget* parent = nullptr);
     ~ElaWindow() override;
 
@@ -60,16 +60,16 @@ public:
     ElaAppBarType::ButtonFlags getWindowButtonFlags() const;
 
     void closeWindow();
-Q_SIGNALS:
+  Q_SIGNALS:
     Q_SIGNAL void userInfoCardClicked();
     Q_SIGNAL void closeButtonClicked();
     Q_SIGNAL void navigationNodeClicked(ElaNavigationType::NavigationNodeType nodeType, QString nodeKey);
     Q_SIGNAL void customWidgetChanged();
     Q_SIGNAL void pageOpenInNewWindow(QString nodeKey);
 
-protected:
+  protected:
     virtual bool eventFilter(QObject* watched, QEvent* event) override;
     virtual QMenu* createPopupMenu() override;
 };
 
-#endif // ELAWINDOW_H
+#endif// ELAWINDOW_H

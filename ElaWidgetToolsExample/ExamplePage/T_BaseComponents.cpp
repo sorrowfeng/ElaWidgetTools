@@ -39,9 +39,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaToggleSwitch* toggleSwitchDisableSwitch = new ElaToggleSwitch(this);
     ElaText* toggleSwitchDisableText = new ElaText("禁用", this);
     toggleSwitchDisableText->setTextPixelSize(15);
-    connect(toggleSwitchDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked) {
-        _toggleSwitch->setDisabled(checked);
-    });
+    connect(toggleSwitchDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            { _toggleSwitch->setDisabled(checked); });
     toggleSwitchLayout->addWidget(toggleSwitchDisableSwitch);
     toggleSwitchLayout->addWidget(toggleSwitchDisableText);
     toggleSwitchLayout->addSpacing(10);
@@ -58,9 +57,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaToggleSwitch* toggleButtonDisableSwitch = new ElaToggleSwitch(this);
     ElaText* toggleButtonDisableText = new ElaText("禁用", this);
     toggleButtonDisableText->setTextPixelSize(15);
-    connect(toggleButtonDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked) {
-        _toggleButton->setDisabled(checked);
-    });
+    connect(toggleButtonDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            { _toggleButton->setDisabled(checked); });
     toggleButtonLayout->addWidget(toggleButtonDisableSwitch);
     toggleButtonLayout->addWidget(toggleButtonDisableText);
     toggleButtonLayout->addSpacing(10);
@@ -84,9 +82,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaToggleSwitch* comboBoxDisableSwitch = new ElaToggleSwitch(this);
     ElaText* comboBoxDisableText = new ElaText("禁用", this);
     comboBoxDisableText->setTextPixelSize(15);
-    connect(comboBoxDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked) {
-        _comboBox->setDisabled(checked);
-    });
+    connect(comboBoxDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            { _comboBox->setDisabled(checked); });
     comboBoxLayout->addWidget(comboBoxDisableSwitch);
     comboBoxLayout->addWidget(comboBoxDisableText);
     comboBoxLayout->addSpacing(10);
@@ -106,9 +103,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaToggleSwitch* multiSelectComboBoxDisableSwitch = new ElaToggleSwitch(this);
     ElaText* multiSelectComboBoxDisableText = new ElaText("禁用", this);
     multiSelectComboBoxDisableText->setTextPixelSize(15);
-    connect(multiSelectComboBoxDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked) {
-        _multiSelectComboBox->setDisabled(checked);
-    });
+    connect(multiSelectComboBoxDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            { _multiSelectComboBox->setDisabled(checked); });
     multiSelectComboBoxLayout->addWidget(multiSelectComboBoxDisableSwitch);
     multiSelectComboBoxLayout->addWidget(multiSelectComboBoxDisableText);
     multiSelectComboBoxLayout->addSpacing(10);
@@ -148,12 +144,12 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaToggleSwitch* messageButtonDisableSwitch = new ElaToggleSwitch(this);
     ElaText* messageButtonDisableText = new ElaText("禁用", this);
     messageButtonDisableText->setTextPixelSize(15);
-    connect(messageButtonDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked) {
+    connect(messageButtonDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            {
         _messageButton->setDisabled(checked);
         _infoMessageButton->setDisabled(checked);
         _warningMessageButton->setDisabled(checked);
-        _errorMessageButton->setDisabled(checked);
-    });
+        _errorMessageButton->setDisabled(checked); });
     messageButtonLayout->addWidget(messageButtonDisableSwitch);
     messageButtonLayout->addWidget(messageButtonDisableText);
     messageButtonLayout->addSpacing(10);
@@ -169,9 +165,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     ElaToggleSwitch* checkBoxDisableSwitch = new ElaToggleSwitch(this);
     ElaText* checkBoxDisableText = new ElaText("禁用", this);
     checkBoxDisableText->setTextPixelSize(15);
-    connect(checkBoxDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked) {
-        _checkBox->setDisabled(checked);
-    });
+    connect(checkBoxDisableSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            { _checkBox->setDisabled(checked); });
     checkBoxLayout->addWidget(checkBoxDisableSwitch);
     checkBoxLayout->addWidget(checkBoxDisableText);
     checkBoxLayout->addSpacing(10);
@@ -210,13 +205,13 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     spinButtonGroup->addButton(sideButton, 2);
     spinButtonGroup->addButton(pmSideButton, 3);
     spinButtonGroup->addButton(noButtonsButton, 4);
-    connect(spinButtonGroup, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled), this, [=](QAbstractButton* button, bool isToggled) {
+    connect(spinButtonGroup, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled), this, [=](QAbstractButton* button, bool isToggled)
+            {
         if (isToggled)
         {
             auto mode = (ElaSpinBoxType::ButtonMode)spinButtonGroup->id(button);
             _spinBox->setButtonMode(mode);
-        }
-    });
+        } });
 
     _slider = new ElaSlider(this);
     ElaScrollPageArea* sliderArea = new ElaScrollPageArea(this);
@@ -238,7 +233,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
 
     _progressBar = new ElaProgressBar(this);
     _progressBar->setMinimum(0);
-    _progressBar->setMaximum(0);
+    _progressBar->setMaximum(100);
+    _progressBar->setValue(70);
     ElaScrollPageArea* progressBarArea = new ElaScrollPageArea(this);
     QHBoxLayout* progressBarLayout = new QHBoxLayout(progressBarArea);
     ElaText* progressBarText = new ElaText("ElaProgressBar", this);
@@ -316,31 +312,31 @@ void T_BaseComponents::mouseReleaseEvent(QMouseEvent* event)
 {
     switch (event->button())
     {
-    case Qt::LeftButton:
-    {
-        //ElaMessageBar::success(ElaMessageBarType::TopRight, "Success", "Never Close Your Eyes", 2500);
-        //ElaMessageBar::success(ElaMessageBarType::TopRight, "Success", "Never Close Your Eyes", 1500);
-        break;
-    }
-    case Qt::BackButton:
-    {
-        this->navigation(0);
-        break;
-    }
-    case Qt::ForwardButton:
-    {
-        this->navigation(1);
-        break;
-    }
-    case Qt::MiddleButton:
-    {
-        this->navigation(2);
-        break;
-    }
-    default:
-    {
-        break;
-    }
+        case Qt::LeftButton:
+        {
+            //ElaMessageBar::success(ElaMessageBarType::TopRight, "Success", "Never Close Your Eyes", 2500);
+            //ElaMessageBar::success(ElaMessageBarType::TopRight, "Success", "Never Close Your Eyes", 1500);
+            break;
+        }
+        case Qt::BackButton:
+        {
+            this->navigation(0);
+            break;
+        }
+        case Qt::ForwardButton:
+        {
+            this->navigation(1);
+            break;
+        }
+        case Qt::MiddleButton:
+        {
+            this->navigation(2);
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
     ElaScrollPage::mouseReleaseEvent(event);
 }

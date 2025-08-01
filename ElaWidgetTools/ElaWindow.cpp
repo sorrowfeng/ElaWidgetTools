@@ -33,7 +33,7 @@ ElaWindow::ElaWindow(QWidget* parent)
     d->q_ptr = this;
     d->_pStackSwitchMode = ElaWindowType::StackSwitchMode::Popup;
     setProperty("ElaBaseClassName", "ElaWindow");
-    resize(1020, 680); // 默认宽高
+    resize(1020, 680);// 默认宽高
 
     d->_pThemeChangeTime = 700;
     d->_pNavigationBarDisplayMode = ElaNavigationType::NavigationDisplayMode::Auto;
@@ -41,16 +41,14 @@ ElaWindow::ElaWindow(QWidget* parent)
 
     // 自定义AppBar
     d->_appBar = new ElaAppBar(this);
-    connect(d->_appBar, &ElaAppBar::routeBackButtonClicked, this, []() {
-        ElaNavigationRouter::getInstance()->navigationRouteBack();
-    });
+    connect(d->_appBar, &ElaAppBar::routeBackButtonClicked, this, []()
+            { ElaNavigationRouter::getInstance()->navigationRouteBack(); });
     connect(d->_appBar, &ElaAppBar::closeButtonClicked, this, &ElaWindow::closeButtonClicked);
     // 导航栏
     d->_navigationBar = new ElaNavigationBar(this);
     // 返回按钮状态变更
-    connect(ElaNavigationRouter::getInstance(), &ElaNavigationRouter::navigationRouterStateChanged, this, [d](bool isEnable) {
-        d->_appBar->setRouteBackButtonEnable(isEnable);
-    });
+    connect(ElaNavigationRouter::getInstance(), &ElaNavigationRouter::navigationRouterStateChanged, this, [d](bool isEnable)
+            { d->_appBar->setRouteBackButtonEnable(isEnable); });
 
     // 转发用户卡片点击信号
     connect(d->_navigationBar, &ElaNavigationBar::userInfoCardClicked, this, &ElaWindow::userInfoCardClicked);
@@ -96,15 +94,14 @@ ElaWindow::ElaWindow(QWidget* parent)
     setStyle(new ElaWindowStyle(style()));
 
     //延时渲染
-    QTimer::singleShot(1, this, [=] {
+    QTimer::singleShot(1, this, [=]
+                       {
         QPalette palette = this->palette();
         palette.setBrush(QPalette::Window, ElaThemeColor(d->_themeMode, WindowBase));
-        this->setPalette(palette);
-    });
+        this->setPalette(palette); });
     eApp->syncWindowDisplayMode(this);
-    connect(eApp, &ElaApplication::pWindowDisplayModeChanged, this, [=]() {
-        d->onThemeModeChanged(d->_themeMode);
-    });
+    connect(eApp, &ElaApplication::pWindowDisplayModeChanged, this, [=]()
+            { d->onThemeModeChanged(d->_themeMode); });
 }
 
 ElaWindow::~ElaWindow()
@@ -402,15 +399,15 @@ bool ElaWindow::eventFilter(QObject* watched, QEvent* event)
     Q_D(ElaWindow);
     switch (event->type())
     {
-    case QEvent::Resize:
-    {
-        d->_doNavigationDisplayModeChange();
-        break;
-    }
-    default:
-    {
-        break;
-    }
+        case QEvent::Resize:
+        {
+            d->_doNavigationDisplayModeChange();
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
     return QMainWindow::eventFilter(watched, event);
 }

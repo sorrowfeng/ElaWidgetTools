@@ -38,24 +38,25 @@ void ElaSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
     d->_style->setButtonMode(buttonMode);
     switch (buttonMode)
     {
-    case ElaSpinBoxType::Inline:
-    {
-        lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        lineEdit()->setStyleSheet("background-color:transparent;padding-left:10px;padding-bottom:3px;");
-        break;
-    }
-    case ElaSpinBoxType::Compact:
-    case ElaSpinBoxType::Side:
-    case ElaSpinBoxType::PMSide:
-    {
-        lineEdit()->setAlignment(Qt::AlignCenter);
-        lineEdit()->setStyleSheet("background-color:transparent;padding-bottom:3px;");
-        break;
-    }
-    case ElaSpinBoxType::NoButtons:
-      break;
+        case ElaSpinBoxType::Inline:
+        {
+            lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+            lineEdit()->setStyleSheet("background-color:transparent;padding-left:10px;padding-bottom:3px;");
+            break;
+        }
+        case ElaSpinBoxType::Compact:
+        case ElaSpinBoxType::Side:
+        case ElaSpinBoxType::PMSide:
+        {
+            lineEdit()->setAlignment(Qt::AlignCenter);
+            lineEdit()->setStyleSheet("background-color:transparent;padding-bottom:3px;");
+            break;
+        }
+        case ElaSpinBoxType::NoButtons:
+            break;
     }
     setFrame(hasFrame());
+    d->onThemeChanged(eTheme->getThemeMode());
     Q_EMIT pButtonModeChanged();
 }
 
@@ -71,9 +72,8 @@ void ElaSpinBox::focusInEvent(QFocusEvent* event)
     if (event->reason() == Qt::MouseFocusReason)
     {
         QPropertyAnimation* markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
-            update();
-        });
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value)
+                { update(); });
         markAnimation->setDuration(300);
         markAnimation->setEasingCurve(QEasingCurve::InOutSine);
         markAnimation->setStartValue(d->_pExpandMarkWidth);
@@ -89,9 +89,8 @@ void ElaSpinBox::focusOutEvent(QFocusEvent* event)
     if (event->reason() != Qt::PopupFocusReason)
     {
         QPropertyAnimation* markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
-            update();
-        });
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value)
+                { update(); });
         markAnimation->setDuration(300);
         markAnimation->setEasingCurve(QEasingCurve::InOutSine);
         markAnimation->setStartValue(d->_pExpandMarkWidth);
@@ -132,8 +131,8 @@ void ElaSpinBox::contextMenuEvent(QContextMenuEvent* event)
 
     const QAbstractSpinBox* that = this;
     const QPoint pos = (event->reason() == QContextMenuEvent::Mouse)
-        ? event->globalPos()
-        : mapToGlobal(QPoint(event->pos().x(), 0)) + QPoint(width() / 2, height() / 2);
+                           ? event->globalPos()
+                           : mapToGlobal(QPoint(event->pos().x(), 0)) + QPoint(width() / 2, height() / 2);
     const QAction* action = menu->exec(pos);
     delete menu;
     if (that && action)

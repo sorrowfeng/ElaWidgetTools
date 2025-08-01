@@ -137,39 +137,39 @@ void ElaAppBarPrivate::_updateCursor(int edges)
     Q_Q(const ElaAppBar);
     switch (edges)
     {
-    case 0:
-    {
-        q->window()->setCursor(Qt::ArrowCursor);
-        break;
-    }
-    case Qt::LeftEdge:
-    case Qt::RightEdge:
-    {
-        q->window()->setCursor(Qt::SizeHorCursor);
-        break;
-    }
-    case Qt::TopEdge:
-    case Qt::BottomEdge:
-    {
-        q->window()->setCursor(Qt::SizeVerCursor);
-        break;
-    }
-    case Qt::LeftEdge | Qt::TopEdge:
-    case Qt::RightEdge | Qt::BottomEdge:
-    {
-        q->window()->setCursor(Qt::SizeFDiagCursor);
-        break;
-    }
-    case Qt::RightEdge | Qt::TopEdge:
-    case Qt::LeftEdge | Qt::BottomEdge:
-    {
-        q->window()->setCursor(Qt::SizeBDiagCursor);
-        break;
-    }
-    default:
-    {
-        break;
-    }
+        case 0:
+        {
+            q->window()->setCursor(Qt::ArrowCursor);
+            break;
+        }
+        case Qt::LeftEdge:
+        case Qt::RightEdge:
+        {
+            q->window()->setCursor(Qt::SizeHorCursor);
+            break;
+        }
+        case Qt::TopEdge:
+        case Qt::BottomEdge:
+        {
+            q->window()->setCursor(Qt::SizeVerCursor);
+            break;
+        }
+        case Qt::LeftEdge | Qt::TopEdge:
+        case Qt::RightEdge | Qt::BottomEdge:
+        {
+            q->window()->setCursor(Qt::SizeFDiagCursor);
+            break;
+        }
+        case Qt::RightEdge | Qt::TopEdge:
+        case Qt::LeftEdge | Qt::BottomEdge:
+        {
+            q->window()->setCursor(Qt::SizeBDiagCursor);
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
 }
 
@@ -188,6 +188,10 @@ bool ElaAppBarPrivate::_containsCursorToItem(QWidget* item)
         {
             return false;
         }
+    }
+    else if (item == _maxButton)
+    {
+        rect.adjust(0, 8, 0, 0);
     }
     if (rect.contains(point))
     {
