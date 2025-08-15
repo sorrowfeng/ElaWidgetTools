@@ -51,16 +51,19 @@ ElaInputDialog::ElaInputDialog(QWidget* parent)
 		Q_EMIT leftButtonClicked();
 		onLeftButtonClicked();
 		d->_doCloseAnimation(); });
+
     d->_leftButton->setMinimumSize(0, 0);
     d->_leftButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
     d->_leftButton->setFixedHeight(38);
     d->_leftButton->setBorderRadius(6);
+
     d->_rightButton = new ElaPushButton("confirm", this);
     connect(d->_rightButton, &ElaPushButton::clicked, this, [=]()
             {
-		Q_EMIT rightButtonClicked();
-		onRightButtonClicked();
-		d->_doCloseAnimation(); });
+		    Q_EMIT rightButtonClicked();
+		    onRightButtonClicked();
+		    d->_doCloseAnimation(); });
+
     d->_rightButton->setLightDefaultColor(
         ElaThemeColor(ElaThemeType::Light, PrimaryNormal));
     d->_rightButton->setLightHoverColor(
@@ -563,6 +566,9 @@ void ElaInputDialog::showEvent(QShowEvent* event)
     d->_maskWidget->raise();
     d->_maskWidget->setFixedSize(parentWidget()->size());
     d->_maskWidget->doMaskAnimation(90);
+    if (d->_inputWidget != nullptr)
+        d->_inputWidget->setFocus();
+
 #ifdef Q_OS_WIN
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && \
      QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
@@ -597,6 +603,30 @@ void ElaInputDialog::paintEvent(QPaintEvent* event)
 
 void ElaInputDialog::keyPressEvent(QKeyEvent* event)
 {
+    Q_D(ElaInputDialog);
+
+    // 处理 Enter / Return 键：触发右按钮（确认）
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+    {
+        if (d->_rightButton)
+        {
+            d->_rightButton->click();// 自动触发 clicked() 信号
+        }
+        event->accept();
+        return;
+    }
+
+    // 处理 Esc 键：触发左按钮（取消）
+    if (event->key() == Qt::Key_Escape)
+    {
+        if (d->_leftButton)
+        {
+            d->_leftButton->click();// 自动触发 clicked() 信号
+        }
+        event->accept();
+        return;
+    }
+
     event->accept();
 }
 
