@@ -17,11 +17,24 @@ ElaTabBar::ElaTabBar(QWidget* parent)
     setTabsClosable(true);
     setMovable(true);
     setAcceptDrops(true);
-    setStyle(new ElaTabBarStyle(style()));
+    d->_style = new ElaTabBarStyle(style());
+    setStyle(d->_style);
 }
 
 ElaTabBar::~ElaTabBar()
 {
+}
+
+void ElaTabBar::setTabWidth(int width)
+{
+    Q_D(ElaTabBar);
+    d->_style->setTabWidth(width);
+}
+
+void ElaTabBar::setTabHeight(int height)
+{
+    Q_D(ElaTabBar);
+    d->_style->setTabHeight(height);
 }
 
 void ElaTabBar::mousePressEvent(QMouseEvent* event)

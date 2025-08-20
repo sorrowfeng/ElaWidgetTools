@@ -13,18 +13,20 @@ class ELA_EXPORT ElaTabWidget : public QTabWidget
     Q_Q_CREATE(ElaTabWidget)
     Q_PROPERTY_CREATE(bool, IsTabTransparent);
 
-public:
+  public:
     explicit ElaTabWidget(QWidget* parent = nullptr);
     ~ElaTabWidget();
     void setTabPosition(TabPosition position);
     void setTabsClosable(bool value);
     void setTabsDragCreated(bool enabled);
     void setTabsDragDroped(bool enabled);
+    void setTabsWidth(int width);
+    void setTabsHeight(int height);
 
-protected:
+  protected:
     virtual void paintEvent(QPaintEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
     virtual void dropEvent(QDropEvent* event) override;
 };
 
-#endif // ELATABWIDGET_H
+#endif// ELATABWIDGET_H

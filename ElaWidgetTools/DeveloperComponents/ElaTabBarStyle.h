@@ -7,7 +7,9 @@
 class ElaTabBarStyle : public QProxyStyle
 {
     Q_OBJECT
-public:
+    Q_PROPERTY_CREATE(int, TabWidth)
+    Q_PROPERTY_CREATE(int, TabHeight)
+  public:
     explicit ElaTabBarStyle(QStyle* style = nullptr);
     ~ElaTabBarStyle();
     void drawPrimitive(QStyle::PrimitiveElement pe, const QStyleOption* opt, QPainter* p, const QWidget* w) const override;
@@ -15,8 +17,8 @@ public:
     QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const override;
     QRect subElementRect(SubElement element, const QStyleOption* option, const QWidget* widget) const override;
 
-private:
+  private:
     ElaThemeType::ThemeMode _themeMode;
 };
 
-#endif // ELATABBARSTYLE_H
+#endif// ELATABBARSTYLE_H

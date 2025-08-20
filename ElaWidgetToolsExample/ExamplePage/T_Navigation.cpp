@@ -9,7 +9,6 @@
 #include "ElaPlainTextEdit.h"
 #include "ElaPushButton.h"
 #include "ElaScrollPageArea.h"
-#include "ElaTabBar.h"
 #include "ElaTabWidget.h"
 #include "ElaText.h"
 #include "ElaWidget.h"
@@ -73,6 +72,7 @@ T_Navigation::T_Navigation(QWidget* parent)
     _tabWidget->setIsTabTransparent(true);
     _tabWidget->setTabsClosable(false);
     _tabWidget->setTabsDragCreated(false);
+    _tabWidget->setTabsWidth(120);
     ElaText* page1 = new ElaText("新标签页1", this);
     QFont font = page1->font();
     font.setPixelSize(32);

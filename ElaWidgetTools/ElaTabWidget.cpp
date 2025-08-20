@@ -85,6 +85,24 @@ void ElaTabWidget::setTabsDragDroped(bool enabled)
     }
 }
 
+void ElaTabWidget::setTabsWidth(int width)
+{
+    Q_D(ElaTabWidget);
+    if (!d->_tabBar)
+        return;
+
+    d->_tabBar->setTabWidth(width);
+}
+
+void ElaTabWidget::setTabsHeight(int height)
+{
+    Q_D(ElaTabWidget);
+    if (!d->_tabBar)
+        return;
+
+    d->_tabBar->setTabHeight(height);
+}
+
 void ElaTabWidget::paintEvent(QPaintEvent* event)
 {
     if (!_pIsTabTransparent)

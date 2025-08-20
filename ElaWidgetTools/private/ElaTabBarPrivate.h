@@ -6,16 +6,18 @@
 
 #include "stdafx.h"
 class ElaTabBar;
+class ElaTabBarStyle;
 class ElaTabBarPrivate : public QObject
 {
     Q_OBJECT
     Q_D_CREATE(ElaTabBar)
-public:
+  public:
     explicit ElaTabBarPrivate(QObject* parent = nullptr);
     ~ElaTabBarPrivate();
 
-private:
+  private:
     QPixmap _lastDragPix;
+    ElaTabBarStyle* _style;
 };
 
-#endif // ELATABBARPRIVATE_H
+#endif// ELATABBARPRIVATE_H
