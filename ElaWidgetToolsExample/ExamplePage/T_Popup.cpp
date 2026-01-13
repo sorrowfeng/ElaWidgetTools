@@ -6,6 +6,7 @@
 #include "ElaCalendar.h"
 #include "ElaCalendarPicker.h"
 #include "ElaCheckBox.h"
+#include "ElaDialog.h"
 #include "ElaColorDialog.h"
 #include "ElaDrawerArea.h"
 #include "ElaInputDialog.h"
