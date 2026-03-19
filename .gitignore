@@ -54,8 +54,10 @@ compile_commands.json
 *_qmlcache.qrc
 
 # CLion
-/.idea
+.idea/
 
 
-/install
+install/
+install-linux/
 build/
+build-linux/

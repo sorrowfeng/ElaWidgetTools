@@ -91,7 +91,8 @@ void ElaApplication::init()
     //默认字体
     QFont font = qApp->font();
     font.setPixelSize(13);
-    font.setFamily("Microsoft YaHei");
+    // 按优先级提供跨平台字体回退：Windows / Linux / 通用
+    font.setFamilies({"Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "sans-serif"});
     font.setHintingPreference(QFont::PreferNoHinting);
     qApp->setFont(font);
 }
