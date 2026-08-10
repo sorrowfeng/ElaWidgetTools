@@ -55,7 +55,19 @@ else ()
 endif ()
 
 FILE(GLOB EXPORT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+
+# 兼容 <ElaWidgetTools/X.h> 包含方式:include/ 内头文件为平铺布局,
+# 在构建目录生成一层带包名的 include 目录(优先符号链接,无权限时退化为复制)
+set(ELA_COMPAT_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/compat_include")
+if(NOT EXISTS "${ELA_COMPAT_INCLUDE_DIR}/ElaWidgetTools")
+    file(MAKE_DIRECTORY "${ELA_COMPAT_INCLUDE_DIR}")
+    file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/include"
+         "${ELA_COMPAT_INCLUDE_DIR}/ElaWidgetTools"
+         COPY_ON_ERROR SYMBOLIC)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${ELA_COMPAT_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DeveloperComponents>
