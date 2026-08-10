@@ -90,9 +90,9 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             path.addRoundedRect(optionRect, 5, 5);
             if (option->state & QStyle::State_Selected)
             {
-                if (option->state & QStyle::State_MouseOver)
+                if (option->state & (QStyle::State_MouseOver | QStyle::State_Sunken))
                 {
-                    // 选中时覆盖
+                    // 选中时覆盖 / 点击
                     painter->setBrush(ElaThemeColor(_themeMode, BasicSelectedHoverAlpha));
                     painter->drawPath(path);
                 }
@@ -109,7 +109,12 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             }
             else
             {
-                if (option->state & QStyle::State_MouseOver)
+                if (option->state & QStyle::State_Sunken)
+                {
+                    painter->setBrush(ElaThemeColor(_themeMode, BasicPressAlpha));
+                    painter->drawPath(path);
+                }
+                else if (option->state & QStyle::State_MouseOver)
                 {
                     // 覆盖时颜色
                     painter->setBrush(ElaThemeColor(_themeMode, BasicHoverAlpha));
@@ -145,12 +150,26 @@ void ElaComboBoxStyle::drawComplexControl(ComplexControl control, const QStyleOp
             //背景绘制
             bool isEnabled = copt->state.testFlag(QStyle::State_Enabled);
             painter->setPen(ElaThemeColor(_themeMode, BasicBorder));
-            painter->setBrush(isEnabled ? (copt->state.testFlag(QStyle::State_HasFocus) && copt->editable)
-                                      ? ElaThemeColor(_themeMode, DialogBase)
-                                      : copt->state.testFlag(QStyle::State_MouseOver)
-                                      ? ElaThemeColor(_themeMode, BasicHover)
-                                      : ElaThemeColor(_themeMode, BasicBase)
-                                        : ElaThemeColor(_themeMode, BasicDisable));
+            if (!isEnabled)
+            {
+                painter->setBrush(ElaThemeColor(_themeMode, BasicDisable));
+            }
+            else if (copt->state.testFlag(QStyle::State_Sunken) || copt->state.testFlag(QStyle::State_On))
+            {
+                painter->setBrush(ElaThemeColor(_themeMode, BasicPress));
+            }
+            else if (copt->state.testFlag(QStyle::State_HasFocus) && copt->editable)
+            {
+                painter->setBrush(ElaThemeColor(_themeMode, InputFocus));
+            }
+            else if (copt->state.testFlag(QStyle::State_MouseOver))
+            {
+                painter->setBrush(ElaThemeColor(_themeMode, BasicHover));
+            }
+            else
+            {
+                painter->setBrush(ElaThemeColor(_themeMode, BasicBase));
+            }
             QRect comboBoxRect = copt->rect;
             comboBoxRect.adjust(_shadowBorderWidth, 1, -_shadowBorderWidth, -1);
             painter->drawRoundedRect(comboBoxRect, 3, 3);

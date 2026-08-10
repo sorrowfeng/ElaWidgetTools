@@ -1,6 +1,7 @@
 #include "ElaPlainTextEditPrivate.h"
 #include "ElaApplication.h"
 #include "ElaPlainTextEdit.h"
+#include "ElaTheme.h"
 #include <QTimer>
 ElaPlainTextEditPrivate::ElaPlainTextEditPrivate(QObject* parent)
     : QObject{parent}
@@ -53,7 +54,7 @@ void ElaPlainTextEditPrivate::onThemeChanged(ElaThemeType::ThemeMode themeMode)
 void ElaPlainTextEditPrivate::_changeTheme()
 {
     Q_Q(ElaPlainTextEdit);
-    if (_themeMode == ElaThemeType::Light)
+    if (!ElaTheme::isDarkTheme(_themeMode))
     {
         QPalette palette;
         palette.setColor(QPalette::Text, Qt::black);

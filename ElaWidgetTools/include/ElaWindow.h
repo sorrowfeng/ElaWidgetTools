@@ -32,6 +32,8 @@ class ELA_EXPORT ElaWindow : public QMainWindow
 
     void setCustomWidget(ElaAppBarType::CustomArea customArea, QWidget* customWidget);
     QWidget* getCustomWidget() const;
+    void setAppBarIcon(const QIcon& icon, int iconSize = 24);
+    QIcon getAppBarIcon() const;
     void setUserInfoCardVisible(bool isVisible);
     void setUserInfoCardPixmap(QPixmap pix);
     void setUserInfoCardTitle(QString title);

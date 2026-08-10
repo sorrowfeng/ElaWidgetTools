@@ -80,6 +80,7 @@ void MainWindow::initWindow()
     // setIsCentralStackedWidgetTransparent(true);
     setWindowIcon(QIcon(":/include/Image/Cirno.jpg"));
     resize(1200, 740);
+    eTheme->setThemeMode(ElaThemeType::Blue);
     // ElaLog::getInstance()->initMessageLog(true);
     // eTheme->setThemeMode(ElaThemeType::Dark);
     // setIsNavigationBarEnable(false);

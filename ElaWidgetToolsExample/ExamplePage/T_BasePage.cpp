@@ -57,9 +57,32 @@ void T_BasePage::createCustomWidget(QString desText)
     ElaToolButton* themeButton = new ElaToolButton(this);
     themeButton->setFixedSize(35, 35);
     themeButton->setIsTransparent(false);
-    themeButton->setElaIcon(ElaIconType::MoonStars);
+    auto updateThemeButtonIcon = [=](ElaThemeType::ThemeMode themeMode) {
+        switch (themeMode)
+        {
+        case ElaThemeType::Light:
+        {
+            themeButton->setElaIcon(ElaIconType::MoonStars);
+            break;
+        }
+        case ElaThemeType::Blue:
+        {
+            themeButton->setElaIcon(ElaIconType::Droplet);
+            break;
+        }
+        default:
+        {
+            themeButton->setElaIcon(ElaIconType::SunBright);
+            break;
+        }
+        }
+    };
+    updateThemeButtonIcon(eTheme->getThemeMode());
+    connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) {
+        updateThemeButtonIcon(themeMode);
+    });
     connect(themeButton, &ElaToolButton::clicked, this, [=]() {
-        eTheme->setThemeMode(eTheme->getThemeMode() == ElaThemeType::Light ? ElaThemeType::Dark : ElaThemeType::Light);
+        eTheme->setThemeMode(ElaTheme::nextThemeMode(eTheme->getThemeMode()));
     });
 
     QHBoxLayout* buttonLayout = new QHBoxLayout();

@@ -50,6 +50,7 @@ enum ThemeMode
 {
     Light = 0x0000,
     Dark = 0x0001,
+    Blue = 0x0002,
 };
 Q_ENUM_CREATE(ThemeMode)
 
@@ -94,6 +95,8 @@ enum ThemeColor
     BasicPressAlpha,
     BasicSelectedAlpha,
     BasicSelectedHoverAlpha,
+    InputBase,
+    InputFocus,
     StatusDanger,
 };
 Q_ENUM_CREATE(ThemeColor)

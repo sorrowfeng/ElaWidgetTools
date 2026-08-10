@@ -17,6 +17,30 @@ ElaTheme::~ElaTheme()
 {
 }
 
+bool ElaTheme::isDarkTheme(ElaThemeType::ThemeMode themeMode)
+{
+    return themeMode == ElaThemeType::Dark;
+}
+
+ElaThemeType::ThemeMode ElaTheme::nextThemeMode(ElaThemeType::ThemeMode themeMode)
+{
+    switch (themeMode)
+    {
+    case ElaThemeType::Light:
+    {
+        return ElaThemeType::Blue;
+    }
+    case ElaThemeType::Blue:
+    {
+        return ElaThemeType::Dark;
+    }
+    default:
+    {
+        return ElaThemeType::Light;
+    }
+    }
+}
+
 void ElaTheme::setThemeMode(ElaThemeType::ThemeMode themeMode)
 {
     Q_D(ElaTheme);
@@ -37,7 +61,7 @@ void ElaTheme::drawEffectShadow(QPainter* painter, QRect widgetRect, int shadowB
     painter->setRenderHints(QPainter::Antialiasing);
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
-    QColor color = d->_themeMode == ElaThemeType::Light ? QColor(0x70, 0x70, 0x70) : QColor(0x9C, 0x9B, 0x9E);
+    QColor color = isDarkTheme(d->_themeMode) ? QColor(0x9C, 0x9B, 0x9E) : QColor(0x70, 0x70, 0x70);
     for (int i = 0; i < shadowBorderWidth; i++)
     {
         path.addRoundedRect(widgetRect.x() + shadowBorderWidth - i, widgetRect.y() + shadowBorderWidth - i, widgetRect.width() - (shadowBorderWidth - i) * 2, widgetRect.height() - (shadowBorderWidth - i) * 2, borderRadius + i, borderRadius + i);
@@ -52,25 +76,42 @@ void ElaTheme::drawEffectShadow(QPainter* painter, QRect widgetRect, int shadowB
 void ElaTheme::setThemeColor(ElaThemeType::ThemeMode themeMode, ElaThemeType::ThemeColor themeColor, QColor newColor)
 {
     Q_D(ElaTheme);
-    if (themeMode == ElaThemeType::Light)
+    switch (themeMode)
+    {
+    case ElaThemeType::Light:
     {
         d->_lightThemeColorList[themeColor] = newColor;
+        break;
     }
-    else
+    case ElaThemeType::Blue:
+    {
+        d->_blueThemeColorList[themeColor] = newColor;
+        break;
+    }
+    default:
     {
         d->_darkThemeColorList[themeColor] = newColor;
+        break;
+    }
     }
 }
 
 const QColor& ElaTheme::getThemeColor(ElaThemeType::ThemeMode themeMode, ElaThemeType::ThemeColor themeColor)
 {
     Q_D(ElaTheme);
-    if (themeMode == ElaThemeType::Light)
+    switch (themeMode)
+    {
+    case ElaThemeType::Light:
     {
         return d->_lightThemeColorList[themeColor];
     }
-    else
+    case ElaThemeType::Blue:
+    {
+        return d->_blueThemeColorList[themeColor];
+    }
+    default:
     {
         return d->_darkThemeColorList[themeColor];
+    }
     }
 }

@@ -172,7 +172,7 @@ void ElaMessageBar::paintEvent(QPaintEvent* event)
 
     // 背景和图标绘制
     painter.save();
-    painter.setPen(d->_themeMode == ElaThemeType::Light ? QColor(0xBE, 0xBA, 0xBE) : QColor(0x52, 0x50, 0x52));
+    painter.setPen(!ElaTheme::isDarkTheme(d->_themeMode) ? QColor(0xBE, 0xBA, 0xBE) : QColor(0x52, 0x50, 0x52));
     switch (d->_messageMode)
     {
     case ElaMessageBarType::Success:

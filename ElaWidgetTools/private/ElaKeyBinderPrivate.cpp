@@ -1,5 +1,6 @@
 #include "ElaKeyBinderPrivate.h"
 #include "ElaKeyBinder.h"
+#include "ElaTheme.h"
 #include <QTimer>
 ElaKeyBinderPrivate::ElaKeyBinderPrivate(QObject* parent)
     : QObject(parent)
@@ -30,7 +31,7 @@ void ElaKeyBinderPrivate::_changeTheme()
 {
     Q_Q(ElaKeyBinder);
     QPalette palette = q->palette();
-    if (_themeMode == ElaThemeType::Light)
+    if (!ElaTheme::isDarkTheme(_themeMode))
     {
         palette.setColor(QPalette::WindowText, Qt::black);
         q->setPalette(palette);

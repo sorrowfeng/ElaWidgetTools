@@ -37,7 +37,7 @@ void ElaPlainTextEditStyle::drawControl(ControlElement element, const QStyleOpti
                 painter->setPen(Qt::NoPen);
 
                 // 背景绘制
-                painter->setBrush(ElaThemeColor(_themeMode, BasicBaseAlpha));
+                painter->setBrush(ElaThemeColor(_themeMode, InputBase));
                 painter->drawRoundedRect(QRectF(editRect.x() + 1.5, editRect.y() + 1.5, editRect.width() - 3, editRect.height() - 3), 6, 6);
 
                 // 底边线绘制

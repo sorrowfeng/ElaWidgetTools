@@ -181,7 +181,7 @@ void ElaMultiSelectComboBox::paintEvent(QPaintEvent* e)
     painter.drawText(15, height() / 2 + painter.fontMetrics().ascent() / 2 - 1, currentText);
     //展开指示器绘制
     painter.setPen(Qt::NoPen);
-    painter.setBrush(d->_themeMode == ElaThemeType::Light ? QColor(0x0E, 0x6F, 0xC3) : QColor(0x4C, 0xA0, 0xE0));
+    painter.setBrush(!ElaTheme::isDarkTheme(d->_themeMode) ? QColor(0x0E, 0x6F, 0xC3) : QColor(0x4C, 0xA0, 0xE0));
     painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 3, d->_pExpandMarkWidth * 2, 3), 2, 2);
     // 展开图标绘制
     if (count() > 0)

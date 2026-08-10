@@ -125,6 +125,7 @@ ElaAppBar::ElaAppBar(QWidget* parent)
     connect(d->_themeChangeButton, &ElaIconButton::clicked, this, &ElaAppBar::themeChangeButtonClicked);
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode)
             { d->_onThemeModeChange(themeMode); });
+    d->_onThemeModeChange(eTheme->getThemeMode());
 
     d->_minButton = new ElaToolButton(this);
     d->_minButton->setElaIcon(ElaIconType::Dash);

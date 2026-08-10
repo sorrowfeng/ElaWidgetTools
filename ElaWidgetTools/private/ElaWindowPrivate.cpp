@@ -102,14 +102,7 @@ void ElaWindowPrivate::onThemeReadyChange()
             });
             _animationWidget->move(0, 0);
             _animationWidget->setOldWindowBackground(q->grab(q->rect()).toImage());
-            if (eTheme->getThemeMode() == ElaThemeType::Light)
-            {
-                eTheme->setThemeMode(ElaThemeType::Dark);
-            }
-            else
-            {
-                eTheme->setThemeMode(ElaThemeType::Light);
-            }
+            eTheme->setThemeMode(ElaTheme::nextThemeMode(eTheme->getThemeMode()));
             _animationWidget->setNewWindowBackground(q->grab(q->rect()).toImage());
             _animationWidget->setCenter(centerPos);
             qreal topLeftDis = _distance(centerPos, QPoint(0, 0));
@@ -127,14 +120,7 @@ void ElaWindowPrivate::onThemeReadyChange()
     }
     default:
     {
-        if (eTheme->getThemeMode() == ElaThemeType::Light)
-        {
-            eTheme->setThemeMode(ElaThemeType::Dark);
-        }
-        else
-        {
-            eTheme->setThemeMode(ElaThemeType::Light);
-        }
+        eTheme->setThemeMode(ElaTheme::nextThemeMode(eTheme->getThemeMode()));
         break;
     }
     }

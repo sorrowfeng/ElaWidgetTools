@@ -35,9 +35,13 @@ void ElaLineEditStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
             painter->drawRoundedRect(lineEditRect.adjusted(1, 1, -1, -1), 6, 6);
             painter->setPen(Qt::NoPen);
             //  背景绘制
-            if (fopt->state & QStyle::State_HasFocus)
+            if (fopt->state & QStyle::State_Sunken)
             {
-                painter->setBrush(ElaThemeColor(_themeMode, DialogBase));
+                painter->setBrush(ElaThemeColor(_themeMode, BasicPress));
+            }
+            else if (fopt->state & QStyle::State_HasFocus)
+            {
+                painter->setBrush(ElaThemeColor(_themeMode, InputFocus));
             }
             else if (fopt->state & QStyle::State_MouseOver)
             {
@@ -45,7 +49,7 @@ void ElaLineEditStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
             }
             else
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicBaseAlpha));
+                painter->setBrush(ElaThemeColor(_themeMode, InputBase));
             }
             painter->drawRoundedRect(QRectF(lineEditRect.x() + 1.5, lineEditRect.y() + 1.5, lineEditRect.width() - 3, lineEditRect.height() - 3), 6, 6);
 

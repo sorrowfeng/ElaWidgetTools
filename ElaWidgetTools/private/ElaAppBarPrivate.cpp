@@ -202,13 +202,23 @@ bool ElaAppBarPrivate::_containsCursorToItem(QWidget* item)
 
 void ElaAppBarPrivate::_onThemeModeChange(ElaThemeType::ThemeMode themeMode)
 {
-    if (themeMode == ElaThemeType::Light)
+    switch (themeMode)
+    {
+    case ElaThemeType::Light:
     {
         _themeChangeButton->setElaIcon(ElaIconType::MoonStars);
+        break;
     }
-    else
+    case ElaThemeType::Blue:
+    {
+        _themeChangeButton->setElaIcon(ElaIconType::Droplet);
+        break;
+    }
+    default:
     {
         _themeChangeButton->setElaIcon(ElaIconType::SunBright);
+        break;
+    }
     }
 }
 

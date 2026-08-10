@@ -1,4 +1,4 @@
-﻿#include "ElaApplication.h"
+#include "ElaApplication.h"
 
 #include "ElaTheme.h"
 #include "ElaWinShadowHelper.h"
@@ -53,7 +53,7 @@ void ElaApplication::setWindowDisplayMode(ElaApplicationType::WindowDisplayMode 
     for (auto widget: d->_micaWidgetList)
     {
         ElaWinShadowHelper::getInstance()->setWindowDisplayMode(widget, windowDisplayType, lastDisplayMode);
-        ElaWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), d->_themeMode == ElaThemeType::Light);
+        ElaWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), !ElaTheme::isDarkTheme(d->_themeMode));
     }
 #endif
     if (windowDisplayType != ElaApplicationType::ElaMica)
@@ -137,7 +137,7 @@ void ElaApplication::syncWindowDisplayMode(QWidget* widget, bool isSync)
         if (isSync)
         {
             ElaWinShadowHelper::getInstance()->setWindowDisplayMode(widget, d->_pWindowDisplayMode, ElaApplicationType::Normal);
-            ElaWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), d->_themeMode == ElaThemeType::Light);
+            ElaWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), !ElaTheme::isDarkTheme(d->_themeMode));
         }
         else
         {

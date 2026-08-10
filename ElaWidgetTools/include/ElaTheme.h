@@ -21,6 +21,9 @@ private:
     ~ElaTheme();
 
 public:
+    static bool isDarkTheme(ElaThemeType::ThemeMode themeMode);
+    static ElaThemeType::ThemeMode nextThemeMode(ElaThemeType::ThemeMode themeMode);
+
     void setThemeMode(ElaThemeType::ThemeMode themeMode);
     ElaThemeType::ThemeMode getThemeMode() const;
 

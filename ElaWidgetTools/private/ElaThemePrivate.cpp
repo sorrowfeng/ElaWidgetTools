@@ -104,7 +104,40 @@ void ElaThemePrivate::_initThemeColor()
     _lightThemeColorList[ElaThemeType::BasicSelectedHoverAlpha] = QColor(0xCC, 0xCC, 0xCC, 40);
     _darkThemeColorList[ElaThemeType::BasicSelectedHoverAlpha] = QColor(0x4B, 0x4B, 0x4B, 55);
 
+    // 输入框
+    _lightThemeColorList[ElaThemeType::InputBase] = _lightThemeColorList[ElaThemeType::BasicBaseAlpha];
+    _darkThemeColorList[ElaThemeType::InputBase] = _darkThemeColorList[ElaThemeType::BasicBaseAlpha];
+    _lightThemeColorList[ElaThemeType::InputFocus] = _lightThemeColorList[ElaThemeType::DialogBase];
+    _darkThemeColorList[ElaThemeType::InputFocus] = _darkThemeColorList[ElaThemeType::DialogBase];
+
     // 状态颜色
     _lightThemeColorList[ElaThemeType::StatusDanger] = QColor(0xE8, 0x11, 0x23);
     _darkThemeColorList[ElaThemeType::StatusDanger] = QColor(0xE8, 0x11, 0x23);
+    _initBlueThemeColor();
+}
+
+void ElaThemePrivate::_initBlueThemeColor()
+{
+    for (int i = 0; i < 42; ++i)
+    {
+        _blueThemeColorList[i] = _lightThemeColorList[i];
+    }
+    // 控件交互色：默认 / 悬停 / 按下，不影响窗口与对话框背景
+    _blueThemeColorList[ElaThemeType::BasicBase] = QColor(0x9A, 0xC4, 0xFF);
+    _blueThemeColorList[ElaThemeType::BasicHover] = QColor(0x84, 0xB5, 0xFF);
+    _blueThemeColorList[ElaThemeType::BasicPress] = QColor(0x6E, 0xA6, 0xF5);
+    _blueThemeColorList[ElaThemeType::BasicHoverAlpha] = QColor(0x84, 0xB5, 0xFF, 70);
+    _blueThemeColorList[ElaThemeType::BasicPressAlpha] = QColor(0x6E, 0xA6, 0xF5, 40);
+    // 输入框
+    _blueThemeColorList[ElaThemeType::InputBase] = QColor(0x9A, 0xC4, 0xFF);
+    _blueThemeColorList[ElaThemeType::InputFocus] = QColor(0x84, 0xB5, 0xFF);
+    // 选中态
+    _blueThemeColorList[ElaThemeType::BasicSelectedAlpha] = QColor(0x9A, 0xC4, 0xFF, 110);
+    _blueThemeColorList[ElaThemeType::BasicSelectedHoverAlpha] = QColor(0x6E, 0xA6, 0xF5, 80);
+    // 下拉弹层（ComboBox 下拉框等）
+    _blueThemeColorList[ElaThemeType::PopupBase] = QColor(0xD6, 0xE8, 0xFF);
+    _blueThemeColorList[ElaThemeType::PopupBorder] = QColor(0x9A, 0xC4, 0xFF);
+    _blueThemeColorList[ElaThemeType::PopupBorderHover] = QColor(0x84, 0xB5, 0xFF);
+    _blueThemeColorList[ElaThemeType::PopupHover] = QColor(0x84, 0xB5, 0xFF);
+    // Primary 强调色保持与 Light 一致
 }

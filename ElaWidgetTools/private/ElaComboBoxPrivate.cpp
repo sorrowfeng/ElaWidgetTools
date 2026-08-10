@@ -1,5 +1,6 @@
 #include "ElaComboBoxPrivate.h"
 #include "ElaComboBox.h"
+#include "ElaTheme.h"
 #include <QLineEdit>
 #include <QTimer>
 ElaComboBoxPrivate::ElaComboBoxPrivate(QObject* parent)
@@ -61,7 +62,7 @@ void ElaComboBoxPrivate::_changeTheme()
 
     Q_Q(ElaComboBox);
     QPalette palette = q->palette();
-    if (_themeMode == ElaThemeType::Light)
+    if (!ElaTheme::isDarkTheme(_themeMode))
     {
         palette.setColor(QPalette::Text, Qt::black);
         palette.setColor(QPalette::PlaceholderText, QColor(0x00, 0x00, 0x00, 128));

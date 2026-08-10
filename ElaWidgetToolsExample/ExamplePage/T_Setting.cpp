@@ -27,6 +27,7 @@ T_Setting::T_Setting(QWidget* parent)
 
     _themeComboBox = new ElaComboBox(this);
     _themeComboBox->addItem("日间模式");
+    _themeComboBox->addItem("蓝色模式");
     _themeComboBox->addItem("夜间模式");
     ElaScrollPageArea* themeSwitchArea = new ElaScrollPageArea(this);
     QHBoxLayout* themeSwitchLayout = new QHBoxLayout(themeSwitchArea);
@@ -41,6 +42,10 @@ T_Setting::T_Setting(QWidget* parent)
         {
             eTheme->setThemeMode(ElaThemeType::Light);
         }
+        else if (index == 1)
+        {
+            eTheme->setThemeMode(ElaThemeType::Blue);
+        }
         else
         {
             eTheme->setThemeMode(ElaThemeType::Dark);
@@ -52,12 +57,34 @@ T_Setting::T_Setting(QWidget* parent)
         {
             _themeComboBox->setCurrentIndex(0);
         }
-        else
+        else if (themeMode == ElaThemeType::Blue)
         {
             _themeComboBox->setCurrentIndex(1);
         }
+        else
+        {
+            _themeComboBox->setCurrentIndex(2);
+        }
         _themeComboBox->blockSignals(false);
     });
+    switch (eTheme->getThemeMode())
+    {
+    case ElaThemeType::Light:
+    {
+        _themeComboBox->setCurrentIndex(0);
+        break;
+    }
+    case ElaThemeType::Blue:
+    {
+        _themeComboBox->setCurrentIndex(1);
+        break;
+    }
+    default:
+    {
+        _themeComboBox->setCurrentIndex(2);
+        break;
+    }
+    }
 
     ElaText* helperText = new ElaText("应用程序设置", this);
     helperText->setWordWrap(false);

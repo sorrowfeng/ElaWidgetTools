@@ -1,6 +1,7 @@
 #include "ElaTextPrivate.h"
 
 #include "ElaText.h"
+#include "ElaTheme.h"
 #include <QTimer>
 ElaTextPrivate::ElaTextPrivate(QObject* parent)
     : QObject{parent}
@@ -31,6 +32,6 @@ void ElaTextPrivate::_changeTheme()
 {
     Q_Q(ElaText);
     QPalette palette = q->palette();
-    palette.setColor(QPalette::WindowText, _themeMode == ElaThemeType::Light ? Qt::black : Qt::white);
+    palette.setColor(QPalette::WindowText, !ElaTheme::isDarkTheme(_themeMode) ? Qt::black : Qt::white);
     q->setPalette(palette);
 }

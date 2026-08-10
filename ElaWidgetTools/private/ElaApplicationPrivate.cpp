@@ -11,6 +11,7 @@
 
 #include "ElaApplication.h"
 #include "ElaMicaBaseInitObject.h"
+#include "ElaTheme.h"
 #include "ElaWinShadowHelper.h"
 ElaApplicationPrivate::ElaApplicationPrivate(QObject* parent)
     : QObject{parent}
@@ -40,7 +41,7 @@ void ElaApplicationPrivate::onThemeModeChanged(ElaThemeType::ThemeMode themeMode
 #ifdef Q_OS_WIN
         for (auto widget: _micaWidgetList)
         {
-            ElaWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), _themeMode == ElaThemeType::Light);
+            ElaWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), !ElaTheme::isDarkTheme(_themeMode));
         }
 #endif
         break;
@@ -156,7 +157,7 @@ void ElaApplicationPrivate::_updateMica(QWidget* widget, bool isProcessEvent)
     if (widget->isVisible())
     {
         QPalette palette = widget->palette();
-        if (_themeMode == ElaThemeType::Light)
+        if (!ElaTheme::isDarkTheme(_themeMode))
         {
             palette.setBrush(QPalette::Window, _lightBaseImage.copy(_calculateWindowVirtualGeometry(widget)).scaled(widget->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
         }

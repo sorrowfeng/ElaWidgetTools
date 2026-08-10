@@ -5,6 +5,7 @@
 #include "ElaSuggestBox.h"
 #include "ElaSuggestBoxSearchViewContainer.h"
 #include "ElaSuggestModel.h"
+#include "ElaTheme.h"
 #include <QLayout>
 #include <QPropertyAnimation>
 #include <QUuid>
@@ -34,8 +35,8 @@ ElaSuggestBoxPrivate::~ElaSuggestBoxPrivate()
 void ElaSuggestBoxPrivate::onThemeModeChanged(ElaThemeType::ThemeMode themeMode)
 {
     _themeMode = themeMode;
-    _searchEdit->removeAction(_themeMode == ElaThemeType::Light ? _darkSearchAction : _lightSearchAction);
-    _searchEdit->addAction(_themeMode == ElaThemeType::Light ? _lightSearchAction : _darkSearchAction, QLineEdit::TrailingPosition);
+    _searchEdit->removeAction(!ElaTheme::isDarkTheme(_themeMode) ? _darkSearchAction : _lightSearchAction);
+    _searchEdit->addAction(!ElaTheme::isDarkTheme(_themeMode) ? _lightSearchAction : _darkSearchAction, QLineEdit::TrailingPosition);
     _searchEdit->update();
 }
 

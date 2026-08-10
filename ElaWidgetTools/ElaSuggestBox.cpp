@@ -39,7 +39,7 @@ ElaSuggestBox::ElaSuggestBox(QWidget* parent)
 
     d->_themeMode = eTheme->getThemeMode();
     connect(eTheme, &ElaTheme::themeModeChanged, d, &ElaSuggestBoxPrivate::onThemeModeChanged);
-    if (d->_themeMode == ElaThemeType::Light)
+    if (!ElaTheme::isDarkTheme(d->_themeMode))
     {
         d->_searchEdit->addAction(d->_lightSearchAction, QLineEdit::TrailingPosition);
     }
