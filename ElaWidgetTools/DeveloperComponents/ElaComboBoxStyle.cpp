@@ -65,8 +65,11 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
             eTheme->drawEffectShadow(painter, viewRect, _shadowBorderWidth, 6);
             QRect foregroundRect(viewRect.x() + _shadowBorderWidth, viewRect.y(), viewRect.width() - 2 * _shadowBorderWidth, viewRect.height() - _shadowBorderWidth);
-            painter->setPen(ElaThemeColor(_themeMode, PopupBorder));
-            painter->setBrush(ElaThemeColor(_themeMode, PopupBase));
+            // Blue 主题:下拉弹层背景/边框沿用 Light 配色(不变蓝)
+            const ElaThemeType::ThemeMode popupThemeMode =
+                _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
+            painter->setPen(ElaThemeColor(popupThemeMode, PopupBorder));
+            painter->setBrush(ElaThemeColor(popupThemeMode, PopupBase));
             painter->drawRoundedRect(foregroundRect, 3, 3);
             painter->restore();
         }
@@ -88,18 +91,21 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             optionRect.adjust(6, 0, -6, 0);
 #endif
             path.addRoundedRect(optionRect, 5, 5);
+            // Blue 主题:选中项底色沿用 Light 配色,悬停/按下保持蓝色
+            const ElaThemeType::ThemeMode itemThemeMode =
+                _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
             if (option->state & QStyle::State_Selected)
             {
                 if (option->state & (QStyle::State_MouseOver | QStyle::State_Sunken))
                 {
                     // 选中时覆盖 / 点击
-                    painter->setBrush(ElaThemeColor(_themeMode, BasicSelectedHoverAlpha));
+                    painter->setBrush(ElaThemeColor(itemThemeMode, BasicSelectedHoverAlpha));
                     painter->drawPath(path);
                 }
                 else
                 {
                     // 选中
-                    painter->setBrush(ElaThemeColor(_themeMode, BasicSelectedAlpha));
+                    painter->setBrush(ElaThemeColor(itemThemeMode, BasicSelectedAlpha));
                     painter->drawPath(path);
                 }
                 //选中Mark
