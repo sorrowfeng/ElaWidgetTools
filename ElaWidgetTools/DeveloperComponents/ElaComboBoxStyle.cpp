@@ -91,26 +91,26 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             optionRect.adjust(6, 0, -6, 0);
 #endif
             path.addRoundedRect(optionRect, 5, 5);
-            // Blue 主题:选中项底色沿用 Light 配色,悬停/按下保持蓝色
-            const ElaThemeType::ThemeMode itemThemeMode =
-                _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
             if (option->state & QStyle::State_Selected)
             {
+                // Blue 主题:选中项为定制蓝色样式(底色蓝调 + #1E94D4 选中条)
                 if (option->state & (QStyle::State_MouseOver | QStyle::State_Sunken))
                 {
                     // 选中时覆盖 / 点击
-                    painter->setBrush(ElaThemeColor(itemThemeMode, BasicSelectedHoverAlpha));
+                    painter->setBrush(ElaThemeColor(_themeMode, BasicSelectedHoverAlpha));
                     painter->drawPath(path);
                 }
                 else
                 {
                     // 选中
-                    painter->setBrush(ElaThemeColor(itemThemeMode, BasicSelectedAlpha));
+                    painter->setBrush(ElaThemeColor(_themeMode, BasicSelectedAlpha));
                     painter->drawPath(path);
                 }
                 //选中Mark
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                painter->setBrush(_themeMode == ElaThemeType::Blue
+                                      ? QColor(0x1E, 0x94, 0xD4)
+                                      : ElaThemeColor(_themeMode, PrimaryNormal));
                 painter->drawRoundedRect(QRectF(optionRect.x() + 3, optionRect.y() + optionRect.height() * 0.2, 3, optionRect.height() - +optionRect.height() * 0.4), 2, 2);
             }
             else
