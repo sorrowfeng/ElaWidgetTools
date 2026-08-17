@@ -223,16 +223,3 @@ ELACOMBOBOX_FORWARD_COLOR(LightPressColor)
 ELACOMBOBOX_FORWARD_COLOR(DarkDefaultColor)
 ELACOMBOBOX_FORWARD_COLOR(DarkHoverColor)
 ELACOMBOBOX_FORWARD_COLOR(DarkPressColor)
-// 下拉箭头颜色转发(存于样式对象)
-void ElaComboBox::setExpandIconColor(const QColor& color)
-{
-    Q_D(ElaComboBox);
-    d->_comboBoxStyle->setExpandIconColor(color);
-    update();
-}
-
-QColor ElaComboBox::getExpandIconColor() const
-{
-    Q_D(const ElaComboBox);
-    return d->_comboBoxStyle->getExpandIconColor();
-}

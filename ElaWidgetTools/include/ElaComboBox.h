@@ -31,10 +31,6 @@ public:
     void setDarkPressColor(const QColor& color);
     QColor getDarkPressColor() const;
 
-    // 下拉箭头颜色(默认无效值=跟随主题文字色)
-    void setExpandIconColor(const QColor& color);
-    QColor getExpandIconColor() const;
-
 protected:
     virtual void showPopup() override;
     virtual void hidePopup() override;
