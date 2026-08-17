@@ -150,25 +150,28 @@ void ElaComboBoxStyle::drawComplexControl(ComplexControl control, const QStyleOp
             //背景绘制
             bool isEnabled = copt->state.testFlag(QStyle::State_Enabled);
             painter->setPen(ElaThemeColor(_themeMode, BasicBorder));
+            // Blue 主题:下拉框本体背景沿用 Light 配色(不变蓝)
+            const ElaThemeType::ThemeMode boxThemeMode =
+                _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
             if (!isEnabled)
             {
                 painter->setBrush(ElaThemeColor(_themeMode, BasicDisable));
             }
             else if (copt->state.testFlag(QStyle::State_Sunken) || copt->state.testFlag(QStyle::State_On))
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicPress));
+                painter->setBrush(ElaThemeColor(boxThemeMode, BasicPress));
             }
             else if (copt->state.testFlag(QStyle::State_HasFocus) && copt->editable)
             {
-                painter->setBrush(ElaThemeColor(_themeMode, InputFocus));
+                painter->setBrush(ElaThemeColor(boxThemeMode, InputFocus));
             }
             else if (copt->state.testFlag(QStyle::State_MouseOver))
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicHover));
+                painter->setBrush(ElaThemeColor(boxThemeMode, BasicHover));
             }
             else
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicBase));
+                painter->setBrush(ElaThemeColor(boxThemeMode, BasicBase));
             }
             QRect comboBoxRect = copt->rect;
             comboBoxRect.adjust(_shadowBorderWidth, 1, -_shadowBorderWidth, -1);

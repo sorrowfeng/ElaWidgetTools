@@ -36,7 +36,8 @@ void ElaSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
         //背景
         QRect spinBoxRect = sopt->rect.adjusted(1, 1, -1, -1);
         painter->setPen(ElaThemeColor(_themeMode, BasicBorder));
-        painter->setBrush(ElaThemeColor(_themeMode, BasicBase));
+        // Blue 主题:输入框背景沿用 Light 配色(不变蓝)
+        painter->setBrush(ElaThemeColor(_themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode, BasicBase));
         painter->drawRoundedRect(spinBoxRect, 4, 4);
 
         if (_pButtonMode != ElaSpinBoxType::NoButtons) 
