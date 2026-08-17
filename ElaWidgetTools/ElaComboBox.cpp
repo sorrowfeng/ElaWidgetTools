@@ -202,3 +202,24 @@ void ElaComboBox::hidePopup()
         markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     }
 }
+
+// 实例级自定义背景色转发(存于样式对象)
+#define ELACOMBOBOX_FORWARD_COLOR(M)                              \
+    void ElaComboBox::set##M(const QColor& color)                 \
+    {                                                             \
+        Q_D(ElaComboBox);                                         \
+        d->_comboBoxStyle->set##M(color);                         \
+        update();                                                 \
+    }                                                             \
+    QColor ElaComboBox::get##M() const                            \
+    {                                                             \
+        Q_D(const ElaComboBox);                                   \
+        return d->_comboBoxStyle->get##M();                       \
+    }
+
+ELACOMBOBOX_FORWARD_COLOR(LightDefaultColor)
+ELACOMBOBOX_FORWARD_COLOR(LightHoverColor)
+ELACOMBOBOX_FORWARD_COLOR(LightPressColor)
+ELACOMBOBOX_FORWARD_COLOR(DarkDefaultColor)
+ELACOMBOBOX_FORWARD_COLOR(DarkHoverColor)
+ELACOMBOBOX_FORWARD_COLOR(DarkPressColor)

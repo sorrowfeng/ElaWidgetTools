@@ -20,6 +20,20 @@ public:
     void setIsTransparent(bool isTransparent);
     bool getIsTransparent() const;
 
+    // 实例级自定义背景色(默认无效值=跟随主题;设置后任意主题下优先生效)
+    void setLightDefaultColor(const QColor& color);
+    QColor getLightDefaultColor() const;
+    void setLightHoverColor(const QColor& color);
+    QColor getLightHoverColor() const;
+    void setLightPressColor(const QColor& color);
+    QColor getLightPressColor() const;
+    void setDarkDefaultColor(const QColor& color);
+    QColor getDarkDefaultColor() const;
+    void setDarkHoverColor(const QColor& color);
+    QColor getDarkHoverColor() const;
+    void setDarkPressColor(const QColor& color);
+    QColor getDarkPressColor() const;
+
     void setMenu(ElaMenu* menu);
     void setElaIcon(ElaIconType::IconName icon);
 

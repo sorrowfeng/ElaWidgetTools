@@ -48,33 +48,44 @@ void ElaToolButtonStyle::drawComplexControl(ComplexControl control, const QStyle
             // Blue 主题:按钮背景沿用 Light 配色(不变蓝)
             const ElaThemeType::ThemeMode buttonThemeMode =
                 _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
+            // 实例自定义色优先;未设置时按主题解析(透明模式用半透明角色)
+            const bool isLightTheme = !ElaTheme::isDarkTheme(_themeMode);
+            const QColor& customDefault = isLightTheme ? _pLightDefaultColor : _pDarkDefaultColor;
+            const QColor& customHover = isLightTheme ? _pLightHoverColor : _pDarkHoverColor;
+            const QColor& customPress = isLightTheme ? _pLightPressColor : _pDarkPressColor;
+            auto stateColor = [&](const QColor& custom, ElaThemeType::ThemeColor alphaRole,
+                                  ElaThemeType::ThemeColor solidRole) -> QColor {
+                if (custom.isValid())
+                    return custom;
+                return eTheme->getThemeColor(buttonThemeMode, _pIsTransparent ? alphaRole : solidRole);
+            };
             // 背景绘制
             if (bopt->state.testFlag(QStyle::State_Enabled))
             {
                 if (bopt->state.testFlag(QStyle::State_Sunken))
                 {
-                    painter->setBrush(_pIsTransparent ? ElaThemeColor(buttonThemeMode, BasicPressAlpha) : ElaThemeColor(buttonThemeMode, BasicPress));
+                    painter->setBrush(stateColor(customPress, ElaThemeType::BasicPressAlpha, ElaThemeType::BasicPress));
                     painter->drawRoundedRect(toolButtonRect, _pBorderRadius, _pBorderRadius);
                 }
                 else
                 {
                     if (_pIsSelected)
                     {
-                        painter->setBrush(_pIsTransparent ? ElaThemeColor(buttonThemeMode, BasicSelectedAlpha) : ElaThemeColor(buttonThemeMode, BasicHover));
+                        painter->setBrush(stateColor(customHover, ElaThemeType::BasicSelectedAlpha, ElaThemeType::BasicHover));
                         painter->drawRoundedRect(toolButtonRect, _pBorderRadius, _pBorderRadius);
                     }
                     else
                     {
                         if (bopt->state.testFlag(QStyle::State_MouseOver) || bopt->state.testFlag(QStyle::State_On))
                         {
-                            painter->setBrush(_pIsTransparent ? ElaThemeColor(buttonThemeMode, BasicHoverAlpha) : ElaThemeColor(buttonThemeMode, BasicHover));
+                            painter->setBrush(stateColor(customHover, ElaThemeType::BasicHoverAlpha, ElaThemeType::BasicHover));
                             painter->drawRoundedRect(toolButtonRect, _pBorderRadius, _pBorderRadius);
                         }
                         else
                         {
                             if (!_pIsTransparent)
                             {
-                                painter->setBrush(ElaThemeColor(buttonThemeMode, BasicBase));
+                                painter->setBrush(customDefault.isValid() ? customDefault : eTheme->getThemeColor(buttonThemeMode, ElaThemeType::BasicBase));
                                 painter->drawRoundedRect(toolButtonRect, _pBorderRadius, _pBorderRadius);
                                 // 底边线绘制
                                 painter->setPen(ElaThemeColor(_themeMode, BasicBaseLine));

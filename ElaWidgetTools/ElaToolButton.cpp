@@ -64,6 +64,27 @@ bool ElaToolButton::getIsTransparent() const
     return d->_toolButtonStyle->getIsTransparent();
 }
 
+// 实例级自定义背景色转发(存于样式对象)
+#define ELATOOLBUTTON_FORWARD_COLOR(M)                            \
+    void ElaToolButton::set##M(const QColor& color)               \
+    {                                                             \
+        Q_D(ElaToolButton);                                       \
+        d->_toolButtonStyle->set##M(color);                       \
+        update();                                                 \
+    }                                                             \
+    QColor ElaToolButton::get##M() const                          \
+    {                                                             \
+        Q_D(const ElaToolButton);                                 \
+        return d->_toolButtonStyle->get##M();                     \
+    }
+
+ELATOOLBUTTON_FORWARD_COLOR(LightDefaultColor)
+ELATOOLBUTTON_FORWARD_COLOR(LightHoverColor)
+ELATOOLBUTTON_FORWARD_COLOR(LightPressColor)
+ELATOOLBUTTON_FORWARD_COLOR(DarkDefaultColor)
+ELATOOLBUTTON_FORWARD_COLOR(DarkHoverColor)
+ELATOOLBUTTON_FORWARD_COLOR(DarkPressColor)
+
 void ElaToolButton::setMenu(ElaMenu* menu)
 {
     if (!menu || menu == this->menu())

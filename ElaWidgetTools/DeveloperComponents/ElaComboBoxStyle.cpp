@@ -159,25 +159,30 @@ void ElaComboBoxStyle::drawComplexControl(ComplexControl control, const QStyleOp
             // Blue 主题:下拉框本体背景沿用 Light 配色(不变蓝)
             const ElaThemeType::ThemeMode boxThemeMode =
                 _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
+            // 实例自定义色优先;未设置时按主题解析
+            const bool isLightTheme = !ElaTheme::isDarkTheme(_themeMode);
+            const QColor& customDefault = isLightTheme ? _pLightDefaultColor : _pDarkDefaultColor;
+            const QColor& customHover = isLightTheme ? _pLightHoverColor : _pDarkHoverColor;
+            const QColor& customPress = isLightTheme ? _pLightPressColor : _pDarkPressColor;
             if (!isEnabled)
             {
                 painter->setBrush(ElaThemeColor(_themeMode, BasicDisable));
             }
             else if (copt->state.testFlag(QStyle::State_Sunken) || copt->state.testFlag(QStyle::State_On))
             {
-                painter->setBrush(ElaThemeColor(boxThemeMode, BasicPress));
+                painter->setBrush(customPress.isValid() ? customPress : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicPress));
             }
             else if (copt->state.testFlag(QStyle::State_HasFocus) && copt->editable)
             {
-                painter->setBrush(ElaThemeColor(boxThemeMode, InputFocus));
+                painter->setBrush(customHover.isValid() ? customHover : eTheme->getThemeColor(boxThemeMode, ElaThemeType::InputFocus));
             }
             else if (copt->state.testFlag(QStyle::State_MouseOver))
             {
-                painter->setBrush(ElaThemeColor(boxThemeMode, BasicHover));
+                painter->setBrush(customHover.isValid() ? customHover : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicHover));
             }
             else
             {
-                painter->setBrush(ElaThemeColor(boxThemeMode, BasicBase));
+                painter->setBrush(customDefault.isValid() ? customDefault : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicBase));
             }
             QRect comboBoxRect = copt->rect;
             comboBoxRect.adjust(_shadowBorderWidth, 1, -_shadowBorderWidth, -1);

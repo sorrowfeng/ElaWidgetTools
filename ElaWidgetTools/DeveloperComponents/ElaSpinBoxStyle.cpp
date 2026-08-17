@@ -36,8 +36,13 @@ void ElaSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
         //背景
         QRect spinBoxRect = sopt->rect.adjusted(1, 1, -1, -1);
         painter->setPen(ElaThemeColor(_themeMode, BasicBorder));
-        // Blue 主题:输入框背景沿用 Light 配色(不变蓝)
-        painter->setBrush(ElaThemeColor(_themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode, BasicBase));
+        // Blue 主题:输入框背景沿用 Light 配色(不变蓝);实例自定义色优先
+        const bool isLightTheme = !ElaTheme::isDarkTheme(_themeMode);
+        const QColor& customDefault = isLightTheme ? _pLightDefaultColor : _pDarkDefaultColor;
+        const QColor& customHover = isLightTheme ? _pLightHoverColor : _pDarkHoverColor;
+        const QColor& customPress = isLightTheme ? _pLightPressColor : _pDarkPressColor;
+        const ElaThemeType::ThemeMode boxThemeMode = _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
+        painter->setBrush(customDefault.isValid() ? customDefault : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicBase));
         painter->drawRoundedRect(spinBoxRect, 4, 4);
 
         if (_pButtonMode != ElaSpinBoxType::NoButtons) 
@@ -49,13 +54,13 @@ void ElaSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
                 painter->setPen(Qt::NoPen);
                 if (sopt->state & QStyle::State_Sunken && sopt->state & QStyle::State_MouseOver)
                 {
-                    painter->setBrush(ElaThemeColor(_themeMode, BasicPressAlpha));
+                    painter->setBrush(customPress.isValid() ? customPress : ElaThemeColor(_themeMode, BasicPressAlpha));
                 }
                 else
                 {
                     if (sopt->state & QStyle::State_MouseOver)
                     {
-                        painter->setBrush(ElaThemeColor(_themeMode, BasicHoverAlpha));
+                        painter->setBrush(customHover.isValid() ? customHover : ElaThemeColor(_themeMode, BasicHoverAlpha));
                     }
                 }
                 painter->drawRoundedRect(addLineRect, 4, 4);
@@ -67,13 +72,13 @@ void ElaSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
                 painter->setPen(Qt::NoPen);
                 if (sopt->state & QStyle::State_Sunken && sopt->state & QStyle::State_MouseOver)
                 {
-                    painter->setBrush(ElaThemeColor(_themeMode, BasicPressAlpha));
+                    painter->setBrush(customPress.isValid() ? customPress : ElaThemeColor(_themeMode, BasicPressAlpha));
                 }
                 else
                 {
                     if (sopt->state & QStyle::State_MouseOver)
                     {
-                        painter->setBrush(ElaThemeColor(_themeMode, BasicHoverAlpha));
+                        painter->setBrush(customHover.isValid() ? customHover : ElaThemeColor(_themeMode, BasicHoverAlpha));
                     }
                 }
                 painter->drawRoundedRect(subLineRect, 4, 4);
