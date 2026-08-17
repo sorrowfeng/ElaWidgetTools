@@ -209,7 +209,12 @@ void ElaComboBoxStyle::drawComplexControl(ComplexControl control, const QStyleOp
                 QFont iconFont = QFont("ElaAwesome");
                 iconFont.setPixelSize(17);
                 painter->setFont(iconFont);
-                painter->setPen(isEnabled ? ElaThemeColor(_themeMode, BasicText) : ElaThemeColor(_themeMode, BasicTextDisable));
+                // 下拉箭头:实例自定义色优先,默认跟随主题文字色
+                const QColor arrowColor =
+                    _pExpandIconColor.isValid()
+                        ? _pExpandIconColor
+                        : ElaThemeColor(_themeMode, BasicText);
+                painter->setPen(isEnabled ? arrowColor : ElaThemeColor(_themeMode, BasicTextDisable));
                 painter->translate(expandIconRect.x() + (qreal)expandIconRect.width() / 2, expandIconRect.y() + (qreal)expandIconRect.height() / 2);
                 painter->rotate(_pExpandIconRotate);
                 painter->translate(-expandIconRect.x() - (qreal)expandIconRect.width() / 2, -expandIconRect.y() - (qreal)expandIconRect.height() / 2);

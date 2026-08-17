@@ -17,6 +17,8 @@ class ElaComboBoxStyle : public QProxyStyle
     Q_PRIVATE_CREATE(QColor, DarkDefaultColor)
     Q_PRIVATE_CREATE(QColor, DarkHoverColor)
     Q_PRIVATE_CREATE(QColor, DarkPressColor)
+    // 下拉箭头颜色(默认无效值=跟随主题文字色 BasicText)
+    Q_PRIVATE_CREATE(QColor, ExpandIconColor)
 public:
     explicit ElaComboBoxStyle(QStyle* style = nullptr);
     ~ElaComboBoxStyle() override;
