@@ -1,25 +1,26 @@
-#ifndef ELADIALOGPRIVATE_H
-#define ELADIALOGPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELADIALOGPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELADIALOGPRIVATE_H_
 
 #include <QObject>
-#include <QWidget>
 
-#include "Def.h"
-#include "stdafx.h"
+#include "ElaWidgetToolsDef.h"
 class ElaAppBar;
 class ElaDialog;
+class QWidget;
 class ElaDialogPrivate : public QObject
 {
     Q_OBJECT
     Q_D_CREATE(ElaDialog)
 public:
     explicit ElaDialogPrivate(QObject* parent = nullptr);
-    ~ElaDialogPrivate();
+    ~ElaDialogPrivate() override;
 
 private:
     ElaThemeType::ThemeMode _themeMode;
+    ElaApplicationType::WindowDisplayMode _windowDisplayMode;
     ElaAppBar* _appBar{nullptr};
     QWidget* _mainContainer{nullptr};
 };
 
-#endif // ELADIALOGPRIVATE_H
+#endif //ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELADIALOGPRIVATE_H_
+

@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QVBoxLayout>
+#include <utility>
 
 #include "ElaBaseListView.h"
 #include "ElaColorDialogPrivate.h"
@@ -24,7 +25,7 @@ ElaColorDialog::ElaColorDialog(QWidget* parent)
 {
     Q_D(ElaColorDialog);
     d->q_ptr = this;
-    setFixedSize(620, 630); // 默认宽高
+    setFixedSize(600, 600); // 默认宽高
     setObjectName("ElaColorDialog");
     setWindowTitle("ElaColorDialog");
     setWindowModality(Qt::ApplicationModal);
@@ -35,10 +36,6 @@ ElaColorDialog::ElaColorDialog(QWidget* parent)
     d->_appBar->setIsFixedSize(true);
     d->_appBar->setIsStayTop(true);
     d->_appBar->setWindowButtonFlags(ElaAppBarType::CloseButtonHint);
-    d->_appBar->setIsDefaultClosed(false);
-    connect(d->_appBar, &ElaAppBar::closeButtonClicked, this, [=]() {
-        close();
-    });
 
     // 颜色选择器
     ElaText* colorPickerText = new ElaText("编辑颜色", this);
@@ -269,7 +266,7 @@ ElaColorDialog::ElaColorDialog(QWidget* parent)
     mainLayout->addLayout(colorPickerTextLayout);
     mainLayout->addSpacing(3);
     mainLayout->addLayout(colorControlLayout);
-    mainLayout->addSpacing(120);
+    mainLayout->addSpacing(80);
     mainLayout->addLayout(colorDisplayLayout);
     mainLayout->addLayout(buttonLayout);
     mainLayout->addStretch();
@@ -283,12 +280,14 @@ ElaColorDialog::ElaColorDialog(QWidget* parent)
 
 ElaColorDialog::~ElaColorDialog()
 {
+    Q_D(ElaColorDialog);
+    delete d->_colorValueSlider->style();
 }
 
-void ElaColorDialog::setCurrentColor(QColor currentColor)
+void ElaColorDialog::setCurrentColor(const QColor& currentColor)
 {
     Q_D(ElaColorDialog);
-    d->_pCurrentColor = currentColor;
+    d->_pCurrentColor = currentColor.toHsv();
     d->_updateHtmlEditValue();
     d->_updateEditValue();
     d->_updateColorPreview();
@@ -297,13 +296,13 @@ void ElaColorDialog::setCurrentColor(QColor currentColor)
     Q_EMIT pCurrentColorChanged();
 }
 
-QColor ElaColorDialog::getCurrentColor() const
+const QColor& ElaColorDialog::getCurrentColor() const
 {
     Q_D(const ElaColorDialog);
     return d->_pCurrentColor;
 }
 
-QList<QColor> ElaColorDialog::getCustomColorList() const
+const QList<QColor>& ElaColorDialog::getCustomColorList() const
 {
     Q_D(const ElaColorDialog);
     return d->_customColorModel->getDisplayColorList();

@@ -30,6 +30,7 @@ ElaMenuBar::ElaMenuBar(QWidget* parent)
 
 ElaMenuBar::~ElaMenuBar()
 {
+    delete this->style();
 }
 
 QAction* ElaMenuBar::addMenu(QMenu* menu)
@@ -72,6 +73,16 @@ ElaMenu* ElaMenuBar::addMenu(ElaIconType::IconName icon, const QString& title)
 QAction* ElaMenuBar::addElaIconAction(ElaIconType::IconName icon, const QString& text)
 {
     QAction* action = new QAction(text, this);
+    action->setProperty("ElaIconType", QChar((unsigned short)icon));
+    action->setIcon(ElaIcon::getInstance()->getElaIcon(ElaIconType::Broom, 1));
+    QMenuBar::addAction(action);
+    return action;
+}
+
+QAction* ElaMenuBar::addElaIconAction(ElaIconType::IconName icon, const QString& text, const QKeySequence& shortcut)
+{
+    QAction* action = new QAction(text, this);
+    action->setShortcut(shortcut);
     action->setProperty("ElaIconType", QChar((unsigned short)icon));
     action->setIcon(ElaIcon::getInstance()->getElaIcon(ElaIconType::Broom, 1));
     QMenuBar::addAction(action);

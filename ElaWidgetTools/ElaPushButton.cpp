@@ -1,17 +1,18 @@
 #include "ElaPushButton.h"
 
+#include "ElaApplication.h"
 #include <QPainter>
 #include <QPainterPath>
 
 #include "ElaTheme.h"
 #include "private/ElaPushButtonPrivate.h"
 Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, int, BorderRadius)
-Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, QColor, LightDefaultColor)
-Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, QColor, DarkDefaultColor)
-Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, QColor, LightHoverColor)
-Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, QColor, DarkHoverColor)
-Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, QColor, LightPressColor)
-Q_PROPERTY_CREATE_Q_CPP(ElaPushButton, QColor, DarkPressColor)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaPushButton, QColor, LightDefaultColor)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaPushButton, QColor, DarkDefaultColor)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaPushButton, QColor, LightHoverColor)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaPushButton, QColor, DarkHoverColor)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaPushButton, QColor, LightPressColor)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaPushButton, QColor, DarkPressColor)
 ElaPushButton::ElaPushButton(QWidget* parent)
     : QPushButton(parent), d_ptr(new ElaPushButtonPrivate())
 {
@@ -30,7 +31,7 @@ ElaPushButton::ElaPushButton(QWidget* parent)
     setMouseTracking(true);
     setFixedHeight(38);
     QFont font = this->font();
-    font.setPixelSize(15);
+    font.setPixelSize(eApp->getFontPixelSize() + 2);
     setFont(font);
     setObjectName("ElaPushButton");
     setStyleSheet("#ElaPushButton{background-color:transparent;}");
@@ -39,7 +40,7 @@ ElaPushButton::ElaPushButton(QWidget* parent)
     });
 }
 
-ElaPushButton::ElaPushButton(QString text, QWidget* parent)
+ElaPushButton::ElaPushButton(const QString& text, QWidget* parent)
     : ElaPushButton(parent)
 {
     setText(text);
@@ -49,25 +50,25 @@ ElaPushButton::~ElaPushButton()
 {
 }
 
-void ElaPushButton::setLightTextColor(QColor color)
+void ElaPushButton::setLightTextColor(const QColor& color)
 {
     Q_D(ElaPushButton);
     d->_lightTextColor = color;
 }
 
-QColor ElaPushButton::getLightTextColor() const
+const QColor& ElaPushButton::getLightTextColor() const
 {
     Q_D(const ElaPushButton);
     return d->_lightTextColor;
 }
 
-void ElaPushButton::setDarkTextColor(QColor color)
+void ElaPushButton::setDarkTextColor(const QColor& color)
 {
     Q_D(ElaPushButton);
     d->_darkTextColor = color;
 }
 
-QColor ElaPushButton::getDarkTextColor() const
+const QColor& ElaPushButton::getDarkTextColor() const
 {
     Q_D(const ElaPushButton);
     return d->_darkTextColor;

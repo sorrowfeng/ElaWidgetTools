@@ -1,7 +1,7 @@
-#ifndef ELAWIDGETTOOLS_ELALCDNUMBERPRIVATE_H
-#define ELAWIDGETTOOLS_ELALCDNUMBERPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELALCDNUMBERPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELALCDNUMBERPRIVATE_H_
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 
 #include <QObject>
 class QTimer;
@@ -20,8 +20,10 @@ public:
     Q_SLOT void onThemeModeChanged(ElaThemeType::ThemeMode themeMode);
 
 private:
+    ElaThemeType::ThemeMode _themeMode;
     QTimer* _clockTimer{nullptr};
     ElaLCDNumberStyle* _lcdNumberStyle{nullptr};
 };
 
-#endif //ELAWIDGETTOOLS_ELALCDNUMBERPRIVATE_H
+#endif //ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELALCDNUMBERPRIVATE_H_
+

@@ -4,9 +4,9 @@
 #include <QScroller>
 #include <QVBoxLayout>
 
-#include "DeveloperComponents/ElaBreadcrumbBarDelegate.h"
-#include "DeveloperComponents/ElaBreadcrumbBarModel.h"
 #include "ElaBaseListView.h"
+#include "ElaBreadcrumbBarDelegate.h"
+#include "ElaBreadcrumbBarModel.h"
 #include "ElaBreadcrumbBarPrivate.h"
 Q_PROPERTY_CREATE_Q_CPP(ElaBreadcrumbBar, bool, IsAutoRemove);
 ElaBreadcrumbBar::ElaBreadcrumbBar(QWidget* parent)
@@ -35,8 +35,10 @@ ElaBreadcrumbBar::ElaBreadcrumbBar(QWidget* parent)
         {
             if (d->_listModel->getBreadcrumbListCount() != 1 && index.row() != d->_listModel->getBreadcrumbListCount() * 2 - 2 && index.data(Qt::DisplayRole).toString() != ">")
             {
-                Q_EMIT breadcrumbClicked(index.data(Qt::DisplayRole).toString(), d->_listModel->getBreadcrumbList());
+                auto breadcrumb = index.data(Qt::DisplayRole).toString();
+                auto lastBreadcrumbList = d->_listModel->getBreadcrumbList();
                 d->_listModel->removeBreadcrumb(index.row() / 2 + 1);
+                Q_EMIT breadcrumbClicked(breadcrumb, lastBreadcrumbList);
             }
         }
         else
@@ -100,7 +102,7 @@ int ElaBreadcrumbBar::getTextPixelSize() const
     return d->_pTextPixelSize;
 }
 
-void ElaBreadcrumbBar::setBreadcrumbList(QStringList breadcrumbList)
+void ElaBreadcrumbBar::setBreadcrumbList(const QStringList& breadcrumbList)
 {
     Q_D(ElaBreadcrumbBar);
     d->_listModel->setBreadcrumbList(breadcrumbList);
@@ -126,7 +128,7 @@ int ElaBreadcrumbBar::getBreadcrumbListCount() const
     return d->_listModel->getBreadcrumbListCount();
 }
 
-QStringList ElaBreadcrumbBar::getBreadcrumbList() const
+const QStringList& ElaBreadcrumbBar::getBreadcrumbList() const
 {
     Q_D(const ElaBreadcrumbBar);
     return d->_listModel->getBreadcrumbList();

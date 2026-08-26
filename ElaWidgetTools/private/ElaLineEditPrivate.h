@@ -1,9 +1,9 @@
-#ifndef ELALINEEDITPRIVATE_H
-#define ELALINEEDITPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELALINEEDITPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELALINEEDITPRIVATE_H_
 
+#include "ElaWidgetToolsDef.h"
 #include <QObject>
-
-#include "Def.h"
+#include <QVariantMap>
 class ElaEvent;
 class ElaLineEdit;
 class ElaLineEditPrivate : public QObject
@@ -16,14 +16,13 @@ class ElaLineEditPrivate : public QObject
 public:
     explicit ElaLineEditPrivate(QObject* parent = nullptr);
     ~ElaLineEditPrivate() override;
-    Q_INVOKABLE void onWMWindowClickedEvent(QVariantMap data);
+    Q_INVOKABLE void onWMWindowClickedEvent(const QVariantMap& data);
     Q_SLOT void onThemeChanged(ElaThemeType::ThemeMode themeMode);
 
 private:
     ElaThemeType::ThemeMode _themeMode;
     ElaEvent* _focusEvent{nullptr};
     qreal _textSpacing{0.5};
-    void _changeTheme();
 };
 
-#endif // ELALINEEDITPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELALINEEDITPRIVATE_H_

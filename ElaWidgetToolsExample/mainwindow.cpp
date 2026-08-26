@@ -1,9 +1,6 @@
 #include "mainwindow.h"
 
-#include <QDebug>
-#include <QGraphicsView>
-#include <QHBoxLayout>
-
+#include "ElaActionCommander.h"
 #include "ElaContentDialog.h"
 #include "ElaDockWidget.h"
 #include "ElaEventBus.h"
@@ -11,7 +8,9 @@
 #include "ElaMenu.h"
 #include "ElaMenuBar.h"
 #include "ElaProgressBar.h"
+#include "ElaProgressRing.h"
 #include "ElaStatusBar.h"
+#include "ElaSuggestBox.h"
 #include "ElaText.h"
 #include "ElaTheme.h"
 #include "ElaToolBar.h"
@@ -19,11 +18,14 @@
 #include "T_About.h"
 #include "T_BaseComponents.h"
 #include "T_Card.h"
-#include "T_Graphics.h"
 #include "T_ListView.h"
 #include "T_Setting.h"
 #include "T_TableView.h"
 #include "T_TreeView.h"
+#include <QDebug>
+#include <QGraphicsView>
+#include <QHBoxLayout>
+#include <QMouseEvent>
 #ifdef Q_OS_WIN
 #include "ElaApplication.h"
 #include "ExamplePage/T_ElaScreen.h"
@@ -36,7 +38,6 @@
 #include "ExamplePage/T_Navigation.h"
 #include "ExamplePage/T_Popup.h"
 #include "ExamplePage/T_UpdateWidget.h"
-
 MainWindow::MainWindow(QWidget* parent)
     : ElaWindow(parent)
 {
@@ -50,7 +51,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     // 拦截默认关闭事件
     _closeDialog = new ElaContentDialog(this);
-    connect(_closeDialog, &ElaContentDialog::rightButtonClicked, this, &MainWindow::closeWindow);
+    connect(_closeDialog, &ElaContentDialog::rightButtonClicked, this, &MainWindow::close);
     connect(_closeDialog, &ElaContentDialog::middleButtonClicked, this, [=]() {
         _closeDialog->close();
         showMinimized();
@@ -61,12 +62,16 @@ MainWindow::MainWindow(QWidget* parent)
     });
 
     //移动到中心
-    moveToCenter();
+    //moveToCenter();
 
     //  如果你的windows版本低于Win11 调用原生Mica、Mica-Alt、Acrylic 会导致窗口绘制失效  Dwm_Blur仍可使用
     //    eTheme->setThemeMode(ElaThemeType::Dark);
     //    QTimer::singleShot(1, this, [=]() {
     //        eApp->setWindowDisplayMode(ElaApplicationType::Mica);
+    //    });
+
+    //    QTimer::singleShot(1, this, [=]() {
+    //        showFullScreen();
     //    });
 }
 
@@ -77,11 +82,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::initWindow()
 {
+    setFocusPolicy(Qt::StrongFocus);
     // setIsCentralStackedWidgetTransparent(true);
     setWindowIcon(QIcon(":/include/Image/Cirno.jpg"));
     resize(1200, 740);
     eTheme->setThemeMode(ElaThemeType::Blue);
-    // ElaLog::getInstance()->initMessageLog(true);
     // eTheme->setThemeMode(ElaThemeType::Dark);
     // setIsNavigationBarEnable(false);
     // setNavigationBarDisplayMode(ElaNavigationType::Compact);
@@ -93,6 +98,111 @@ void MainWindow::initWindow()
     // setIsStayTop(true);
     // setUserInfoCardVisible(false);
     // setNavigationBarWidth(260);
+    ElaText* centralStack = new ElaText("这是一个主窗口堆栈页面", this);
+    centralStack->setFocusPolicy(Qt::StrongFocus);
+    centralStack->setTextPixelSize(32);
+    centralStack->setAlignment(Qt::AlignCenter);
+    addCentralWidget(centralStack);
+
+    // 窗口绘制模式
+    setWindowPixmap(ElaThemeType::Light, QPixmap(":/Resource/Image/WindowBase/Miku.png"));
+    setWindowPixmap(ElaThemeType::Dark, QPixmap(":/Resource/Image/WindowBase/WorldTree.jpg"));
+    setWindowMoviePath(ElaThemeType::Light, ":/Resource/Image/WindowBase/Miku.gif");
+    setWindowMoviePath(ElaThemeType::Dark, ":/Resource/Image/WindowBase/WorldTree.gif");
+    //setWindowPaintMode(ElaWindowType::PaintMode::Pixmap);
+
+    // 自定义AppBar菜单
+    ElaMenu* appBarMenu = new ElaMenu(this);
+    appBarMenu->setMenuItemHeight(27);
+    connect(appBarMenu->addAction("跳转到一级主要堆栈"), &QAction::triggered, this, [=]() {
+        setCurrentStackIndex(0);
+    });
+    connect(appBarMenu->addAction("跳转到二级主要堆栈"), &QAction::triggered, this, [=]() {
+        setCurrentStackIndex(1);
+    });
+    connect(appBarMenu->addAction("更改页面切换特效(Scale)"), &QAction::triggered, this, [=]() {
+        setStackSwitchMode(ElaWindowType::StackSwitchMode::Scale);
+    });
+    connect(appBarMenu->addElaIconAction(ElaIconType::GearComplex, "自定义主窗口设置"), &QAction::triggered, this, [=]() {
+        navigation(_settingKey);
+    });
+    appBarMenu->addSeparator();
+    connect(appBarMenu->addElaIconAction(ElaIconType::MoonStars, "更改项目主题"), &QAction::triggered, this, [=]() {
+        eTheme->setThemeMode(eTheme->getThemeMode() == ElaThemeType::Light ? ElaThemeType::Dark : ElaThemeType::Light);
+    });
+    connect(appBarMenu->addAction("使用原生菜单"), &QAction::triggered, this, [=]() {
+        setCustomMenu(nullptr);
+    });
+    setCustomMenu(appBarMenu);
+
+    // 堆栈独立自定义窗口
+    QWidget* centralCustomWidget = new QWidget(this);
+    QHBoxLayout* centralCustomWidgetLayout = new QHBoxLayout(centralCustomWidget);
+    centralCustomWidgetLayout->setContentsMargins(13, 15, 9, 6);
+    ElaToolButton* leftButton = new ElaToolButton(this);
+    leftButton->setElaIcon(ElaIconType::AngleLeft);
+    leftButton->setEnabled(false);
+    connect(leftButton, &ElaToolButton::clicked, this, [=]() {
+        ElaActionCommander::getInstance()->undoCommand("ElaWidgetToolsAction");
+    });
+    ElaToolButton* rightButton = new ElaToolButton(this);
+    rightButton->setElaIcon(ElaIconType::AngleRight);
+    rightButton->setEnabled(false);
+    connect(rightButton, &ElaToolButton::clicked, this, [=]() {
+        ElaActionCommander::getInstance()->redoCommand("ElaWidgetToolsAction");
+    });
+    connect(ElaActionCommander::getInstance(), &ElaActionCommander::commanderStateChanged, this, [=](const QString& domainName, ElaActionCommanderType::CommanderState state) {
+        if (domainName != "ElaWidgetToolsAction")
+        {
+            return;
+        }
+        switch (state)
+        {
+        case ElaActionCommanderType::UndoValid:
+        {
+            leftButton->setEnabled(true);
+            break;
+        }
+        case ElaActionCommanderType::UndoInvalid:
+        {
+            leftButton->setEnabled(false);
+            break;
+        }
+        case ElaActionCommanderType::RedoValid:
+        {
+            rightButton->setEnabled(true);
+            break;
+        }
+        case ElaActionCommanderType::RedoInvalid:
+        {
+            rightButton->setEnabled(false);
+            break;
+        }
+        }
+    });
+    _windowSuggestBox = new ElaSuggestBox(this);
+    _windowSuggestBox->setFixedHeight(32);
+    _windowSuggestBox->setPlaceholderText("搜索关键字");
+    connect(_windowSuggestBox, &ElaSuggestBox::suggestionClicked, this, [=](const ElaSuggestBox::SuggestData& suggestData) {
+        navigation(suggestData.getSuggestData().value("ElaPageKey").toString());
+    });
+
+    ElaText* progressBusyRingText = new ElaText("系统运行中", this);
+    progressBusyRingText->setIsWrapAnywhere(false);
+    progressBusyRingText->setTextPixelSize(15);
+
+    ElaProgressRing* progressBusyRing = new ElaProgressRing(this);
+    progressBusyRing->setBusyingWidth(4);
+    progressBusyRing->setFixedSize(28, 28);
+    progressBusyRing->setIsBusying(true);
+
+    centralCustomWidgetLayout->addWidget(leftButton);
+    centralCustomWidgetLayout->addWidget(rightButton);
+    centralCustomWidgetLayout->addWidget(_windowSuggestBox);
+    centralCustomWidgetLayout->addStretch();
+    centralCustomWidgetLayout->addWidget(progressBusyRingText);
+    centralCustomWidgetLayout->addWidget(progressBusyRing);
+    setCentralCustomWidget(centralCustomWidget);
 }
 
 void MainWindow::initEdgeLayout()
@@ -101,13 +211,13 @@ void MainWindow::initEdgeLayout()
     ElaMenuBar* menuBar = new ElaMenuBar(this);
     menuBar->setFixedHeight(30);
     QWidget* customWidget = new QWidget(this);
+    customWidget->setFixedWidth(500);
     QVBoxLayout* customLayout = new QVBoxLayout(customWidget);
     customLayout->setContentsMargins(0, 0, 0, 0);
     customLayout->addWidget(menuBar);
     customLayout->addStretch();
     // this->setMenuBar(menuBar);
     this->setCustomWidget(ElaAppBarType::MiddleArea, customWidget);
-    this->setCustomWidgetMaximumWidth(500);
 
     menuBar->addElaIconAction(ElaIconType::AtomSimple, "动作菜单");
     ElaMenu* iconMenu = menuBar->addMenu(ElaIconType::Aperture, "图标菜单");
@@ -220,7 +330,6 @@ void MainWindow::initContent()
 #endif
     _iconPage = new T_Icon(this);
     _baseComponentsPage = new T_BaseComponents(this);
-    _graphicsPage = new T_Graphics(this);
     _navigationPage = new T_Navigation(this);
     _popupPage = new T_Popup(this);
     _cardPage = new T_Card(this);
@@ -234,45 +343,46 @@ void MainWindow::initContent()
     addPageNode("HOME", _homePage, ElaIconType::House);
 #ifdef Q_OS_WIN
     addExpanderNode("ElaDxgi", _elaDxgiKey, ElaIconType::TvMusic);
+    QString dxgiCategoryKey;
+    addCategoryNode("Windows-DXGI", dxgiCategoryKey, _elaDxgiKey);
     addPageNode("ElaScreen", _elaScreenPage, _elaDxgiKey, 3, ElaIconType::ObjectGroup);
 #endif
+    QString controlCategoryKey;
+    addCategoryNode("Controls", controlCategoryKey);
     // navigation(elaScreenWidget->property("ElaPageKey").toString());
     addPageNode("ElaBaseComponents", _baseComponentsPage, ElaIconType::CabinetFiling);
 
     addExpanderNode("ElaView", _viewKey, ElaIconType::CameraViewfinder);
+    QString viewCategoryKey;
+    addCategoryNode("View Content", viewCategoryKey, _viewKey);
     addPageNode("ElaListView", _listViewPage, _viewKey, 9, ElaIconType::List);
     addPageNode("ElaTableView", _tableViewPage, _viewKey, ElaIconType::Table);
     addPageNode("ElaTreeView", _treeViewPage, _viewKey, ElaIconType::ListTree);
     expandNavigationNode(_viewKey);
-
-    addPageNode("ElaGraphics", _graphicsPage, 9, ElaIconType::Paintbrush);
     addPageNode("ElaCard", _cardPage, ElaIconType::Cards);
+    QString customKey;
+    addCategoryNode("Custom", customKey);
     addPageNode("ElaNavigation", _navigationPage, ElaIconType::LocationArrow);
     addPageNode("ElaPopup", _popupPage, ElaIconType::Envelope);
     addPageNode("ElaIcon", _iconPage, 99, ElaIconType::FontCase);
-    addExpanderNode("TEST4", testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST5", testKey_1, testKey_2, ElaIconType::Acorn);
-    addPageNode("Third Level", new QWidget(this), testKey_1, ElaIconType::Acorn);
-    addExpanderNode("TEST6", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST7", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST8", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST9", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST10", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST11", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST12", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST13", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST14", testKey_1, testKey_2, ElaIconType::Acorn);
-    addExpanderNode("TEST15", testKey_1, ElaIconType::Acorn);
-    addExpanderNode("TEST16", testKey_1, ElaIconType::Acorn);
-    addExpanderNode("TEST17", testKey_1, ElaIconType::Acorn);
+    addExpanderNode("TEST_EXPAND_NODE1", testKey_1, ElaIconType::Acorn);
+    addExpanderNode("TEST_EXPAND_NODE2", testKey_2, testKey_1, ElaIconType::Acorn);
+    addPageNode("TEST_NODE3", new QWidget(this), testKey_2, ElaIconType::Acorn);
+    for (int i = 0; i < 10; i++)
+    {
+        addExpanderNode(QString("TEST_EXPAND_NODE%1").arg(i + 4), testKey_1, testKey_2, ElaIconType::Acorn);
+    }
+    addExpanderNode("TEST_EXPAND_NODE14", testKey_1, ElaIconType::Acorn);
+    addExpanderNode("TEST_EXPAND_NODE5", testKey_1, ElaIconType::Acorn);
+    addExpanderNode("TEST_EXPAND_NODE16", testKey_1, ElaIconType::Acorn);
 
     addFooterNode("About", nullptr, _aboutKey, 0, ElaIconType::User);
     _aboutPage = new T_About();
 
     _aboutPage->hide();
     connect(this, &ElaWindow::navigationNodeClicked, this, [=](ElaNavigationType::NavigationNodeType nodeType, QString nodeKey) {
-        if (_aboutKey == nodeKey) {
-            _aboutPage->setFixedSize(400, 400);
+        if (_aboutKey == nodeKey)
+        {
             _aboutPage->moveToCenter();
             _aboutPage->show();
         }
@@ -289,14 +399,38 @@ void MainWindow::initContent()
     connect(_homePage, &T_Home::elaBaseComponentNavigation, this, [=]() {
         this->navigation(_baseComponentsPage->property("ElaPageKey").toString());
     });
-    connect(_homePage, &T_Home::elaSceneNavigation, this, [=]() {
-        this->navigation(_graphicsPage->property("ElaPageKey").toString());
-    });
     connect(_homePage, &T_Home::elaIconNavigation, this, [=]() {
         this->navigation(_iconPage->property("ElaPageKey").toString());
     });
     connect(_homePage, &T_Home::elaCardNavigation, this, [=]() {
         this->navigation(_cardPage->property("ElaPageKey").toString());
     });
+
+    _windowSuggestBox->addSuggestion(getNavigationSuggestDataList());
     qDebug() << "已注册的事件列表" << ElaEventBus::getInstance()->getRegisteredEventsName();
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (getCurrentNavigationIndex() != 2)
+    {
+        switch (event->button())
+        {
+        case Qt::BackButton:
+        {
+            this->setCurrentStackIndex(0);
+            break;
+        }
+        case Qt::ForwardButton:
+        {
+            this->setCurrentStackIndex(1);
+            break;
+        }
+        default:
+        {
+            break;
+        }
+        }
+    }
+    ElaWindow::mouseReleaseEvent(event);
 }

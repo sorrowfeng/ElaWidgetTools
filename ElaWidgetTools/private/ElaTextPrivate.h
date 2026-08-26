@@ -1,10 +1,9 @@
-#ifndef ELATEXTPRIVATE_H
-#define ELATEXTPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATEXTPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATEXTPRIVATE_H_
 
 #include <QObject>
 
-#include "Def.h"
-#include "stdafx.h"
+#include "ElaWidgetToolsDef.h"
 class ElaText;
 class ElaTextPrivate : public QObject
 {
@@ -21,7 +20,7 @@ private:
     ElaThemeType::ThemeMode _themeMode;
     bool _isWrapAnywhere{false};
     qreal _textSpacing{0.5};
-    void _changeTheme();
 };
 
-#endif // ELATEXTPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATEXTPRIVATE_H_
+

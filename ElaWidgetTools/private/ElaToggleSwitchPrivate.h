@@ -1,10 +1,9 @@
-#ifndef ELATOGGLESWITCHPRIVATE_H
-#define ELATOGGLESWITCHPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOGGLESWITCHPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOGGLESWITCHPRIVATE_H_
 
 #include <QObject>
 
-#include "Def.h"
-#include "stdafx.h"
+#include "ElaWidgetToolsDef.h"
 class ElaToggleSwitch;
 class ElaToggleSwitchPrivate : public QObject
 {
@@ -29,4 +28,5 @@ private:
     void _adjustCircleCenterX();
 };
 
-#endif // ELATOGGLESWITCHPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOGGLESWITCHPRIVATE_H_
+

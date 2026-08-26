@@ -1,11 +1,11 @@
-#ifndef ELACALENDARPRIVATE_H
-#define ELACALENDARPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACALENDARPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACALENDARPRIVATE_H_
 
 #include <QDate>
 #include <QObject>
 #include <QPixmap>
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 class ElaCalendar;
 class ElaBaseListView;
 class ElaCalendarModel;
@@ -21,7 +21,7 @@ class ElaCalendarPrivate : public QObject
     Q_PROPERTY_CREATE(qreal, PixOpacity)
 public:
     explicit ElaCalendarPrivate(QObject* parent = nullptr);
-    ~ElaCalendarPrivate();
+    ~ElaCalendarPrivate() override;
     Q_SLOT void onSwitchButtonClicked();
     Q_SLOT void onCalendarViewClicked(const QModelIndex& index);
     Q_SLOT void onUpButtonClicked();
@@ -48,4 +48,5 @@ private:
     void _updateSwitchButtonText();
 };
 
-#endif // ELACALENDARPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACALENDARPRIVATE_H_
+

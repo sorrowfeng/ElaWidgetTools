@@ -1,9 +1,9 @@
-#ifndef ELAPLAINTEXTEDITPRIVATE_H
-#define ELAPLAINTEXTEDITPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPLAINTEXTEDITPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPLAINTEXTEDITPRIVATE_H_
 
+#include "ElaWidgetToolsDef.h"
 #include <QObject>
-
-#include "Def.h"
+#include <QVariantMap>
 class ElaEvent;
 class ElaPlainTextEdit;
 class ElaPlainTextEditStyle;
@@ -14,15 +14,15 @@ class ElaPlainTextEditPrivate : public QObject
 
 public:
     explicit ElaPlainTextEditPrivate(QObject* parent = nullptr);
-    ~ElaPlainTextEditPrivate();
-    Q_INVOKABLE void onWMWindowClickedEvent(QVariantMap data);
+    ~ElaPlainTextEditPrivate() override;
+    Q_INVOKABLE void onWMWindowClickedEvent(const QVariantMap& data);
     Q_SLOT void onThemeChanged(ElaThemeType::ThemeMode themeMode);
 
 private:
     ElaThemeType::ThemeMode _themeMode;
     ElaPlainTextEditStyle* _style{nullptr};
     ElaEvent* _focusEvent{nullptr};
-    void _changeTheme();
 };
 
-#endif // ELAPLAINTEXTEDITPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPLAINTEXTEDITPRIVATE_H_
+

@@ -40,6 +40,8 @@ ElaPlainTextEdit::ElaPlainTextEdit(const QString& text, QWidget* parent)
 
 ElaPlainTextEdit::~ElaPlainTextEdit()
 {
+    Q_D(ElaPlainTextEdit);
+    delete d->_style;
 }
 
 void ElaPlainTextEdit::focusInEvent(QFocusEvent* event)
@@ -135,4 +137,14 @@ void ElaPlainTextEdit::contextMenuEvent(QContextMenuEvent* event)
     connect(action, &QAction::triggered, this, &ElaPlainTextEdit::selectAll);
     menu->popup(event->globalPos());
     this->setFocus();
+}
+
+void ElaPlainTextEdit::paintEvent(QPaintEvent* event)
+{
+    Q_D(ElaPlainTextEdit);
+    if (palette().color(QPalette::Text) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
+    QPlainTextEdit::paintEvent(event);
 }

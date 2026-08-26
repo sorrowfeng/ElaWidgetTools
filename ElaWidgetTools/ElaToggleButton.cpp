@@ -1,5 +1,6 @@
 #include "ElaToggleButton.h"
 
+#include "ElaApplication.h"
 #include <QEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -8,7 +9,7 @@
 #include "ElaTheme.h"
 #include "private/ElaToggleButtonPrivate.h"
 Q_PROPERTY_CREATE_Q_CPP(ElaToggleButton, int, BorderRadius)
-Q_PROPERTY_CREATE_Q_CPP(ElaToggleButton, QString, Text)
+Q_PROPERTY_REF_CREATE_Q_CPP(ElaToggleButton, QString, Text)
 ElaToggleButton::ElaToggleButton(QWidget* parent)
     : QWidget(parent), d_ptr(new ElaToggleButtonPrivate())
 {
@@ -20,7 +21,7 @@ ElaToggleButton::ElaToggleButton(QWidget* parent)
     setMouseTracking(true);
     setFixedSize(80, 32);
     QFont font = this->font();
-    font.setPixelSize(15);
+    font.setPixelSize(eApp->getFontPixelSize() + 2);
     setFont(font);
     setObjectName("ElaToggleButton");
     setStyleSheet("#ElaToggleButton{background-color:transparent;}");
@@ -29,7 +30,7 @@ ElaToggleButton::ElaToggleButton(QWidget* parent)
     });
 }
 
-ElaToggleButton::ElaToggleButton(QString text, QWidget* parent)
+ElaToggleButton::ElaToggleButton(const QString& text, QWidget* parent)
     : ElaToggleButton(parent)
 {
     Q_D(ElaToggleButton);

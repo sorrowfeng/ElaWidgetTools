@@ -1,7 +1,7 @@
-#ifndef ELAWIDGETTOOLS_SRC_PRIVATE_ELAKEYBINDERPRIVATE_H_
-#define ELAWIDGETTOOLS_SRC_PRIVATE_ELAKEYBINDERPRIVATE_H_
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAKEYBINDERPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAKEYBINDERPRIVATE_H_
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 #include <QObject>
 class ElaKeyBinder;
 class ElaContentDialog;
@@ -20,7 +20,7 @@ private:
     ElaThemeType::ThemeMode _themeMode;
     ElaContentDialog* _binderDialog{nullptr};
     ElaKeyBinderContainer* _binderContainer{nullptr};
-    void _changeTheme();
 };
 
-#endif //ELAWIDGETTOOLS_SRC_PRIVATE_ELAKEYBINDERPRIVATE_H_
+#endif //ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAKEYBINDERPRIVATE_H_
+

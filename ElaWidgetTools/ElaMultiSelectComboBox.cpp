@@ -7,7 +7,7 @@
 #include <QPainter>
 #include <QPropertyAnimation>
 
-#include "DeveloperComponents/ElaComboBoxView.h"
+#include "ElaComboBoxView.h"
 #include "ElaApplication.h"
 #include "ElaComboBoxStyle.h"
 #include "ElaScrollBar.h"
@@ -58,7 +58,9 @@ ElaMultiSelectComboBox::ElaMultiSelectComboBox(QWidget* parent)
         layout->addWidget(view());
         layout->setContentsMargins(6, 0, 6, 6);
 #ifndef Q_OS_WIN
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         container->setStyleSheet("background-color:transparent;");
+#endif
 #endif
     }
     QComboBox::setMaxVisibleItems(5);
@@ -68,14 +70,18 @@ ElaMultiSelectComboBox::ElaMultiSelectComboBox(QWidget* parent)
     d->_itemSelection.fill(false);
     d->_itemSelection[0] = true;
     QComboBox::setMaxVisibleItems(5);
-    connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) { d->_themeMode = themeMode; });
+    connect(eTheme, &ElaTheme::themeModeChanged, this, [=](ElaThemeType::ThemeMode themeMode) {
+        d->_themeMode = themeMode;
+    });
 }
 
 ElaMultiSelectComboBox::~ElaMultiSelectComboBox()
 {
+    Q_D(ElaMultiSelectComboBox);
+    delete d->_comboBoxStyle;
 }
 
-void ElaMultiSelectComboBox::setCurrentSelection(QString selection)
+void ElaMultiSelectComboBox::setCurrentSelection(const QString& selection)
 {
     Q_D(ElaMultiSelectComboBox);
     d->_itemSelection.fill(false);
@@ -92,7 +98,7 @@ void ElaMultiSelectComboBox::setCurrentSelection(QString selection)
     d->_refreshCurrentIndexs();
 }
 
-void ElaMultiSelectComboBox::setCurrentSelection(QStringList selection)
+void ElaMultiSelectComboBox::setCurrentSelection(const QStringList& selection)
 {
     Q_D(ElaMultiSelectComboBox);
     d->_comboView->selectionModel()->clearSelection();
@@ -124,12 +130,12 @@ void ElaMultiSelectComboBox::setCurrentSelection(int index)
     d->_refreshCurrentIndexs();
 }
 
-void ElaMultiSelectComboBox::setCurrentSelection(QList<int> selectionIndex)
+void ElaMultiSelectComboBox::setCurrentSelection(const QList<int>& selectionIndex)
 {
     Q_D(ElaMultiSelectComboBox);
     d->_itemSelection.fill(false);
     d->_comboView->selectionModel()->clearSelection();
-    for (auto index : selectionIndex)
+    for (auto index: selectionIndex)
     {
         if (index >= this->count() || index < 0)
         {
@@ -142,7 +148,7 @@ void ElaMultiSelectComboBox::setCurrentSelection(QList<int> selectionIndex)
     d->_refreshCurrentIndexs();
 }
 
-QStringList ElaMultiSelectComboBox::getCurrentSelection() const
+const QStringList& ElaMultiSelectComboBox::getCurrentSelection() const
 {
     return d_ptr->_selectedTextList;
 }
@@ -187,7 +193,7 @@ void ElaMultiSelectComboBox::paintEvent(QPaintEvent* e)
     if (count() > 0)
     {
         QFont iconFont = QFont("ElaAwesome");
-        iconFont.setPixelSize(17);
+        iconFont.setPixelSize(eApp->getFontPixelSize() + 4);
         painter.setFont(iconFont);
         painter.setPen(isEnabled() ? ElaThemeColor(d->_themeMode, BasicText) : ElaThemeColor(d->_themeMode, BasicTextDisable));
         QRectF expandIconRect(width() - 25, 0, 20, height());
@@ -305,7 +311,9 @@ void ElaMultiSelectComboBox::hidePopup()
                     container->setFixedHeight(containerHeight);
                 });
                 QPoint viewPos = view()->pos();
-                connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() { view()->move(viewPos); });
+                connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() {
+                    view()->move(viewPos);
+                });
                 viewPosAnimation->setStartValue(viewPos);
                 viewPosAnimation->setEndValue(QPoint(viewPos.x(), viewPos.y() - view()->height()));
                 viewPosAnimation->setEasingCurve(QEasingCurve::InCubic);

@@ -23,31 +23,47 @@ ElaWindowPrivate::~ElaWindowPrivate()
 
 void ElaWindowPrivate::onNavigationButtonClicked()
 {
-    if (_isWMClickedAnimationFinished)
+    if (_isNavigationBarFloat)
+    {
+        return;
+    }
+    auto currentDisplayMode = _navigationBar->getDisplayMode();
+    if (currentDisplayMode == ElaNavigationType::Minimal)
     {
         _isNavigationDisplayModeChanged = false;
         _resetWindowLayout(true);
         _navigationBar->setIsTransparent(false);
         _navigationBar->setDisplayMode(ElaNavigationType::Maximal, false);
         _navigationBar->move(-_navigationBar->width(), _navigationBar->pos().y());
-        _navigationBar->resize(_navigationBar->width(), _centerStackedWidget->height() + 1);
+        _navigationBar->resize(_navigationBar->width(), _navigationCenterStackedWidget->height() + 1);
         QPropertyAnimation* navigationMoveAnimation = new QPropertyAnimation(_navigationBar, "pos");
         connect(navigationMoveAnimation, &QPropertyAnimation::finished, this, [=]() {
             _isNavigationBarExpanded = true;
         });
-        navigationMoveAnimation->setEasingCurve(QEasingCurve::InOutSine);
-        navigationMoveAnimation->setDuration(300);
+        navigationMoveAnimation->setEasingCurve(QEasingCurve::OutCubic);
+        navigationMoveAnimation->setDuration(225);
         navigationMoveAnimation->setStartValue(_navigationBar->pos());
         navigationMoveAnimation->setEndValue(QPoint(0, 0));
         navigationMoveAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-        _isWMClickedAnimationFinished = false;
+        _isNavigationBarFloat = true;
+    }
+    else
+    {
+        if (currentDisplayMode == ElaNavigationType::Compact)
+        {
+            _navigationBar->setDisplayMode(ElaNavigationType::Maximal);
+        }
+        else
+        {
+            _navigationBar->setDisplayMode(ElaNavigationType::Compact);
+        }
     }
 }
 
-void ElaWindowPrivate::onWMWindowClickedEvent(QVariantMap data)
+void ElaWindowPrivate::onWMWindowClickedEvent(const QVariantMap& data)
 {
     ElaAppBarType::WMMouseActionType actionType = data.value("WMClickType").value<ElaAppBarType::WMMouseActionType>();
-    if (actionType == ElaAppBarType::WMLBUTTONDBLCLK || actionType == ElaAppBarType::WMLBUTTONUP || actionType == ElaAppBarType::WMNCLBUTTONDOWN)
+    if (actionType == ElaAppBarType::WMLBUTTONDBLCLK || actionType == ElaAppBarType::WMLBUTTONUP)
     {
         if (ElaApplication::containsCursorToItem(_navigationBar))
         {
@@ -59,7 +75,7 @@ void ElaWindowPrivate::onWMWindowClickedEvent(QVariantMap data)
             connect(navigationMoveAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
                 if (_isNavigationDisplayModeChanged)
                 {
-                    _isWMClickedAnimationFinished = true;
+                    _isNavigationBarFloat = false;
                     _resetWindowLayout(false);
                     navigationMoveAnimation->deleteLater();
                 }
@@ -70,10 +86,10 @@ void ElaWindowPrivate::onWMWindowClickedEvent(QVariantMap data)
                     _navigationBar->setDisplayMode(ElaNavigationType::Minimal, false);
                     _resetWindowLayout(false);
                 }
-                _isWMClickedAnimationFinished = true;
+                _isNavigationBarFloat = false;
             });
-            navigationMoveAnimation->setEasingCurve(QEasingCurve::InOutSine);
-            navigationMoveAnimation->setDuration(300);
+            navigationMoveAnimation->setEasingCurve(QEasingCurve::OutCubic);
+            navigationMoveAnimation->setDuration(225);
             navigationMoveAnimation->setStartValue(_navigationBar->pos());
             navigationMoveAnimation->setEndValue(QPoint(-_navigationBar->width(), 0));
             navigationMoveAnimation->start(QAbstractAnimation::DeleteWhenStopped);
@@ -103,7 +119,7 @@ void ElaWindowPrivate::onThemeReadyChange()
             _animationWidget->move(0, 0);
             _animationWidget->setOldWindowBackground(q->grab(q->rect()).toImage());
             eTheme->setThemeMode(ElaTheme::nextThemeMode(eTheme->getThemeMode()));
-            _animationWidget->setNewWindowBackground(q->grab(q->rect()).toImage());
+
             _animationWidget->setCenter(centerPos);
             qreal topLeftDis = _distance(centerPos, QPoint(0, 0));
             qreal topRightDis = _distance(centerPos, QPoint(q->width(), 0));
@@ -114,7 +130,6 @@ void ElaWindowPrivate::onThemeReadyChange()
             _animationWidget->setEndRadius(disList[3]);
             _animationWidget->resize(q->width(), q->height());
             _animationWidget->startAnimation(_pThemeChangeTime);
-            _animationWidget->show();
         }
         break;
     }
@@ -126,59 +141,34 @@ void ElaWindowPrivate::onThemeReadyChange()
     }
 }
 
-void ElaWindowPrivate::onDisplayModeChanged()
-{
-    _currentNavigationBarDisplayMode = _pNavigationBarDisplayMode;
-    switch (_pNavigationBarDisplayMode)
-    {
-    case ElaNavigationType::Auto:
-    {
-        _appBar->setWindowButtonFlag(ElaAppBarType::NavigationButtonHint, false);
-        _doNavigationDisplayModeChange();
-        break;
-    }
-    case ElaNavigationType::Minimal:
-    {
-        _navigationBar->setDisplayMode(ElaNavigationType::Minimal, true);
-        _appBar->setWindowButtonFlag(ElaAppBarType::NavigationButtonHint);
-        break;
-    }
-    case ElaNavigationType::Compact:
-    {
-        _navigationBar->setDisplayMode(ElaNavigationType::Compact, true);
-        _appBar->setWindowButtonFlag(ElaAppBarType::NavigationButtonHint, false);
-        break;
-    }
-    case ElaNavigationType::Maximal:
-    {
-        _navigationBar->setDisplayMode(ElaNavigationType::Maximal, true);
-        _appBar->setWindowButtonFlag(ElaAppBarType::NavigationButtonHint, false);
-        break;
-    }
-    }
-}
-
 void ElaWindowPrivate::onThemeModeChanged(ElaThemeType::ThemeMode themeMode)
 {
     Q_Q(ElaWindow);
     _themeMode = themeMode;
-    switch (eApp->getWindowDisplayMode())
+    if (_pWindowPaintMode == ElaWindowType::PaintMode::Movie)
     {
-    case ElaApplicationType::Normal:
-    case ElaApplicationType::ElaMica:
-    {
-        QPalette palette = q->palette();
-        palette.setBrush(QPalette::Window, ElaThemeColor(_themeMode, WindowBase));
-        q->setPalette(palette);
-        break;
+        if (_windowPaintMovie->state() == QMovie::Running)
+        {
+            _windowPaintMovie->stop();
+        }
+        _windowPaintMovie->setFileName(_themeMode == ElaThemeType::Light ? _lightWindowMoviePath : _darkWindowMoviePath);
+        _windowPaintMovie->start();
     }
-    default:
+    q->update();
+}
+
+void ElaWindowPrivate::onWindowDisplayModeChanged()
+{
+    Q_Q(ElaWindow);
+    _windowDisplayMode = eApp->getWindowDisplayMode();
+    if (_windowPaintMovie->state() == QMovie::Running)
     {
-        QPalette palette = q->palette();
-        palette.setBrush(QPalette::Window, Qt::transparent);
-        q->setPalette(palette);
-        break;
+        _windowPaintMovie->stop();
     }
+    if (_windowDisplayMode == ElaApplicationType::WindowDisplayMode::Normal && _pWindowPaintMode == ElaWindowType::Movie)
+    {
+        _windowPaintMovie->setFileName(_themeMode == ElaThemeType::Light ? _lightWindowMoviePath : _darkWindowMoviePath);
+        _windowPaintMovie->start();
     }
     q->update();
 }
@@ -191,29 +181,25 @@ void ElaWindowPrivate::onNavigationNodeClicked(ElaNavigationType::NavigationNode
         // 页脚没有绑定页面
         return;
     }
-    int nodeIndex = _centerStackedWidget->indexOf(page);
-    if (_navigationTargetIndex == nodeIndex || _centerStackedWidget->count() <= nodeIndex)
+    int nodeIndex = _navigationCenterStackedWidget->getContainerStackedWidget()->indexOf(page);
+    if (_navigationTargetIndex == nodeIndex || _navigationCenterStackedWidget->getContainerStackedWidget()->count() <= nodeIndex)
     {
         return;
     }
     _navigationTargetIndex = nodeIndex;
-    _centerStackedWidget->doWindowStackSwitch(_pStackSwitchMode, nodeIndex, isRouteBack);
+    _navigationCenterStackedWidget->doWindowStackSwitch(_pStackSwitchMode, nodeIndex, isRouteBack);
 }
 
 void ElaWindowPrivate::onNavigationNodeAdded(ElaNavigationType::NavigationNodeType nodeType, QString nodeKey, QWidget* page)
 {
-    if (nodeType == ElaNavigationType::PageNode)
+    if (nodeType == ElaNavigationType::CategoryNode)
     {
-        _routeMap.insert(nodeKey, page);
-        _centerStackedWidget->addWidget(page);
+        return;
     }
-    else
+    _routeMap.insert(nodeKey, page);
+    if (page)
     {
-        _routeMap.insert(nodeKey, page);
-        if (page)
-        {
-            _centerStackedWidget->addWidget(page);
-        }
+        _navigationCenterStackedWidget->getContainerStackedWidget()->addWidget(page);
     }
 }
 
@@ -226,11 +212,43 @@ void ElaWindowPrivate::onNavigationNodeRemoved(ElaNavigationType::NavigationNode
     }
     QWidget* page = _routeMap.value(nodeKey);
     _routeMap.remove(nodeKey);
-    _centerStackedWidget->removeWidget(page);
-    QWidget* currentWidget = _centerStackedWidget->currentWidget();
+    _pageMetaMap.remove(nodeKey);
+    _navigationCenterStackedWidget->getContainerStackedWidget()->removeWidget(page);
+    QWidget* currentWidget = _navigationCenterStackedWidget->getContainerStackedWidget()->currentWidget();
     if (currentWidget)
     {
         q->navigation(currentWidget->property("ElaPageKey").toString());
+    }
+}
+
+void ElaWindowPrivate::onNavigationRouterStateChanged(const QString& domainName, ElaActionCommanderType::CommanderState state)
+{
+    if (domainName != "ElaWidgetToolsAction")
+    {
+        return;
+    }
+    switch (state)
+    {
+    case ElaActionCommanderType::UndoValid:
+    {
+        _appBar->setRouteBackButtonEnable(true);
+        break;
+    }
+    case ElaActionCommanderType::UndoInvalid:
+    {
+        _appBar->setRouteBackButtonEnable(false);
+        break;
+    }
+    case ElaActionCommanderType::RedoValid:
+    {
+        _appBar->setRouteForwardButtonEnable(true);
+        break;
+    }
+    case ElaActionCommanderType::RedoInvalid:
+    {
+        _appBar->setRouteForwardButtonEnable(false);
+        break;
+    }
     }
 }
 
@@ -255,7 +273,7 @@ void ElaWindowPrivate::_resetWindowLayout(bool isAnimation)
             _navigationBar->setIsTransparent(true);
             _navigationBar->setDisplayMode(ElaNavigationType::Minimal, false);
             _centerLayout->addWidget(_navigationBar);
-            _centerLayout->addWidget(_centerStackedWidget);
+            _centerLayout->addWidget(_navigationCenterStackedWidget);
         }
     }
 }
@@ -263,7 +281,7 @@ void ElaWindowPrivate::_resetWindowLayout(bool isAnimation)
 void ElaWindowPrivate::_doNavigationDisplayModeChange()
 {
     Q_Q(ElaWindow);
-    if (_isWindowClosing || !_isNavigationEnable || !_isInitFinished)
+    if (!_isNavigationEnable || !_isInitFinished)
     {
         return;
     }
@@ -274,20 +292,18 @@ void ElaWindowPrivate::_doNavigationDisplayModeChange()
     if (_pNavigationBarDisplayMode == ElaNavigationType::Auto)
     {
         _isNavigationDisplayModeChanged = true;
-        _isWMClickedAnimationFinished = true;
+        _isNavigationBarFloat = false;
         _resetWindowLayout(false);
         int width = q->centralWidget()->width();
         if (width >= 850 && _currentNavigationBarDisplayMode != ElaNavigationType::Maximal)
         {
             _navigationBar->setDisplayMode(ElaNavigationType::Maximal);
             _currentNavigationBarDisplayMode = ElaNavigationType::Maximal;
-            _appBar->setWindowButtonFlag(ElaAppBarType::NavigationButtonHint, false);
         }
         else if (width >= 550 && width < 850 && _currentNavigationBarDisplayMode != ElaNavigationType::Compact)
         {
             _navigationBar->setDisplayMode(ElaNavigationType::Compact);
             _currentNavigationBarDisplayMode = ElaNavigationType::Compact;
-            _appBar->setWindowButtonFlag(ElaAppBarType::NavigationButtonHint, false);
         }
         else if (width < 550 && _currentNavigationBarDisplayMode != ElaNavigationType::Minimal)
         {

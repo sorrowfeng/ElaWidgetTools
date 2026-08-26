@@ -1,15 +1,15 @@
-#ifndef ELACONTENTDIALOGPRIVATE_H
-#define ELACONTENTDIALOGPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACONTENTDIALOGPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACONTENTDIALOGPRIVATE_H_
 
 #include <QObject>
 
-#include "Def.h"
-#include "stdafx.h"
+#include "ElaWidgetToolsDef.h"
 class QVBoxLayout;
 class ElaPushButton;
 class ElaContentDialog;
 class ElaMaskWidget;
 class ElaText;
+class ElaAppBar;
 class ElaContentDialogPrivate : public QObject
 {
     Q_OBJECT
@@ -20,6 +20,7 @@ public:
 
 private:
     qint64 _currentWinID{0};
+    ElaAppBar* _appBar{nullptr};
     ElaThemeType::ThemeMode _themeMode;
     ElaMaskWidget* _maskWidget{nullptr};
     QWidget* _centralWidget{nullptr};
@@ -31,9 +32,11 @@ private:
     ElaPushButton* _leftButton{nullptr};
     ElaPushButton* _middleButton{nullptr};
     ElaPushButton* _rightButton{nullptr};
-	ElaText* _title{ nullptr };
-	ElaText* _subTitle{ nullptr };
+    ElaText* _title{nullptr};
+    ElaText* _subTitle{nullptr};
     void _doCloseAnimation(bool isAccept);
+    void _moveToCenter();
 };
 
-#endif // ELACONTENTDIALOGPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACONTENTDIALOGPRIVATE_H_
+

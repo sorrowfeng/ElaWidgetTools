@@ -1,8 +1,9 @@
-#ifndef ELATOOLBARPRIVATE_H
-#define ELATOOLBARPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOOLBARPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOOLBARPRIVATE_H_
 #include <QObject>
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
+class ElaToolBarStyle;
 class ElaToolBar;
 class ElaToolBarPrivate : public QObject
 {
@@ -10,11 +11,13 @@ class ElaToolBarPrivate : public QObject
     Q_D_CREATE(ElaToolBar)
 public:
     explicit ElaToolBarPrivate(QObject* parent = nullptr);
-    ~ElaToolBarPrivate();
+    ~ElaToolBarPrivate() override;
 
 private:
+    ElaToolBarStyle* _toolBarStyle{nullptr};
     ElaThemeType::ThemeMode _themeMode;
     int _shadowBorderWidth{6};
 };
 
-#endif // ELATOOLBARPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOOLBARPRIVATE_H_
+

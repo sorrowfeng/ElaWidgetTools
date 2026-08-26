@@ -1,8 +1,5 @@
 #include "ElaColorDialogPrivate.h"
 
-#include <QPainter>
-#include <QSlider>
-
 #include "ElaBaseListView.h"
 #include "ElaColorDialog.h"
 #include "ElaColorDisplayModel.h"
@@ -12,6 +9,9 @@
 #include "ElaIntValidator.h"
 #include "ElaLineEdit.h"
 #include "ElaText.h"
+#include <QPainter>
+#include <QSlider>
+#include <QtMath>
 ElaColorDialogPrivate::ElaColorDialogPrivate(QObject* parent)
     : QObject{parent}
 {
@@ -21,11 +21,11 @@ ElaColorDialogPrivate::~ElaColorDialogPrivate()
 {
 }
 
-void ElaColorDialogPrivate::onColorPickerColorChanged(QColor selectedColor)
+void ElaColorDialogPrivate::onColorPickerColorChanged(const QColor& selectedColor)
 {
     Q_Q(ElaColorDialog);
     QColor valueColor = selectedColor.toHsv();
-    valueColor.setHsv(valueColor.hue(), valueColor.saturation(), _colorValueSlider->value());
+    valueColor.setHsvF(valueColor.hueF(), valueColor.saturationF(), _colorValueSlider->value() / 255.0);
     _pCurrentColor = valueColor;
     _updateHtmlEditValue();
     _updateEditValue();
@@ -37,8 +37,8 @@ void ElaColorDialogPrivate::onColorPickerColorChanged(QColor selectedColor)
 void ElaColorDialogPrivate::onColorValueSliderChanged(int value)
 {
     Q_Q(ElaColorDialog);
-    QColor baseColor = _pCurrentColor.toHsv();
-    baseColor.setHsv(baseColor.hue(), baseColor.saturation(), _colorValueSlider->value());
+    QColor baseColor = _pCurrentColor;
+    baseColor.setHsvF(baseColor.hueF(), baseColor.saturationF(), _colorValueSlider->value() / 255.0);
     q->setCurrentColor(baseColor);
 }
 
@@ -61,7 +61,7 @@ void ElaColorDialogPrivate::onColorModeChanged(int index)
     _updateEditValue();
 }
 
-void ElaColorDialogPrivate::onHtmlEditFocusOut(QString text)
+void ElaColorDialogPrivate::onHtmlEditFocusOut(const QString& text)
 {
     // 自动补全
     if (text == "#")
@@ -234,15 +234,16 @@ void ElaColorDialogPrivate::_updateColorValueSlider()
     _colorValueSlider->update();
 }
 
-QString ElaColorDialogPrivate::_completeColorText(QString text) const
+QString ElaColorDialogPrivate::_completeColorText(const QString& text) const
 {
-    text.remove("#");
-    while (text.length() < 6)
+    auto tempText = text;
+    tempText.remove("#");
+    while (tempText.length() < 6)
     {
-        text.prepend("0");
+        tempText.prepend("0");
     }
-    text.prepend("#");
-    return text;
+    tempText.prepend("#");
+    return tempText;
 }
 
 QString ElaColorDialogPrivate::_getHexRgbValue() const

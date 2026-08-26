@@ -1,9 +1,9 @@
-#ifndef ELASPINBOXPRIVATE_H
-#define ELASPINBOXPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELASPINBOXPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELASPINBOXPRIVATE_H_
 
 #include <QObject>
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 
 class ElaMenu;
 class ElaSpinBox;
@@ -22,7 +22,7 @@ private:
     ElaSpinBoxStyle* _style{nullptr};
     ElaThemeType::ThemeMode _themeMode;
     ElaMenu* _createStandardContextMenu();
-    void _changeTheme();
 };
 
-#endif // ELASPINBOXPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELASPINBOXPRIVATE_H_
+

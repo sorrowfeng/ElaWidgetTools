@@ -205,13 +205,12 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     spinButtonGroup->addButton(sideButton, 2);
     spinButtonGroup->addButton(pmSideButton, 3);
     spinButtonGroup->addButton(noButtonsButton, 4);
-    connect(spinButtonGroup, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled), this, [=](QAbstractButton* button, bool isToggled)
-            {
+    connect(spinButtonGroup, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled), this, [=](QAbstractButton* button, bool isToggled) {
         if (isToggled)
         {
-            auto mode = (ElaSpinBoxType::ButtonMode)spinButtonGroup->id(button);
-            _spinBox->setButtonMode(mode);
-        } });
+            _spinBox->setButtonMode((ElaSpinBoxType::ButtonMode)spinButtonGroup->id(button));
+        }
+    });
 
     _slider = new ElaSlider(this);
     ElaScrollPageArea* sliderArea = new ElaScrollPageArea(this);

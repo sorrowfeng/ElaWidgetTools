@@ -8,11 +8,11 @@
 #include <QVBoxLayout>
 
 #include "ElaAcrylicUrlCard.h"
+#include "ElaActionCommander.h"
 #include "ElaFlowLayout.h"
 #include "ElaImageCard.h"
 #include "ElaMenu.h"
 #include "ElaMessageBar.h"
-#include "ElaNavigationRouter.h"
 #include "ElaPopularCard.h"
 #include "ElaScrollArea.h"
 #include "ElaText.h"
@@ -32,14 +32,13 @@ T_Home::T_Home(QWidget* parent)
     titleText->setTextPixelSize(35);
 
     QVBoxLayout* titleLayout = new QVBoxLayout();
-    titleLayout->setContentsMargins(30, 60, 0, 0);
+    titleLayout->setContentsMargins(30, 10, 0, 0);
     titleLayout->addWidget(desText);
     titleLayout->addWidget(titleText);
 
     ElaImageCard* backgroundCard = new ElaImageCard(this);
     backgroundCard->setBorderRadius(10);
-    backgroundCard->setFixedHeight(400);
-    backgroundCard->setMaximumAspectRatio(1.7);
+    backgroundCard->setFixedHeight(340);
     backgroundCard->setCardImage(QImage(":/Resource/Image/Home_Background.png"));
 
     ElaAcrylicUrlCard* urlCard1 = new ElaAcrylicUrlCard(this);
@@ -63,7 +62,7 @@ T_Home::T_Home(QWidget* parent)
     urlCard2->setUrl("https://space.bilibili.com/21256707");
     urlCard2->setCardPixmap(QPixmap(":/Resource/Image/Moon.jpg"));
     urlCard2->setTitle("ElaWidgetTool");
-    urlCard2->setSubTitle("3056769574@qq.com");
+    urlCard2->setSubTitle("80985@qq.com");
 
     ElaScrollArea* cardScrollArea = new ElaScrollArea(this);
     cardScrollArea->setWidgetResizable(true);
@@ -200,7 +199,7 @@ T_Home::T_Home(QWidget* parent)
     _homeMenu->addElaIconAction(ElaIconType::ArrowRotateRight, "刷新");
     QAction* action = _homeMenu->addElaIconAction(ElaIconType::ArrowRotateLeft, "撤销");
     connect(action, &QAction::triggered, this, [=]() {
-        ElaNavigationRouter::getInstance()->navigationRouteBack();
+        ElaActionCommander::getInstance()->undoCommand("ElaWidgetToolsAction");
     });
 
     _homeMenu->addElaIconAction(ElaIconType::Copy, "复制");

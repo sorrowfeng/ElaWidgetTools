@@ -1,33 +1,49 @@
-#ifndef ELATABWIDGETPRIVATE_H
-#define ELATABWIDGETPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATABWIDGETPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATABWIDGETPRIVATE_H_
 
+#include "ElaPropertyMacro.h"
+#include "ElaSingletonMacro.h"
+#include "ElaWidgetToolsExport.h"
 #include <QDrag>
 #include <QObject>
 #include <QPixmap>
+class ElaDragMonitor : public QObject
+{
+    Q_OBJECT
+    Q_PRIVATE_CREATE(bool, IsInDrag)
+    Q_SINGLETON_CREATE(ElaDragMonitor)
+private:
+    explicit ElaDragMonitor(QObject* parent = nullptr);
+    ~ElaDragMonitor() override;
+};
 
-#include "stdafx.h"
 class ElaTabWidget;
 class ElaTabBar;
 class ElaTabWidgetPrivate : public QObject
 {
     Q_OBJECT
     Q_D_CREATE(ElaTabWidget)
+    Q_PROPERTY_CREATE_D(bool, IsTabTransparent)
+    Q_PROPERTY_CREATE_D(bool, IsContainerAcceptDrops);
+    Q_PROPERTY_CREATE_D(QSize, TabSize)
+    Q_PROPERTY_CREATE_D(QSize, FloatWidgetSize)
 public:
     explicit ElaTabWidgetPrivate(QObject* parent = nullptr);
-    ~ElaTabWidgetPrivate();
-    Q_SLOT void onTabBarPress(int index);
-    Q_SLOT void onTabDragCreate(QDrag* drag);
-    Q_SLOT void onTabDragDrop(const QMimeData* mimeData);
+    ~ElaTabWidgetPrivate() override;
+    Q_SLOT void onTabDragCreate(QMimeData* mimeData);
+    Q_SLOT void onTabDragEnter(QMimeData* mimeData);
+    Q_SLOT void onTabDragLeave(QMimeData* mimeData);
+    Q_SLOT void onTabDragDrop(QMimeData* mimeData);
     Q_SLOT void onTabCloseRequested(int index);
 
 private:
+    friend class ElaCustomTabWidget;
     ElaTabBar* _tabBar{nullptr};
     ElaTabBar* _customTabBar{nullptr};
-
+    QList<QWidget*> _allTabWidgetList;
     QMetaObject::Connection _tabDragCreateConnection;
-    QMetaObject::Connection _tabDragDropConnection;
-    bool _isTabDragCreateEnabled = true;
-    bool _isTabDragDropEnabled = true;
+    bool _isTabDragCreateEnabled{true};
+    void _clearAllTabWidgetList();
 };
 
-#endif // ELATABWIDGETPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATABWIDGETPRIVATE_H_

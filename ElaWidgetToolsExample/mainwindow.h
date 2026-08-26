@@ -8,7 +8,6 @@ class T_Home;
 class T_Icon;
 class T_ElaScreen;
 class T_BaseComponents;
-class T_Graphics;
 class T_Navigation;
 class T_Popup;
 class T_Card;
@@ -24,22 +23,25 @@ class MainWindow : public ElaWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(QWidget* parent = nullptr);
+    ~MainWindow() override;
 
     void initWindow();
     void initEdgeLayout();
     void initContent();
 
+protected:
+    virtual void mouseReleaseEvent(QMouseEvent* event);
+
 private:
     ElaContentDialog* _closeDialog{nullptr};
+    ElaSuggestBox* _windowSuggestBox{nullptr};
     T_Home* _homePage{nullptr};
 #ifdef Q_OS_WIN
     T_ElaScreen* _elaScreenPage{nullptr};
 #endif
     T_Icon* _iconPage{nullptr};
     T_BaseComponents* _baseComponentsPage{nullptr};
-    T_Graphics* _graphicsPage{nullptr};
     T_Navigation* _navigationPage{nullptr};
     T_Popup* _popupPage{nullptr};
     T_Card* _cardPage{nullptr};

@@ -14,6 +14,7 @@ ElaApplication::ElaApplication(QObject* parent)
 {
     Q_D(ElaApplication);
     d->q_ptr = this;
+    d->_pFontPixelSize = 13;
     d->_pElaMicaImagePath = ":/include/Image/MicaBase.png";
     d->_pWindowDisplayMode = ElaApplicationType::Normal;
     d->_themeMode = eTheme->getThemeMode();
@@ -31,6 +32,10 @@ void ElaApplication::setWindowDisplayMode(ElaApplicationType::WindowDisplayMode 
     if (lastDisplayMode == windowDisplayType)
     {
         return;
+    }
+    if (lastDisplayMode == ElaApplicationType::ElaMica)
+    {
+        d->_resetAllMicaWidget();
     }
     switch (windowDisplayType)
     {
@@ -69,32 +74,52 @@ ElaApplicationType::WindowDisplayMode ElaApplication::getWindowDisplayMode() con
     return d->_pWindowDisplayMode;
 }
 
-void ElaApplication::setElaMicaImagePath(QString micaImagePath)
+void ElaApplication::setElaMicaImagePath(const QString& micaImagePath)
 {
     Q_D(ElaApplication);
-    d->_pElaMicaImagePath = std::move(micaImagePath);
+    d->_pElaMicaImagePath = micaImagePath;
     d->_initMicaBaseImage(QImage(d->_pElaMicaImagePath));
     Q_EMIT pElaMicaImagePathChanged();
 }
 
-QString ElaApplication::getElaMicaImagePath() const
+const QString& ElaApplication::getElaMicaImagePath() const
 {
     Q_D(const ElaApplication);
     return d->_pElaMicaImagePath;
 }
 
+void ElaApplication::setFontPixelSize(int fontPixelSize)
+{
+    Q_D(ElaApplication);
+    d->_pFontPixelSize = fontPixelSize;
+    QFont font = qApp->font();
+    font.setPixelSize(fontPixelSize);
+    qApp->setFont(font);
+    Q_EMIT pFontPixelSizeChanged();
+}
+
+int ElaApplication::getFontPixelSize() const
+{
+    Q_D(const ElaApplication);
+    return d->_pFontPixelSize;
+}
+
 void ElaApplication::init()
 {
+    Q_D(ElaApplication);
     Q_INIT_RESOURCE(ElaWidgetTools);
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
     QFontDatabase::addApplicationFont(":/include/Font/ElaAwesome.ttf");
     //默认字体
     QFont font = qApp->font();
-    font.setPixelSize(13);
+    font.setPixelSize(d->_pFontPixelSize);
     // 按优先级提供跨平台字体回退：Windows / Linux / 通用
     font.setFamilies({"Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "sans-serif"});
     font.setHintingPreference(QFont::PreferNoHinting);
     qApp->setFont(font);
+#ifdef Q_OS_WIN
+    eWinHelper->initWinAPI();
+#endif
 }
 
 void ElaApplication::syncWindowDisplayMode(QWidget* widget, bool isSync)
@@ -126,9 +151,6 @@ void ElaApplication::syncWindowDisplayMode(QWidget* widget, bool isSync)
                 d->_updateMica(widget, false);
             }
         }
-        else
-        {
-        }
         break;
     }
     default:
@@ -156,9 +178,8 @@ bool ElaApplication::containsCursorToItem(QWidget* item)
     {
         return false;
     }
-    auto point = item->window()->mapFromGlobal(QCursor::pos());
-    QRectF rect = QRectF(item->mapTo(item->window(), QPoint(0, 0)), item->size());
-    if (rect.contains(point))
+    auto itemRect = QRect(item->mapToGlobal(QPoint(0, 0)), item->size());
+    if (itemRect.contains(QCursor::pos()))
     {
         return true;
     }

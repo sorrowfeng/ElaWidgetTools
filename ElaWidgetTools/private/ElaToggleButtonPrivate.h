@@ -1,10 +1,9 @@
-#ifndef ELATOGGLEBUTTONPRIVATE_H
-#define ELATOGGLEBUTTONPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOGGLEBUTTONPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOGGLEBUTTONPRIVATE_H_
 
 #include <QObject>
 
-#include "Def.h"
-#include "stdafx.h"
+#include "ElaWidgetToolsDef.h"
 class ElaToggleButton;
 class ElaToggleButtonPrivate : public QObject
 {
@@ -24,4 +23,5 @@ private:
     ElaThemeType::ThemeMode _themeMode;
 };
 
-#endif // ELATOGGLEBUTTONPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELATOGGLEBUTTONPRIVATE_H_
+

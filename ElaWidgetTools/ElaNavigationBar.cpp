@@ -47,65 +47,20 @@ ElaNavigationBar::ElaNavigationBar(QWidget* parent)
     d->_userButton->setBorderRadius(8);
     d->_userButtonLayout = new QVBoxLayout();
     d->_userButtonLayout->setAlignment(Qt::AlignLeft);
-    d->_userButtonLayout->setContentsMargins(0, 0, 0, 6);
+    d->_userButtonLayout->setContentsMargins(0, 0, 0, 0);
     d->_userButtonLayout->setSpacing(0);
     d->_userButtonLayout->addWidget(d->_userButton);
 
     connect(d->_userButton, &ElaIconButton::clicked, this, &ElaNavigationBar::userInfoCardClicked);
-    QHBoxLayout* userCardLayout = new QHBoxLayout();
-    userCardLayout->setContentsMargins(0, 0, 0, 0);
-    userCardLayout->addSpacing(3);
-    userCardLayout->addLayout(d->_userButtonLayout);
-    userCardLayout->addWidget(d->_userCard);
-
-    // 搜索栏和按钮组
-    d->_navigationButton = new ElaToolButton(this);
-    d->_navigationButton->setFixedSize(40, 38);
-    d->_navigationButton->setElaIcon(ElaIconType::Bars);
-    d->_navigationButton->setBorderRadius(8);
-    connect(d->_navigationButton, &ElaToolButton::clicked, d, &ElaNavigationBarPrivate::onNavigationButtonClicked);
-
-    d->_searchButton = new ElaToolButton(this);
-    d->_searchButton->setFixedSize(40, 38);
-    d->_searchButton->setElaIcon(ElaIconType::MagnifyingGlass);
-    d->_searchButton->setBorderRadius(8);
-    connect(d->_searchButton, &ElaToolButton::clicked, d, &ElaNavigationBarPrivate::onNavigationButtonClicked);
-    d->_searchButton->setVisible(false);
-
-    d->_navigationSuggestBox = new ElaSuggestBox(this);
-    d->_navigationSuggestBox->setMinimumWidth(0);
-    d->_navigationButtonLayout = new QVBoxLayout();
-    d->_navigationButtonLayout->setContentsMargins(0, 0, 0, 0);
-    d->_navigationButtonLayout->setSpacing(0);
-    d->_navigationButtonLayout->addWidget(d->_navigationButton);
-    d->_navigationButtonLayout->addWidget(d->_searchButton);
-
-    d->_navigationSuggestLayout = new QHBoxLayout();
-    d->_navigationSuggestLayout->setContentsMargins(0, 0, 10, 0);
-    d->_navigationSuggestLayout->setSpacing(6);
-    d->_navigationSuggestLayout->addLayout(d->_navigationButtonLayout);
-    d->_navigationSuggestLayout->addWidget(d->_navigationSuggestBox);
+    d->_userCardLayout = new QVBoxLayout();
+    d->_userCardLayout->setContentsMargins(3, 10, 0, 5);
+    d->_userCardLayout->addLayout(d->_userButtonLayout);
+    d->_userCardLayout->addWidget(d->_userCard);
 
     // 搜索跳转
-    connect(d->_navigationSuggestBox, &ElaSuggestBox::suggestionClicked, this, [=](QString suggestText, QVariantMap suggestData) {
-        ElaNavigationNode* node = nullptr;
-        if (suggestData.value("ElaNodeType").toString() == "Stacked")
-        {
-            node = d->_navigationModel->getNavigationNode(suggestData.value("ElaPageKey").toString());
-            if (node)
-            {
-                d->onTreeViewClicked(node->getModelIndex());
-            }
-        }
-        else
-        {
-            node = d->_footerModel->getNavigationNode(suggestData.value("ElaPageKey").toString());
-            if (node)
-            {
-                d->onFooterViewClicked(node->getModelIndex());
-            }
-        }
-    });
+    //    connect(d->_navigationSuggestBox, &ElaSuggestBox::suggestionClicked, this, [=](QString suggestText, QVariantMap suggestData) {
+    //        navigation(suggestData.value("ElaPageKey").toString());
+    //    });
 
     // 导航模型
     d->_navigationModel = new ElaNavigationModel(this);
@@ -142,13 +97,10 @@ ElaNavigationBar::ElaNavigationBar(QWidget* parent)
     });
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setAlignment(Qt::AlignLeft);
     mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0, 10, 5, 0);
-    mainLayout->addLayout(userCardLayout);
-    mainLayout->addSpacing(4);
-    mainLayout->addLayout(d->_navigationSuggestLayout);
-    mainLayout->addSpacing(4);
+    mainLayout->addLayout(d->_userCardLayout);
     mainLayout->addWidget(d->_navigationView);
     mainLayout->addWidget(d->_footerView);
 
@@ -188,57 +140,68 @@ void ElaNavigationBar::setUserInfoCardVisible(bool isVisible)
 {
     Q_D(ElaNavigationBar);
     d->_isShowUserCard = isVisible;
-    d->_userCard->setVisible(isVisible);
-    if (!isVisible)
+    if (d->_currentDisplayMode == ElaNavigationType::NavigationDisplayMode::Compact)
     {
-        d->_userButton->setVisible(false);
+        d->_userButton->setVisible(isVisible);
+    }
+    else
+    {
+        d->_userCard->setVisible(isVisible);
+    }
+    if (isVisible)
+    {
+        d->_userCardLayout->setContentsMargins(3, 10, 5, 5);
+    }
+    else
+    {
+        d->_userCardLayout->setContentsMargins(0, 0, 0, 0);
     }
 }
 
-void ElaNavigationBar::setUserInfoCardPixmap(QPixmap pix)
+void ElaNavigationBar::setUserInfoCardPixmap(const QPixmap& pix)
 {
     Q_D(ElaNavigationBar);
     d->_userCard->setCardPixmap(pix);
     d->_userButton->setPixmap(pix);
 }
 
-void ElaNavigationBar::setUserInfoCardTitle(QString title)
+void ElaNavigationBar::setUserInfoCardTitle(const QString& title)
 {
     Q_D(ElaNavigationBar);
     d->_userCard->setTitle(title);
 }
 
-void ElaNavigationBar::setUserInfoCardSubTitle(QString subTitle)
+void ElaNavigationBar::setUserInfoCardSubTitle(const QString& subTitle)
 {
     Q_D(ElaNavigationBar);
     d->_userCard->setSubTitle(subTitle);
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addExpanderNode(QString expanderTitle, QString& expanderKey, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addExpanderNode(const QString& expanderTitle, QString& expanderKey, ElaIconType::IconName awesome)
 {
     Q_D(ElaNavigationBar);
-    ElaNavigationType::NodeOperateReturnType returnType = d_ptr->_navigationModel->addExpanderNode(expanderTitle, expanderKey, awesome);
-    if (returnType == ElaNavigationType::Success)
+    ElaNavigationType::NodeResult result = d_ptr->_navigationModel->addExpanderNode(expanderTitle, expanderKey, awesome);
+    if (result == ElaNavigationType::Success)
     {
         d->_initNodeModelIndex(QModelIndex());
         d->_resetNodeSelected();
     }
-    return returnType;
+    return result;
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addExpanderNode(QString expanderTitle, QString& expanderKey, QString targetExpanderKey, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addExpanderNode(const QString& expanderTitle, QString& expanderKey, const QString& targetExpanderKey, ElaIconType::IconName awesome)
 {
     Q_D(ElaNavigationBar);
-    ElaNavigationType::NodeOperateReturnType returnType = d->_navigationModel->addExpanderNode(expanderTitle, expanderKey, targetExpanderKey, awesome);
-    if (returnType == ElaNavigationType::Success)
+    ElaNavigationType::NodeResult result = d->_navigationModel->addExpanderNode(expanderTitle, expanderKey, targetExpanderKey, awesome);
+    if (result == ElaNavigationType::Success)
     {
         d->_initNodeModelIndex(QModelIndex());
         d->_resetNodeSelected();
     }
-    return returnType;
+    return result;
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString pageTitle, QWidget* page, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addPageNode(const QString& pageTitle, QWidget* page, ElaIconType::IconName awesome)
 {
     Q_D(ElaNavigationBar);
     if (!page)
@@ -246,8 +209,8 @@ ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString p
         return ElaNavigationType::PageInvalid;
     }
     QString pageKey;
-    ElaNavigationType::NodeOperateReturnType returnType = d_ptr->_navigationModel->addPageNode(pageTitle, pageKey, awesome);
-    if (returnType == ElaNavigationType::Success)
+    ElaNavigationType::NodeResult result = d_ptr->_navigationModel->addPageNode(pageTitle, pageKey, awesome);
+    if (result == ElaNavigationType::Success)
     {
         d->_pageMetaMap.insert(pageKey, page->metaObject());
         d->_pageNewWindowCountMap.insert(pageKey, 0);
@@ -255,10 +218,30 @@ ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString p
         d->_initNodeModelIndex(QModelIndex());
         d->_resetNodeSelected();
     }
-    return returnType;
+    return result;
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString pageTitle, QWidget* page, QString targetExpanderKey, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addPageNode(const QString& pageTitle, QWidget* page, int keyPoints, ElaIconType::IconName awesome)
+{
+    Q_D(ElaNavigationBar);
+    if (!page)
+    {
+        return ElaNavigationType::PageInvalid;
+    }
+    QString pageKey;
+    ElaNavigationType::NodeResult result = d_ptr->_navigationModel->addPageNode(pageTitle, pageKey, keyPoints, awesome);
+    if (result == ElaNavigationType::Success)
+    {
+        d->_pageMetaMap.insert(pageKey, page->metaObject());
+        d->_pageNewWindowCountMap.insert(pageKey, 0);
+        d->_addStackedPage(page, pageKey);
+        d->_initNodeModelIndex(QModelIndex());
+        d->_resetNodeSelected();
+    }
+    return result;
+}
+
+ElaNavigationType::NodeResult ElaNavigationBar::addPageNode(const QString& pageTitle, QWidget* page, const QString& targetExpanderKey, ElaIconType::IconName awesome)
 {
     Q_D(ElaNavigationBar);
     if (!page)
@@ -270,8 +253,8 @@ ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString p
         return ElaNavigationType::TargetNodeInvalid;
     }
     QString pageKey;
-    ElaNavigationType::NodeOperateReturnType returnType = d->_navigationModel->addPageNode(pageTitle, pageKey, targetExpanderKey, awesome);
-    if (returnType == ElaNavigationType::NodeOperateReturnType::Success)
+    ElaNavigationType::NodeResult result = d->_navigationModel->addPageNode(pageTitle, pageKey, targetExpanderKey, awesome);
+    if (result == ElaNavigationType::NodeResult::Success)
     {
         d->_pageMetaMap.insert(pageKey, page->metaObject());
         d->_pageNewWindowCountMap.insert(pageKey, 0);
@@ -298,30 +281,10 @@ ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString p
         d->_initNodeModelIndex(QModelIndex());
         d->_resetNodeSelected();
     }
-    return returnType;
+    return result;
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString pageTitle, QWidget* page, int keyPoints, ElaIconType::IconName awesome)
-{
-    Q_D(ElaNavigationBar);
-    if (!page)
-    {
-        return ElaNavigationType::PageInvalid;
-    }
-    QString pageKey;
-    ElaNavigationType::NodeOperateReturnType returnType = d_ptr->_navigationModel->addPageNode(pageTitle, pageKey, keyPoints, awesome);
-    if (returnType == ElaNavigationType::Success)
-    {
-        d->_pageMetaMap.insert(pageKey, page->metaObject());
-        d->_pageNewWindowCountMap.insert(pageKey, 0);
-        d->_addStackedPage(page, pageKey);
-        d->_initNodeModelIndex(QModelIndex());
-        d->_resetNodeSelected();
-    }
-    return returnType;
-}
-
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString pageTitle, QWidget* page, QString targetExpanderKey, int keyPoints, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addPageNode(const QString& pageTitle, QWidget* page, const QString& targetExpanderKey, int keyPoints, ElaIconType::IconName awesome)
 {
     Q_D(ElaNavigationBar);
     if (!page)
@@ -333,8 +296,8 @@ ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString p
         return ElaNavigationType::TargetNodeInvalid;
     }
     QString pageKey;
-    ElaNavigationType::NodeOperateReturnType returnType = d_ptr->_navigationModel->addPageNode(pageTitle, pageKey, targetExpanderKey, keyPoints, awesome);
-    if (returnType == ElaNavigationType::Success)
+    ElaNavigationType::NodeResult result = d_ptr->_navigationModel->addPageNode(pageTitle, pageKey, targetExpanderKey, keyPoints, awesome);
+    if (result == ElaNavigationType::Success)
     {
         d->_pageMetaMap.insert(pageKey, page->metaObject());
         d->_pageNewWindowCountMap.insert(pageKey, 0);
@@ -361,25 +324,50 @@ ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addPageNode(QString p
         d->_initNodeModelIndex(QModelIndex());
         d->_resetNodeSelected();
     }
-    return returnType;
+    return result;
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addFooterNode(QString footerTitle, QString& footerKey, int keyPoints, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addFooterNode(const QString& footerTitle, QString& footerKey, int keyPoints, ElaIconType::IconName awesome)
 {
     return addFooterNode(footerTitle, nullptr, footerKey, keyPoints, awesome);
 }
 
-ElaNavigationType::NodeOperateReturnType ElaNavigationBar::addFooterNode(QString footerTitle, QWidget* page, QString& footerKey, int keyPoints, ElaIconType::IconName awesome)
+ElaNavigationType::NodeResult ElaNavigationBar::addFooterNode(const QString& footerTitle, QWidget* page, QString& footerKey, int keyPoints, ElaIconType::IconName awesome)
 {
-    ElaNavigationType::NodeOperateReturnType returnType = d_ptr->_footerModel->addFooterNode(footerTitle, footerKey, page ? true : false, keyPoints, awesome);
-    if (returnType == ElaNavigationType::Success)
+    ElaNavigationType::NodeResult result = d_ptr->_footerModel->addFooterNode(footerTitle, footerKey, page != nullptr, keyPoints, awesome);
+    if (result == ElaNavigationType::Success)
     {
         d_ptr->_addFooterPage(page, footerKey);
     }
-    return returnType;
+    return result;
 }
 
-bool ElaNavigationBar::getNavigationNodeIsExpanded(QString expanderKey) const
+ElaNavigationType::NodeResult ElaNavigationBar::addCategoryNode(const QString& categoryTitle, QString& categoryKey)
+{
+    Q_D(ElaNavigationBar);
+    ElaNavigationType::NodeResult result = d_ptr->_navigationModel->addCategoryNode(categoryTitle, categoryKey);
+    if (result == ElaNavigationType::Success)
+    {
+        d->_initNodeModelIndex(QModelIndex());
+        d->_resetNodeSelected();
+        Q_EMIT navigationNodeAdded(ElaNavigationType::CategoryNode, categoryKey, nullptr);
+    }
+    return result;
+}
+
+ElaNavigationType::NodeResult ElaNavigationBar::addCategoryNode(const QString& categoryTitle, QString& categoryKey, const QString& targetExpanderKey)
+{
+    Q_D(ElaNavigationBar);
+    ElaNavigationType::NodeResult result = d_ptr->_navigationModel->addCategoryNode(categoryTitle, categoryKey, targetExpanderKey);
+    if (result == ElaNavigationType::Success)
+    {
+        d->_initNodeModelIndex(QModelIndex());
+        d->_resetNodeSelected();
+    }
+    return result;
+}
+
+bool ElaNavigationBar::getNodeIsExpanded(const QString& expanderKey) const
 {
     Q_D(const ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(expanderKey);
@@ -390,7 +378,7 @@ bool ElaNavigationBar::getNavigationNodeIsExpanded(QString expanderKey) const
     return d->_navigationView->isExpanded(node->getModelIndex());
 }
 
-void ElaNavigationBar::expandNavigationNode(QString expanderKey)
+void ElaNavigationBar::expandNode(const QString& expanderKey)
 {
     Q_D(ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(expanderKey);
@@ -398,11 +386,11 @@ void ElaNavigationBar::expandNavigationNode(QString expanderKey)
     {
         return;
     }
-    d->_expandOrCollpaseExpanderNode(node, true);
+    d->_expandOrCollapseExpanderNode(node, true);
     d->_resetNodeSelected();
 }
 
-void ElaNavigationBar::collpaseNavigationNode(QString expanderKey)
+void ElaNavigationBar::collapseNode(const QString& expanderKey)
 {
     Q_D(ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(expanderKey);
@@ -410,11 +398,11 @@ void ElaNavigationBar::collpaseNavigationNode(QString expanderKey)
     {
         return;
     }
-    d->_expandOrCollpaseExpanderNode(node, false);
+    d->_expandOrCollapseExpanderNode(node, false);
     d->_resetNodeSelected();
 }
 
-void ElaNavigationBar::removeNavigationNode(QString nodeKey)
+void ElaNavigationBar::removeNode(const QString& nodeKey)
 {
     Q_D(ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(nodeKey);
@@ -434,19 +422,39 @@ void ElaNavigationBar::removeNavigationNode(QString nodeKey)
     }
     else
     {
-        QStringList removeKeyList = d->_navigationModel->removeNavigationNode(nodeKey);
-        d->_initNodeModelIndex(QModelIndex());
-        for (const auto& removeKey: removeKeyList)
+        if (node->getIsCategoryNode())
         {
-            d->_pageMetaMap.remove(removeKey);
-            d->_pageNewWindowCountMap.remove(removeKey);
-            Q_EMIT navigationNodeRemoved(ElaNavigationType::PageNode, removeKey);
+            QStringList removeKeyList = d->_navigationModel->removeNavigationNode(nodeKey);
+            d->_initNodeModelIndex(QModelIndex());
+            for (const auto& removeKey: removeKeyList)
+            {
+                Q_EMIT navigationNodeRemoved(ElaNavigationType::CategoryNode, removeKey);
+            }
+        }
+        else
+        {
+            QStringList removeKeyList = d->_navigationModel->removeNavigationNode(nodeKey);
+            d->_initNodeModelIndex(QModelIndex());
+            for (const auto& removeKey: removeKeyList)
+            {
+                d->_pageMetaMap.remove(removeKey);
+                d->_pageNewWindowCountMap.remove(removeKey);
+                Q_EMIT navigationNodeRemoved(ElaNavigationType::PageNode, removeKey);
+            }
         }
     }
-    d->_navigationSuggestBox->removeSuggestion(d->_suggestKeyMap.value(nodeKey));
+    for (int i = 0; i < d->_suggestDataList.count(); i++)
+    {
+        auto& suggestData = d->_suggestDataList[i];
+        if (suggestData.getSuggestData().value("ElaPageKey").toString() == nodeKey)
+        {
+            d->_suggestDataList.removeAt(i);
+            break;
+        }
+    }
 }
 
-void ElaNavigationBar::setNodeKeyPoints(QString nodeKey, int keyPoints)
+void ElaNavigationBar::setNodeKeyPoints(const QString& nodeKey, int keyPoints)
 {
     Q_D(ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(nodeKey);
@@ -473,7 +481,7 @@ void ElaNavigationBar::setNodeKeyPoints(QString nodeKey, int keyPoints)
     }
 }
 
-int ElaNavigationBar::getNodeKeyPoints(QString nodeKey) const
+int ElaNavigationBar::getNodeKeyPoints(const QString& nodeKey) const
 {
     Q_D(const ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(nodeKey);
@@ -492,7 +500,38 @@ int ElaNavigationBar::getNodeKeyPoints(QString nodeKey) const
     return node->getKeyPoints();
 }
 
-void ElaNavigationBar::navigation(QString pageKey, bool isLogClicked, bool isRouteBack)
+void ElaNavigationBar::setNodeTitle(const QString& nodeKey, const QString& nodeTitle)
+{
+    Q_D(ElaNavigationBar);
+    ElaNavigationNode* node = d->_navigationModel->getNavigationNode(nodeKey);
+    if (!node)
+    {
+        node = d->_footerModel->getNavigationNode(nodeKey);
+    }
+    if (!node)
+    {
+        return;
+    }
+    node->setNodeTitle(nodeTitle);
+    update();
+}
+
+QString ElaNavigationBar::getNodeTitle(const QString& nodeKey) const
+{
+    Q_D(const ElaNavigationBar);
+    ElaNavigationNode* node = d->_navigationModel->getNavigationNode(nodeKey);
+    if (!node)
+    {
+        node = d->_footerModel->getNavigationNode(nodeKey);
+    }
+    if (!node)
+    {
+        return {};
+    }
+    return node->getNodeTitle();
+}
+
+void ElaNavigationBar::navigation(const QString& pageKey, bool isLogClicked, bool isRouteBack)
 {
     Q_D(ElaNavigationBar);
     ElaNavigationNode* node = d->_navigationModel->getNavigationNode(pageKey);
@@ -511,6 +550,7 @@ void ElaNavigationBar::navigation(QString pageKey, bool isLogClicked, bool isRou
             if (!node->getIsExpanderNode())
             {
                 d->onTreeViewClicked(node->getModelIndex(), isLogClicked, isRouteBack);
+                d->_smoothScrollNavigationView(node->getModelIndex());
             }
         }
     }
@@ -523,11 +563,25 @@ void ElaNavigationBar::setDisplayMode(ElaNavigationType::NavigationDisplayMode d
     {
         return;
     }
+    if (displayMode == ElaNavigationType::Maximal)
+    {
+        d->_navigationModel->setIsMaximalMode(true);
+    }
+    else
+    {
+        d->_navigationModel->setIsMaximalMode(false);
+    }
     d->_doComponentAnimation(displayMode, isAnimation);
     d->_raiseNavigationBar();
 }
 
-int ElaNavigationBar::getPageOpenInNewWindowCount(QString nodeKey) const
+ElaNavigationType::NavigationDisplayMode ElaNavigationBar::getDisplayMode() const
+{
+    Q_D(const ElaNavigationBar);
+    return d->_currentDisplayMode;
+}
+
+int ElaNavigationBar::getPageOpenInNewWindowCount(const QString& nodeKey) const
 {
     Q_D(const ElaNavigationBar);
     if (!d->_pageNewWindowCountMap.contains(nodeKey))
@@ -535,6 +589,12 @@ int ElaNavigationBar::getPageOpenInNewWindowCount(QString nodeKey) const
         return 0;
     }
     return d->_pageNewWindowCountMap[nodeKey];
+}
+
+const QList<ElaSuggestBox::SuggestData>& ElaNavigationBar::getSuggestDataList() const
+{
+    Q_D(const ElaNavigationBar);
+    return d->_suggestDataList;
 }
 
 void ElaNavigationBar::paintEvent(QPaintEvent* event)

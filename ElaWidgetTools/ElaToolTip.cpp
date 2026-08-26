@@ -21,8 +21,10 @@ ElaToolTip::ElaToolTip(QWidget* parent)
     d->_pHideDelayMsec = 0;
     d->_pCustomWidget = nullptr;
     setObjectName("ElaToolTip");
-    parent->installEventFilter(d);
-
+    if (parent)
+    {
+        parent->installEventFilter(d);
+    }
     setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
@@ -49,8 +51,9 @@ ElaToolTip::~ElaToolTip()
 void ElaToolTip::setToolTip(QString toolTip)
 {
     Q_D(ElaToolTip);
-    resize(fontMetrics().horizontalAdvance(toolTip), height());
-    d->_toolTipText->setText(toolTip);
+    const QString tempToolTip = std::move(toolTip);
+    resize(fontMetrics().horizontalAdvance(tempToolTip), height());
+    d->_toolTipText->setText(tempToolTip);
     Q_EMIT pToolTipChanged();
 }
 

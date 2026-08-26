@@ -1,6 +1,7 @@
 #include "ElaRadioButton.h"
 
-#include "DeveloperComponents/ElaRadioButtonStyle.h"
+#include "ElaApplication.h"
+#include "ElaRadioButtonStyle.h"
 #include "ElaTheme.h"
 #include "private/ElaRadioButtonPrivate.h"
 ElaRadioButton::ElaRadioButton(QWidget* parent)
@@ -10,7 +11,7 @@ ElaRadioButton::ElaRadioButton(QWidget* parent)
     d->q_ptr = this;
     setFixedHeight(20);
     QFont font = this->font();
-    font.setPixelSize(15);
+    font.setPixelSize(eApp->getFontPixelSize() + 2);
     setFont(font);
     setStyle(new ElaRadioButtonStyle(style()));
     d->onThemeChanged(eTheme->getThemeMode());
@@ -25,4 +26,15 @@ ElaRadioButton::ElaRadioButton(const QString& text, QWidget* parent)
 
 ElaRadioButton::~ElaRadioButton()
 {
+    delete this->style();
+}
+
+void ElaRadioButton::paintEvent(QPaintEvent* event)
+{
+    Q_D(ElaRadioButton);
+    if (palette().color(QPalette::WindowText) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
+    QRadioButton::paintEvent(event);
 }

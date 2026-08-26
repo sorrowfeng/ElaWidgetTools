@@ -77,17 +77,17 @@ int main(int argc, char* argv[]) {
 ## 简介
 
 本项目是基于QT-Widget开发的FluentUI风格的组件库，同时提供不限于组件的常用集成功能；目前Main分支支持QT5.12以上所有版本(
-Linux为QT5.15以上)，推荐版本为QT6.4.3和QT6.6.2；
+Linux为QT5.15以上)，推荐版本为QT5.15.2和QT6.6.2；
 
 ## 重要提示
 
-该项目项目性质原因，暂不接受任何PR！！！使用问题或BUG请直接进群反馈，都会及时处理，感谢您的支持！ 企鹅群：850243692
+该项目性质原因，不会接受任何PR；如确认组件库存在BUG，请提供具体复现步骤和QT程序版本反馈至QQ群：850243692，确认后会尽快处理；
 
 ## 支持平台
 
-| [Windows][win-link] | [Ubuntu][ubuntu-link] 
-|---------------------|-----------------------|
-| ![win-badge]        | ![ubuntu-badge]       |
+| [Windows][win-link] | [Ubuntu/Kylin][ubuntu-link] |
+|---------------------|-----------------------------|
+| ![win-badge]        | ![ubuntu-badge]             |
 
 [win-link]: https://github.com/Liniyous/ElaWidgetTools/actions?query=workflow%3AWindows "WindowsAction"
 
@@ -122,6 +122,7 @@ Linux为QT5.15以上)，推荐版本为QT6.4.3和QT6.6.2；
 | ElaMultiSelectComboBox | 多选下拉框        |                            |
 | ElaContentDialog       | 带遮罩的对话框      |                            |
 | ElaDockWidget          | 停靠窗口         |                            |
+| ElaDrawerArea          | 抽屉窗口         |                            |
 | ElaSpinBox             | 微调框          |                            |
 | ElaDoubleSpinBox       | 微调框          | 浮点数                        |
 | ElaDxgiManager         | DXGI采集器      | 支持自动选择采集设备 效率远高于原生采集       |
@@ -134,6 +135,7 @@ Linux为QT5.15以上)，推荐版本为QT6.4.3和QT6.6.2；
 | ElaKeyBinder           | 单按键绑定器       |                            |
 | ElaLineEdit            | 输入框          |                            |
 | ElaListView            | 列表视图         |                            |
+| ElaLCDNumber           | LCD数字显示器     |                            |
 | ElaLog                 | 消息日志         |                            |
 | ElaMenu                | 菜单           |                            |
 | ElaMenuBar             | 菜单栏          |                            |
@@ -149,7 +151,7 @@ Linux为QT5.15以上)，推荐版本为QT6.4.3和QT6.6.2；
 | ElaSwitchButton        | 切换按钮         |                            |
 | ElaSuggestBox          | 建议搜索框        |                            |
 | ElaRadioButton         | 单选按钮         |                            |
-| ElaNavigationRouter    | 路由跳转         |                            |
+| ElaActionCommander     | 命令式操作器       |                            |
 | ElaToggleSwitch        | 开关按钮         |                            |
 | ElaTabBar              | 选项卡          | 谷歌浏览器风格                    |
 | ElaTabWidget           | 选项卡页面        | 谷歌浏览器风格                    |
@@ -159,6 +161,7 @@ Linux为QT5.15以上)，推荐版本为QT6.4.3和QT6.6.2；
 | ElaToolBar             | 工具栏          |                            |
 | ElaTheme               | 主题管理器        |                            |
 | ElaReminderCard        | 带图片的提醒卡片     |                            |
+| ElaRoller              | 无限滚筒选择器      |                            |
 | ElaScrollbar           | 滚动条          |                            |
 | ElaScrollArea          | 滚动区域         | 可设置鼠标拖动                    |
 | ElaScrollPage          | 滚动页面         | 自带堆栈页面和面包屑导航               |
@@ -167,8 +170,19 @@ Linux为QT5.15以上)，推荐版本为QT6.4.3和QT6.6.2；
 | ElaStatusBar           | 状态栏          |                            |
 | ElaExponentialBlur     | 指数模糊         |                            |
 | ElaText                | Text文本       |                            |
-| ElaGraphicsScene       | 高级场景         | 大量实用API                    |
-| ElaGraphicsView        | 高级视图         | 按键缩放、拖动                    |
-| ElaGraphicsItem        | 高级图元         | 大量实用API                    |
 | ElaWindow              | 带导航栏的无边框窗口   |                            |
 | ElaWidget              | 无边框模态窗口      |                            |
+
+## 参考范例
+
+以下是一些使用了ElaWidgetTools的优秀开源项目：
+
+[KikoPlay-全功能弹幕播放器](https://github.com/KikoPlayProject/KikoPlay)
+
+[EricTool-工业级多协议数据分析平台](https://www.erictool.online/ )
+
+## 许可证
+
+ElaWidgetTools 使用 MIT 许可证授权所有类型项目，但要求所有分发的软件中必须保留本项目的MIT授权许可；所有未保留授权分发的商业行为均将被视为侵权行为
+
+版权所有 © 2024 by Liniyous

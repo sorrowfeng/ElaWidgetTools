@@ -1,8 +1,8 @@
-#ifndef ELARADIOBUTTONPRIVATE_H
-#define ELARADIOBUTTONPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELARADIOBUTTONPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELARADIOBUTTONPRIVATE_H_
 #include <QObject>
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 class ElaRadioButton;
 class ElaRadioButtonPrivate : public QObject
 {
@@ -10,8 +10,12 @@ class ElaRadioButtonPrivate : public QObject
     Q_D_CREATE(ElaRadioButton)
 public:
     explicit ElaRadioButtonPrivate(QObject* parent = nullptr);
-    ~ElaRadioButtonPrivate();
+    ~ElaRadioButtonPrivate() override;
     Q_SLOT void onThemeChanged(ElaThemeType::ThemeMode themeMode);
+
+private:
+    ElaThemeType::ThemeMode _themeMode;
 };
 
-#endif // ELARADIOBUTTONPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELARADIOBUTTONPRIVATE_H_
+

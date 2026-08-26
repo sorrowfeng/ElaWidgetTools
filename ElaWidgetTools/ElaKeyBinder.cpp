@@ -1,4 +1,5 @@
 #include "ElaKeyBinder.h"
+#include "ElaApplication.h"
 #include "ElaContentDialog.h"
 #include "ElaKeyBinderContainer.h"
 #include "ElaKeyBinderPrivate.h"
@@ -18,7 +19,7 @@ ElaKeyBinder::ElaKeyBinder(QWidget* parent)
     setStyleSheet("#ElaKeyBinder{background-color:transparent;}");
     QFont textFont = font();
     textFont.setLetterSpacing(QFont::AbsoluteSpacing, 0.5);
-    textFont.setPixelSize(15);
+    textFont.setPixelSize(eApp->getFontPixelSize() + 2);
     setFont(textFont);
     d->_binderContainer = new ElaKeyBinderContainer(this);
     setText(u8"  按键: " + QString(u8"未绑定") + "      ");
@@ -41,14 +42,14 @@ ElaKeyBinder::~ElaKeyBinder()
 {
 }
 
-void ElaKeyBinder::setBinderKeyText(QString binderKeyText)
+void ElaKeyBinder::setBinderKeyText(const QString& binderKeyText)
 {
     Q_D(ElaKeyBinder);
     d->_binderContainer->setBinderKeyText(binderKeyText);
     setText(u8"  按键: " + binderKeyText + "      ");
 }
 
-QString ElaKeyBinder::getBinderKeyText() const
+const QString& ElaKeyBinder::getBinderKeyText() const
 {
     Q_D(const ElaKeyBinder);
     return d->_binderContainer->getBinderKeyText();
@@ -99,17 +100,21 @@ void ElaKeyBinder::mouseReleaseEvent(QMouseEvent* event)
 void ElaKeyBinder::paintEvent(QPaintEvent* event)
 {
     Q_D(ElaKeyBinder);
+    if (palette().color(QPalette::WindowText) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
     QPainter painter(this);
     painter.save();
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter.setPen(ElaThemeColor(d->_themeMode, BasicBorder));
-    painter.setBrush(underMouse() ? ElaThemeColor(d->_themeMode, BasicHover) : Qt::transparent);
+    painter.setBrush(underMouse() ? ElaThemeColor(d->_themeMode, BasicHover) : ElaThemeColor(d->_themeMode, BasicBase));
     QRect borderRect = rect();
     borderRect.adjust(1, 1, -1, -1);
     painter.drawRoundedRect(borderRect, d->_pBorderRadius, d->_pBorderRadius);
     // 图标绘制
     QFont iconFont = QFont("ElaAwesome");
-    iconFont.setPixelSize(16);
+    iconFont.setPixelSize(eApp->getFontPixelSize() + 3);
     painter.setFont(iconFont);
     painter.setPen(ElaThemeColor(d->_themeMode, BasicText));
     QRect iconRect = rect();

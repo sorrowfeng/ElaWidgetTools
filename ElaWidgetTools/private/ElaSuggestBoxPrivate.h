@@ -1,5 +1,5 @@
-#ifndef ELASUGGESTBOXPRIVATE_H
-#define ELASUGGESTBOXPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELASUGGESTBOXPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELASUGGESTBOXPRIVATE_H_
 
 #include <QAction>
 #include <QObject>
@@ -7,15 +7,14 @@
 #include <QVariantMap>
 #include <QVector>
 
-#include "Def.h"
-#include "stdafx.h"
+#include "ElaWidgetToolsDef.h"
 class ElaSuggestion : public QObject
 {
     Q_OBJECT
     Q_PROPERTY_CREATE(ElaIconType::IconName, ElaIcon)
-    Q_PROPERTY_CREATE(QString, SuggestText)
-    Q_PROPERTY_CREATE(QString, SuggestKey)
-    Q_PROPERTY_CREATE(QVariantMap, SuggestData)
+    Q_PROPERTY_REF_CREATE(QString, SuggestText)
+    Q_PROPERTY_REF_CREATE(QString, SuggestKey)
+    Q_PROPERTY_REF_CREATE(QVariantMap, SuggestData)
 public:
     explicit ElaSuggestion(QObject* parent = nullptr);
     ~ElaSuggestion() override;
@@ -37,7 +36,7 @@ class ElaSuggestBoxPrivate : public QObject
     Q_PROPERTY_CREATE_D(Qt::CaseSensitivity, CaseSensitivity)
 public:
     explicit ElaSuggestBoxPrivate(QObject* parent = nullptr);
-    ~ElaSuggestBoxPrivate();
+    ~ElaSuggestBoxPrivate() override;
     Q_SLOT void onThemeModeChanged(ElaThemeType::ThemeMode themeMode);
     Q_SLOT void onSearchEditTextEdit(const QString& searchText);
     Q_SLOT void onSearchViewClicked(const QModelIndex& index);
@@ -61,4 +60,5 @@ private:
     void _startCloseAnimation();
 };
 
-#endif // ELASUGGESTBOXPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELASUGGESTBOXPRIVATE_H_
+

@@ -4,17 +4,23 @@
 #ifdef Q_OS_WIN
 #include <Windows.h>
 #endif
-#include <QGuiApplication>
-#include <QLabel>
-#include <QPropertyAnimation>
-#include <QScreen>
-#include <QVBoxLayout>
-#include <QWidget>
-
 #include "ElaAppBar.h"
 #include "ElaIconButton.h"
 #include "ElaNavigationBar.h"
 #include "ElaText.h"
+
+#include <QApplication>
+#include <QDebug>
+#include <QGuiApplication>
+#include <QLabel>
+#include <QMenu>
+#include <QPropertyAnimation>
+#include <QScreen>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QWindow>
+#include <QtMath>
+
 ElaAppBarPrivate::ElaAppBarPrivate(QObject* parent)
     : QObject{parent}
 {
@@ -33,14 +39,11 @@ void ElaAppBarPrivate::onMinButtonClicked()
 void ElaAppBarPrivate::onMaxButtonClicked()
 {
     Q_Q(ElaAppBar);
-    if (q->window()->isMaximized())
-    {
-        q->window()->showNormal();
-    }
-    else
-    {
-        q->window()->showMaximized();
-    }
+    bool isMaximized = q->window()->isMaximized();
+    isMaximized ? q->window()->showNormal() : q->window()->showMaximized();
+#ifndef Q_OS_WIM
+    _changeMaxButtonAwesome(!isMaximized);
+#endif
 }
 
 void ElaAppBarPrivate::onCloseButtonClicked()
@@ -48,7 +51,13 @@ void ElaAppBarPrivate::onCloseButtonClicked()
     Q_Q(ElaAppBar);
     if (_pIsDefaultClosed)
     {
-        q->window()->close();
+        const auto window = q->window();
+        window->close();
+        QApplication::processEvents();
+        if (const auto windowHandle = window->windowHandle())
+        {
+            windowHandle->close();
+        }
     }
     else
     {
@@ -62,12 +71,15 @@ void ElaAppBarPrivate::onStayTopButtonClicked()
     HWND hwnd = (HWND)_currentWinID;
     ::SetWindowPos(hwnd, _pIsStayTop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 #else
-    Q_Q(const ElaAppBar);
-    bool isVisible = q->window()->isVisible();
-    q->window()->setWindowFlag(Qt::WindowStaysOnTopHint, _pIsStayTop);
-    if (isVisible)
+    Q_Q(ElaAppBar);
+    if (q->window()->isVisible())
     {
-        q->window()->show();
+        q->window()->windowHandle()->setFlag(Qt::WindowStaysOnTopHint, _pIsStayTop);
+        q->window()->update();
+    }
+    else
+    {
+        q->window()->setWindowFlag(Qt::WindowStaysOnTopHint, _pIsStayTop);
     }
 #endif
     _stayTopButton->setIsSelected(_pIsStayTop);
@@ -86,50 +98,57 @@ void ElaAppBarPrivate::_changeMaxButtonAwesome(bool isMaximized)
     }
 }
 
-void ElaAppBarPrivate::_showSystemMenu(QPoint point)
+void ElaAppBarPrivate::_showAppBarMenu(QPoint point)
 {
     Q_Q(const ElaAppBar);
+    if (_pCustomMenu)
+    {
+        _pCustomMenu->exec(point);
+    }
+    else
+    {
 #ifdef Q_OS_WIN
-    QScreen* screen = qApp->screenAt(QCursor::pos());
-    if (!screen)
-    {
-        screen = QGuiApplication::primaryScreen();
-    }
-    if (!screen)
-    {
-        return;
-    }
-    const QPoint origin = screen->geometry().topLeft();
-    auto nativePos = QPointF(QPointF(point - origin) * screen->devicePixelRatio()).toPoint() + origin;
-    HWND hwnd = reinterpret_cast<HWND>(q->window()->winId());
-    const HMENU hMenu = ::GetSystemMenu(hwnd, FALSE);
-    if (q->window()->isMaximized() || q->window()->isFullScreen())
-    {
-        ::EnableMenuItem(hMenu, SC_MOVE, MFS_DISABLED);
-        ::EnableMenuItem(hMenu, SC_RESTORE, MFS_ENABLED);
-    }
-    else
-    {
-        ::EnableMenuItem(hMenu, SC_MOVE, MFS_ENABLED);
-        ::EnableMenuItem(hMenu, SC_RESTORE, MFS_DISABLED);
-    }
-    if (!_pIsFixedSize && !q->window()->isMaximized() && !q->window()->isFullScreen())
-    {
-        ::EnableMenuItem(hMenu, SC_SIZE, MFS_ENABLED);
-        ::EnableMenuItem(hMenu, SC_MAXIMIZE, MFS_ENABLED);
-    }
-    else
-    {
-        ::EnableMenuItem(hMenu, SC_SIZE, MFS_DISABLED);
-        ::EnableMenuItem(hMenu, SC_MAXIMIZE, MFS_DISABLED);
-    }
-    const int result = ::TrackPopupMenu(hMenu, (TPM_RETURNCMD | (QGuiApplication::isRightToLeft() ? TPM_RIGHTALIGN : TPM_LEFTALIGN)), nativePos.x(),
-                                        nativePos.y(), 0, hwnd, nullptr);
-    if (result != FALSE)
-    {
-        ::PostMessageW(hwnd, WM_SYSCOMMAND, result, 0);
-    }
+        QScreen* screen = qApp->screenAt(QCursor::pos());
+        if (!screen)
+        {
+            screen = QGuiApplication::primaryScreen();
+        }
+        if (!screen)
+        {
+            return;
+        }
+        const QPoint origin = screen->geometry().topLeft();
+        auto nativePos = QPointF(QPointF(point - origin) * screen->devicePixelRatio()).toPoint() + origin;
+        HWND hwnd = reinterpret_cast<HWND>(q->window()->winId());
+        const HMENU hMenu = ::GetSystemMenu(hwnd, FALSE);
+        if (q->window()->isMaximized() || q->window()->isFullScreen())
+        {
+            ::EnableMenuItem(hMenu, SC_MOVE, MFS_DISABLED);
+            ::EnableMenuItem(hMenu, SC_RESTORE, MFS_ENABLED);
+        }
+        else
+        {
+            ::EnableMenuItem(hMenu, SC_MOVE, MFS_ENABLED);
+            ::EnableMenuItem(hMenu, SC_RESTORE, MFS_DISABLED);
+        }
+        if (!_pIsFixedSize && !q->window()->isMaximized() && !q->window()->isFullScreen())
+        {
+            ::EnableMenuItem(hMenu, SC_SIZE, MFS_ENABLED);
+            ::EnableMenuItem(hMenu, SC_MAXIMIZE, MFS_ENABLED);
+        }
+        else
+        {
+            ::EnableMenuItem(hMenu, SC_SIZE, MFS_DISABLED);
+            ::EnableMenuItem(hMenu, SC_MAXIMIZE, MFS_DISABLED);
+        }
+        const int result = ::TrackPopupMenu(hMenu, (TPM_RETURNCMD | (QGuiApplication::isRightToLeft() ? TPM_RIGHTALIGN : TPM_LEFTALIGN)), nativePos.x(),
+                                            nativePos.y(), 0, hwnd, nullptr);
+        if (result != FALSE)
+        {
+            ::PostMessageW(hwnd, WM_SYSCOMMAND, result, 0);
+        }
 #endif
+    }
 }
 
 void ElaAppBarPrivate::_updateCursor(int edges)
@@ -137,39 +156,39 @@ void ElaAppBarPrivate::_updateCursor(int edges)
     Q_Q(const ElaAppBar);
     switch (edges)
     {
-        case 0:
-        {
-            q->window()->setCursor(Qt::ArrowCursor);
-            break;
-        }
-        case Qt::LeftEdge:
-        case Qt::RightEdge:
-        {
-            q->window()->setCursor(Qt::SizeHorCursor);
-            break;
-        }
-        case Qt::TopEdge:
-        case Qt::BottomEdge:
-        {
-            q->window()->setCursor(Qt::SizeVerCursor);
-            break;
-        }
-        case Qt::LeftEdge | Qt::TopEdge:
-        case Qt::RightEdge | Qt::BottomEdge:
-        {
-            q->window()->setCursor(Qt::SizeFDiagCursor);
-            break;
-        }
-        case Qt::RightEdge | Qt::TopEdge:
-        case Qt::LeftEdge | Qt::BottomEdge:
-        {
-            q->window()->setCursor(Qt::SizeBDiagCursor);
-            break;
-        }
-        default:
-        {
-            break;
-        }
+    case 0:
+    {
+        q->window()->setCursor(Qt::ArrowCursor);
+        break;
+    }
+    case Qt::LeftEdge:
+    case Qt::RightEdge:
+    {
+        q->window()->setCursor(Qt::SizeHorCursor);
+        break;
+    }
+    case Qt::TopEdge:
+    case Qt::BottomEdge:
+    {
+        q->window()->setCursor(Qt::SizeVerCursor);
+        break;
+    }
+    case Qt::LeftEdge | Qt::TopEdge:
+    case Qt::RightEdge | Qt::BottomEdge:
+    {
+        q->window()->setCursor(Qt::SizeFDiagCursor);
+        break;
+    }
+    case Qt::RightEdge | Qt::TopEdge:
+    case Qt::LeftEdge | Qt::BottomEdge:
+    {
+        q->window()->setCursor(Qt::SizeBDiagCursor);
+        break;
+    }
+    default:
+    {
+        break;
+    }
     }
 }
 
@@ -180,20 +199,37 @@ bool ElaAppBarPrivate::_containsCursorToItem(QWidget* item)
     {
         return false;
     }
-    auto point = item->window()->mapFromGlobal(QCursor::pos());
-    QRectF rect = QRectF(item->mapTo(item->window(), QPoint(0, 0)), item->size());
+    QRect itemRect = QRect(item->mapToGlobal(QPoint(0, 0)), item->size());
     if (item == q)
     {
-        if (_containsCursorToItem(_routeBackButton) || _containsCursorToItem(_navigationButton) || _containsCursorToItem(_pCustomWidget) || _containsCursorToItem(_stayTopButton) || _containsCursorToItem(_themeChangeButton) || _containsCursorToItem(_minButton) || _containsCursorToItem(_maxButton) || _containsCursorToItem(_closeButton))
+        for (int i = 0; i < _clientWidgetList.count(); i++)
         {
-            return false;
+            if (_containsCursorToItem(_clientWidgetList[i]))
+            {
+                return false;
+            }
+        }
+        for (int i = 0; i < _customAreaWidgetList.count(); i++)
+        {
+            QWidget* customAreaWidget = _customAreaWidgetList[i];
+            if (_containsCursorToItem(customAreaWidget))
+            {
+                QObject* customAreaHitTestObject = _customAreaHitTestObjectList[i];
+                if (customAreaHitTestObject)
+                {
+                    bool isContainsInAppBar = false;
+                    QMetaObject::invokeMethod(customAreaHitTestObject, _customAreaHitTestFunctionNameList[i].toLocal8Bit().constData(), Qt::AutoConnection, Q_RETURN_ARG(bool, isContainsInAppBar));
+                    return isContainsInAppBar;
+                }
+                return false;
+            }
         }
     }
     else if (item == _maxButton)
     {
-        rect.adjust(0, 8, 0, 0);
+        itemRect.adjust(0, 8, 0, 0);
     }
-    if (rect.contains(point))
+    if (itemRect.contains(QCursor::pos()))
     {
         return true;
     }
@@ -225,51 +261,35 @@ void ElaAppBarPrivate::_onThemeModeChange(ElaThemeType::ThemeMode themeMode)
 int ElaAppBarPrivate::_calculateMinimumWidth()
 {
     Q_Q(ElaAppBar);
-    int width = 0;
+    int appBarWidth = 0;
     if (_titleLabel->isVisible())
     {
-        width += _titleLabel->width();
-        width += 10;
+        appBarWidth += _titleLabel->width();
+        appBarWidth += 10;
     }
     if (_iconLabel->isVisible())
     {
-        width += _iconLabel->width();
-        width += 10;
+        appBarWidth += _iconLabel->width();
+        appBarWidth += 10;
     }
-    bool isHasNavigationBar = false;
-    if (q->parentWidget()->findChild<ElaNavigationBar*>())
+    for (int i = 0; i < _customAreaWidgetList.count(); i++)
     {
-        isHasNavigationBar = true;
-        width += 305;
-    }
-    else
-    {
-        width += 5;
-    }
-    if (_pCustomWidget)
-    {
-        int customWidgetWidth = _pCustomWidget->width();
-        if (isHasNavigationBar)
+        auto customAreaWidget = _customAreaWidgetList[i];
+        if (customAreaWidget->isVisible())
         {
-            if (customWidgetWidth > 300)
-            {
-                width += customWidgetWidth - 300;
-            }
-        }
-        else
-        {
-            width += customWidgetWidth;
+            appBarWidth += customAreaWidget->minimumWidth();
         }
     }
     QList<QAbstractButton*> buttonList = q->findChildren<QAbstractButton*>();
-    for (auto button : buttonList)
+    for (const auto clientWidget: _clientWidgetList)
     {
-        if (button->isVisible() && button->objectName() != "NavigationButton")
+        if (clientWidget->isVisible())
         {
-            width += button->width();
+            appBarWidth += clientWidget->minimumWidth();
         }
     }
-    return width;
+    auto windowMinWidth = q->parentWidget()->minimumWidth() + 20;
+    return qMax(appBarWidth, windowMinWidth);
 }
 
 QVBoxLayout* ElaAppBarPrivate::_createVLayout(QWidget* widget)

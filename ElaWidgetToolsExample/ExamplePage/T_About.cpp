@@ -7,8 +7,9 @@
 #include "ElaImageCard.h"
 #include "ElaText.h"
 T_About::T_About(QWidget* parent)
-    : ElaWidget(parent)
+    : ElaDialog(parent)
 {
+    setFixedSize(400, 400);
     setWindowTitle("关于..");
     setWindowIcon(QIcon(":/include/Image/Moon.jpg"));
     this->setIsFixedSize(true);
@@ -36,7 +37,7 @@ T_About::T_About(QWidget* parent)
     ElaText* supportText = new ElaText("Windows支持版本: QT5.12以上\nLinux支持版本: Qt5.14以上", this);
     supportText->setWordWrap(false);
     supportText->setTextPixelSize(14);
-    ElaText* contactText = new ElaText("作者: 3056769574@qq.com\n交流群: 850243692(QQ)", this);
+    ElaText* contactText = new ElaText("作者: 80985@qq.com\n交流群: 850243692(QQ)", this);
     contactText->setWordWrap(false);
     contactText->setTextInteractionFlags(Qt::TextSelectableByMouse);
     contactText->setTextPixelSize(14);

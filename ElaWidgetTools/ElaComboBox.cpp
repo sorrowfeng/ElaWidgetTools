@@ -52,7 +52,9 @@ ElaComboBox::ElaComboBox(QWidget* parent)
         layout->addWidget(view());
         layout->setContentsMargins(6, 0, 6, 6);
 #ifndef Q_OS_WIN
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         container->setStyleSheet("background-color:transparent;");
+#endif
 #endif
     }
     QComboBox::setMaxVisibleItems(5);
@@ -61,6 +63,8 @@ ElaComboBox::ElaComboBox(QWidget* parent)
 
 ElaComboBox::~ElaComboBox()
 {
+    Q_D(ElaComboBox);
+    delete d->_comboBoxStyle;
 }
 
 void ElaComboBox::setEditable(bool editable)
@@ -201,4 +205,14 @@ void ElaComboBox::hidePopup()
         markAnimation->setEndValue(0);
         markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     }
+}
+
+void ElaComboBox::paintEvent(QPaintEvent* event)
+{
+    Q_D(ElaComboBox);
+    if (lineEdit() && lineEdit()->palette().color(QPalette::Text) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
+    QComboBox::paintEvent(event);
 }

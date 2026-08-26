@@ -1,10 +1,10 @@
-#ifndef ELAPROMOTIONVIEWPRIVATE_H
-#define ELAPROMOTIONVIEWPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPROMOTIONVIEWPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPROMOTIONVIEWPRIVATE_H_
 
 #include <QObject>
 #include <QPixmap>
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 class ElaPromotionCard;
 class ElaPromotionView;
 class ElaPromotionViewPrivate : public QObject
@@ -37,4 +37,5 @@ private:
     int _getRightLimitX();
 };
 
-#endif // ELAPROMOTIONVIEWPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPROMOTIONVIEWPRIVATE_H_
+

@@ -1,8 +1,8 @@
 #include "ElaDoubleSpinBox.h"
 
-#include "DeveloperComponents/ElaSpinBoxStyle.h"
 #include "ElaDoubleSpinBoxPrivate.h"
 #include "ElaMenu.h"
+#include "ElaSpinBoxStyle.h"
 #include "ElaTheme.h"
 
 #include <QContextMenuEvent>
@@ -26,32 +26,38 @@ ElaDoubleSpinBox::ElaDoubleSpinBox(QWidget* parent)
 
 ElaDoubleSpinBox::~ElaDoubleSpinBox()
 {
+    Q_D(ElaDoubleSpinBox);
+    delete d->_style;
 }
 
 void ElaDoubleSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
 {
     Q_D(ElaDoubleSpinBox);
-    if (minimumWidth() < 90)
+    if (buttonMode != ElaSpinBoxType::NoButtons && minimumWidth() < 90)
     {
         setMinimumWidth(90);
     }
     d->_style->setButtonMode(buttonMode);
     switch (buttonMode)
     {
-        case ElaSpinBoxType::Inline:
-        {
-            lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-            lineEdit()->setStyleSheet("background-color:transparent;padding-left:10px;padding-bottom:3px;");
-            break;
-        }
-        case ElaSpinBoxType::Compact:
-        case ElaSpinBoxType::Side:
-        case ElaSpinBoxType::PMSide:
-        {
-            lineEdit()->setAlignment(Qt::AlignCenter);
-            lineEdit()->setStyleSheet("background-color:transparent;padding-bottom:3px;");
-            break;
-        }
+    case ElaSpinBoxType::Inline:
+    {
+        lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        lineEdit()->setStyleSheet("background-color:transparent;padding-left:10px;padding-bottom:3px;");
+        break;
+    }
+    case ElaSpinBoxType::Compact:
+    case ElaSpinBoxType::Side:
+    case ElaSpinBoxType::PMSide:
+    {
+        lineEdit()->setAlignment(Qt::AlignCenter);
+        lineEdit()->setStyleSheet("background-color:transparent;padding-bottom:3px;");
+        break;
+    }
+    case ElaSpinBoxType::NoButtons:
+    {
+        break;
+    }
     }
     d->onThemeChanged(eTheme->getThemeMode());
     setFrame(hasFrame());
@@ -70,8 +76,9 @@ void ElaDoubleSpinBox::focusInEvent(QFocusEvent* event)
     if (event->reason() == Qt::MouseFocusReason)
     {
         QPropertyAnimation* markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value)
-                { update(); });
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
+            update();
+        });
         markAnimation->setDuration(300);
         markAnimation->setEasingCurve(QEasingCurve::InOutSine);
         markAnimation->setStartValue(d->_pExpandMarkWidth);
@@ -87,8 +94,9 @@ void ElaDoubleSpinBox::focusOutEvent(QFocusEvent* event)
     if (event->reason() != Qt::PopupFocusReason)
     {
         QPropertyAnimation* markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value)
-                { update(); });
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
+            update();
+        });
         markAnimation->setDuration(300);
         markAnimation->setEasingCurve(QEasingCurve::InOutSine);
         markAnimation->setStartValue(d->_pExpandMarkWidth);

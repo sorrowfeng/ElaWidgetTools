@@ -1,11 +1,12 @@
-#ifndef ELAPROMOTIONCARDPRIVATE_H
-#define ELAPROMOTIONCARDPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPROMOTIONCARDPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPROMOTIONCARDPRIVATE_H_
 
 #include <QObject>
 #include <QPixmap>
 #include <QPoint>
 
-#include "stdafx.h"
+#include "ElaWidgetToolsExport.h"
+#include "ElaPropertyMacro.h"
 class QRadialGradient;
 class ElaPromotionCard;
 class ElaPromotionCardPrivate : public QObject
@@ -46,4 +47,5 @@ private:
     void _startHoverOpacityAnimation(bool isVisible);
 };
 
-#endif // ELAPROMOTIONCARDPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELAPROMOTIONCARDPRIVATE_H_
+

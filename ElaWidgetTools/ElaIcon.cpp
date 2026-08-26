@@ -1,5 +1,6 @@
 #include "ElaIcon.h"
 
+#include "ElaApplication.h"
 #include <QPainter>
 #include <QPixmap>
 Q_SINGLETON_CREATE_CPP(ElaIcon)
@@ -21,7 +22,7 @@ QIcon ElaIcon::getElaIcon(ElaIconType::IconName awesome)
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
     // painter.setPen(QColor("#1570A5"));
     // painter.setBrush(QColor("#1570A5"));
-    iconFont.setPixelSize(25);
+    iconFont.setPixelSize(eApp->getFontPixelSize() + 12);
     painter.setFont(iconFont);
     painter.drawText(pix.rect(), Qt::AlignCenter, QChar((unsigned short)awesome));
     painter.end();
@@ -38,7 +39,7 @@ QIcon ElaIcon::getElaIcon(ElaIconType::IconName awesome, QColor iconColor)
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
     painter.setPen(iconColor);
     // painter.setBrush(QColor("#1570A5"));
-    iconFont.setPixelSize(25);
+    iconFont.setPixelSize(eApp->getFontPixelSize() + 12);
     painter.setFont(iconFont);
     painter.drawText(pix.rect(), Qt::AlignCenter, QChar((unsigned short)awesome));
     painter.end();

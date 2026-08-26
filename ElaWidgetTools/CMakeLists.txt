@@ -4,38 +4,28 @@ cmake_minimum_required(VERSION 3.5...3.30)
 
 project(ElaWidgetTools VERSION 2.0.0 LANGUAGES CXX)
 
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-
 add_definitions(-DELAWIDGETTOOLS_LIBRARY)
 option(ELAWIDGETTOOLS_BUILD_STATIC_LIB "Build static library." OFF)
-
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-FILE(GLOB ORIGIN *.h *.cpp)
-FILE(GLOB INCLUDE include/*.h)
-FILE(GLOB PRIVATE private/*.h private/*.cpp)
-FILE(GLOB DEVELOPER DeveloperComponents/*.h DeveloperComponents/*.cpp)
+FILE(GLOB Origin CONFIGURE_DEPENDS *.h *.cpp)
+FILE(GLOB private CONFIGURE_DEPENDS private/*.h private/*.cpp)
+FILE(GLOB Development CONFIGURE_DEPENDS Development/*.h Development/*.cpp)
+FILE(GLOB Development_Command CONFIGURE_DEPENDS Development/Command/*.h Development/Command/*.cpp)
 
-source_group(include FILES ${INCLUDE})
-source_group(private FILES ${PRIVATE})
-source_group(DeveloperComponents FILES ${DEVELOPER})
+source_group(private FILES ${private})
+source_group(Development FILES ${Development})
+source_group(Development/Command FILES ${Development_Command})
 
 set(PROJECT_SOURCES
-    ${ORIGIN}
-    ${INCLUDE}
-    ${PRIVATE}
-    ${DEVELOPER}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ElaWidgetTools.qrc
+    ${Origin}
+    ${private}
+    ${Development}
+    ${Development_Command}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ElaWidgetTools.qrc
 )
 
 if (ELAWIDGETTOOLS_BUILD_STATIC_LIB)
@@ -44,33 +34,31 @@ else ()
     set(LIB_TYPE "SHARED")
 endif ()
 
-if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_library(${PROJECT_NAME} ${LIB_TYPE}
-        ${PROJECT_SOURCES}
-    )
-else ()
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
-        ${PROJECT_SOURCES}
-    )
-endif ()
+add_library(${PROJECT_NAME} ${LIB_TYPE}
+    ${PROJECT_SOURCES}
+)
 
-FILE(GLOB EXPORT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+set_target_properties(${PROJECT_NAME} PROPERTIES EXPORT_NAME WidgetTools)
+add_library(Ela::WidgetTools ALIAS ${PROJECT_NAME})
 
-# 兼容 <ElaWidgetTools/X.h> 包含方式:include/ 内头文件为平铺布局,
+FILE(GLOB EXPORT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+
+# 兼容 <ElaWidgetTools/X.h> 包含方式:头文件在库根目录平铺,
 # 在构建目录生成一层带包名的 include 目录(优先符号链接,无权限时退化为复制)
 set(ELA_COMPAT_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/compat_include")
 if(NOT EXISTS "${ELA_COMPAT_INCLUDE_DIR}/ElaWidgetTools")
     file(MAKE_DIRECTORY "${ELA_COMPAT_INCLUDE_DIR}")
-    file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}"
          "${ELA_COMPAT_INCLUDE_DIR}/ElaWidgetTools"
          COPY_ON_ERROR SYMBOLIC)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${ELA_COMPAT_INCLUDE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DeveloperComponents>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Development>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Development/Command>
     $<INSTALL_INTERFACE:${PROJECT_NAME}/include>
 )
 
@@ -81,31 +69,34 @@ if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 endif ()
 
-
-
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::WidgetsPrivate
+)
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt${QT_VERSION_MAJOR}::Widgets
         D3D11
         DXGI
-    )
-else ()
-    target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt${QT_VERSION_MAJOR}::Widgets
     )
 endif ()
 
 
 install(
     TARGETS ${PROJECT_NAME}
-    EXPORT ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
     ARCHIVE DESTINATION ${PROJECT_NAME}/lib
     LIBRARY DESTINATION ${PROJECT_NAME}/lib
     RUNTIME DESTINATION ${PROJECT_NAME}/bin
 )
-install(TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/ElaWidgetToolsExample
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+    DESTINATION ${PROJECT_NAME}/include
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "Font" EXCLUDE
+    PATTERN "Image" EXCLUDE
+    PATTERN "private" EXCLUDE
+    PATTERN "Development" EXCLUDE
 )
 if (MSVC AND NOT LIB_TYPE STREQUAL "STATIC")
     install(
@@ -115,12 +106,9 @@ endif ()
 
 install(FILES ${EXPORT_HEADERS} DESTINATION ${PROJECT_NAME}/include/${PROJECT_NAME})
 
-set(INCLUDE_DIRS include)
-set(LIBRARIES ${PROJECT_NAME})
-set(LIB_DIR lib)
-
 install(
-    EXPORT ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    NAMESPACE Ela::
     FILE ${PROJECT_NAME}Targets.cmake
     DESTINATION ${PROJECT_NAME}/lib/cmake
 )
@@ -136,7 +124,6 @@ configure_package_config_file(
     ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
     ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
     INSTALL_DESTINATION lib/cmake
-    PATH_VARS INCLUDE_DIRS LIBRARIES LIB_DIR
     INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
 )
 

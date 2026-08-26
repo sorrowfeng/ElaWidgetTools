@@ -1,9 +1,9 @@
-#ifndef ELACALENDARPICKERPRIVATE_H
-#define ELACALENDARPICKERPRIVATE_H
+#ifndef ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACALENDARPICKERPRIVATE_H_
+#define ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACALENDARPICKERPRIVATE_H_
 
 #include <QObject>
 
-#include "Def.h"
+#include "ElaWidgetToolsDef.h"
 class ElaCalendar;
 class ElaCalendarPicker;
 class ElaCalendarPickerContainer;
@@ -14,7 +14,7 @@ class ElaCalendarPickerPrivate : public QObject
     Q_PROPERTY_CREATE_D(int, BorderRadius)
 public:
     explicit ElaCalendarPickerPrivate(QObject* parent = nullptr);
-    ~ElaCalendarPickerPrivate();
+    ~ElaCalendarPickerPrivate() override;
     Q_SLOT void onCalendarPickerClicked();
     Q_SLOT void onCalendarSelectedDateChanged();
 
@@ -24,4 +24,5 @@ private:
     ElaCalendarPickerContainer* _calendarPickerContainer{nullptr};
 };
 
-#endif // ELACALENDARPICKERPRIVATE_H
+#endif // ELAWORKSPACE_ELAWIDGETTOOLS_PRIVATE_ELACALENDARPICKERPRIVATE_H_
+

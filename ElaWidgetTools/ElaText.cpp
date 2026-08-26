@@ -24,13 +24,13 @@ ElaText::ElaText(QWidget* parent)
     connect(eTheme, &ElaTheme::themeModeChanged, d, &ElaTextPrivate::onThemeChanged);
 }
 
-ElaText::ElaText(QString text, QWidget* parent)
+ElaText::ElaText(const QString& text, QWidget* parent)
     : ElaText(parent)
 {
     setText(text);
 }
 
-ElaText::ElaText(QString text, int pixelSize, QWidget* parent)
+ElaText::ElaText(const QString& text, int pixelSize, QWidget* parent)
     : ElaText(text, parent)
 {
     QFont font = this->font();
@@ -157,6 +157,10 @@ ElaIconType::IconName ElaText::getElaIcon() const
 void ElaText::paintEvent(QPaintEvent* event)
 {
     Q_D(ElaText);
+    if (palette().color(QPalette::WindowText) != ElaThemeColor(d->_themeMode, BasicText))
+    {
+        d->onThemeChanged(d->_themeMode);
+    }
     if (d->_pElaIcon != ElaIconType::None)
     {
         QPainter painter(this);

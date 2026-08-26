@@ -3,7 +3,7 @@
 #include <QHeaderView>
 #include <QMouseEvent>
 
-#include "DeveloperComponents/ElaTableViewStyle.h"
+#include "ElaTableViewStyle.h"
 #include "ElaScrollBar.h"
 #include "ElaTableViewPrivate.h"
 ElaTableView::ElaTableView(QWidget* parent)
@@ -29,6 +29,8 @@ ElaTableView::ElaTableView(QWidget* parent)
 
 ElaTableView::~ElaTableView()
 {
+    Q_D(ElaTableView);
+    delete d->_tableViewStyle;
 }
 
 void ElaTableView::setHeaderMargin(int headerMargin)

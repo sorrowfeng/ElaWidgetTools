@@ -2,7 +2,7 @@
 
 #include <QEvent>
 
-#include "DeveloperComponents/ElaSliderStyle.h"
+#include "ElaSliderStyle.h"
 ElaSlider::ElaSlider(QWidget* parent)
     : QSlider(parent)
 {
@@ -18,4 +18,5 @@ ElaSlider::ElaSlider(Qt::Orientation orientation, QWidget* parent)
 
 ElaSlider::~ElaSlider()
 {
+    delete this->style();
 }
