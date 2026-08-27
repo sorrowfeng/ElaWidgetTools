@@ -2,9 +2,11 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QStackedWidget>
 #include <QVBoxLayout>
 
 #include "ElaBreadcrumbBar.h"
+#include "ElaNavigationBar.h"
 #include "ElaPivot.h"
 #include "ElaPlainTextEdit.h"
 #include "ElaPushButton.h"
@@ -91,6 +93,38 @@ T_Navigation::T_Navigation(QWidget* parent)
         page->setAlignment(Qt::AlignCenter);
         _tabWidget->addTab(page, QString("新标签页%1").arg(i));
     }
+    // ElaNavigationBar
+    ElaText* navigationBarText = new ElaText("ElaNavigationBar", this);
+    navigationBarText->setTextPixelSize(18);
+    ElaNavigationBar* navigationBar = new ElaNavigationBar(this);
+    navigationBar->setFixedWidth(260);
+    QStackedWidget* navigationStack = new QStackedWidget(this);
+    for (int i = 0; i < 3; i++)
+    {
+        ElaText* page = new ElaText(QString("导航页面%1").arg(i + 1), this);
+        page->setTextPixelSize(28);
+        page->setAlignment(Qt::AlignCenter);
+        navigationStack->addWidget(page);
+        navigationBar->addPageNode(QString("导航页面%1").arg(i + 1), page, ElaIconType::House);
+    }
+    // 页面切换：导航节点被点击后，根据其 ElaPageKey 切换堆栈页
+    connect(navigationBar, &ElaNavigationBar::navigationNodeClicked, this, [=](ElaNavigationType::NavigationNodeType nodeType, QString nodeKey, bool isRouteBack) {
+        for (int i = 0; i < navigationStack->count(); i++)
+        {
+            if (navigationStack->widget(i)->property("ElaPageKey").toString() == nodeKey)
+            {
+                navigationStack->setCurrentIndex(i);
+                break;
+            }
+        }
+    });
+    ElaScrollPageArea* navigationBarArea = new ElaScrollPageArea(this);
+    navigationBarArea->setFixedHeight(350);
+    QHBoxLayout* navigationBarLayout = new QHBoxLayout(navigationBarArea);
+    navigationBarLayout->setContentsMargins(0, 0, 0, 0);
+    navigationBarLayout->addWidget(navigationBar);
+    navigationBarLayout->addWidget(navigationStack);
+
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("ElaNavigation");
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
@@ -102,6 +136,10 @@ T_Navigation::T_Navigation(QWidget* parent)
     centerVLayout->addWidget(pivotText);
     centerVLayout->addSpacing(10);
     centerVLayout->addWidget(pivotArea);
+    centerVLayout->addSpacing(15);
+    centerVLayout->addWidget(navigationBarText);
+    centerVLayout->addSpacing(10);
+    centerVLayout->addWidget(navigationBarArea);
     centerVLayout->addSpacing(15);
     centerVLayout->addWidget(tabWidgetText);
     centerVLayout->addSpacing(10);

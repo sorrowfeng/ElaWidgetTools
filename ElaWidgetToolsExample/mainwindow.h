@@ -11,6 +11,7 @@ class T_BaseComponents;
 class T_Navigation;
 class T_Popup;
 class T_Card;
+class T_RibbonBar;
 class T_ListView;
 class T_TableView;
 class T_TreeView;
@@ -45,6 +46,7 @@ private:
     T_Navigation* _navigationPage{nullptr};
     T_Popup* _popupPage{nullptr};
     T_Card* _cardPage{nullptr};
+    T_RibbonBar* _ribbonBarPage{nullptr};
     T_ListView* _listViewPage{nullptr};
     T_TableView* _tableViewPage{nullptr};
     T_TreeView* _treeViewPage{nullptr};

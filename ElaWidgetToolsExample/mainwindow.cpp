@@ -19,6 +19,7 @@
 #include "T_BaseComponents.h"
 #include "T_Card.h"
 #include "T_ListView.h"
+#include "T_RibbonBar.h"
 #include "T_Setting.h"
 #include "T_TableView.h"
 #include "T_TreeView.h"
@@ -333,6 +334,7 @@ void MainWindow::initContent()
     _navigationPage = new T_Navigation(this);
     _popupPage = new T_Popup(this);
     _cardPage = new T_Card(this);
+    _ribbonBarPage = new T_RibbonBar(this);
     _listViewPage = new T_ListView(this);
     _tableViewPage = new T_TableView(this);
     _treeViewPage = new T_TreeView(this);
@@ -360,6 +362,7 @@ void MainWindow::initContent()
     addPageNode("ElaTreeView", _treeViewPage, _viewKey, ElaIconType::ListTree);
     expandNavigationNode(_viewKey);
     addPageNode("ElaCard", _cardPage, ElaIconType::Cards);
+    addPageNode("ElaRibbonBar", _ribbonBarPage, ElaIconType::RectangleWide);
     QString customKey;
     addCategoryNode("Custom", customKey);
     addPageNode("ElaNavigation", _navigationPage, ElaIconType::LocationArrow);

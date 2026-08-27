@@ -2,6 +2,8 @@
 
 #include "ElaCheckBox.h"
 #include "ElaComboBox.h"
+#include "ElaDoubleSpinBox.h"
+#include "ElaIconButton.h"
 #include "ElaMessageButton.h"
 #include "ElaMultiSelectComboBox.h"
 #include "ElaPlainTextEdit.h"
@@ -212,6 +214,41 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
         }
     });
 
+    // ElaDoubleSpinBox
+    ElaDoubleSpinBox* doubleSpinBox = new ElaDoubleSpinBox(this);
+    doubleSpinBox->setRange(0.0, 100.0);
+    doubleSpinBox->setSingleStep(0.5);
+    doubleSpinBox->setValue(3.14);
+    ElaScrollPageArea* doubleSpinBoxArea = new ElaScrollPageArea(this);
+    QHBoxLayout* doubleSpinBoxLayout = new QHBoxLayout(doubleSpinBoxArea);
+    ElaText* doubleSpinBoxText = new ElaText("ElaDoubleSpinBox", this);
+    doubleSpinBoxText->setTextPixelSize(15);
+    doubleSpinBoxLayout->addWidget(doubleSpinBoxText);
+    doubleSpinBoxLayout->addWidget(doubleSpinBox);
+    doubleSpinBoxLayout->addStretch();
+    ElaToggleSwitch* doubleSpinBoxModeSwitch = new ElaToggleSwitch(this);
+    ElaText* doubleSpinBoxModeText = new ElaText("NoButtons", this);
+    doubleSpinBoxModeText->setTextPixelSize(15);
+    connect(doubleSpinBoxModeSwitch, &ElaToggleSwitch::toggled, this, [=](bool checked)
+            { doubleSpinBox->setButtonMode(checked ? ElaSpinBoxType::NoButtons : ElaSpinBoxType::Inline); });
+    doubleSpinBoxLayout->addWidget(doubleSpinBoxModeSwitch);
+    doubleSpinBoxLayout->addWidget(doubleSpinBoxModeText);
+    doubleSpinBoxLayout->addSpacing(10);
+
+    // ElaIconButton
+    ElaIconButton* iconButton1 = new ElaIconButton(ElaIconType::MagnifyingGlass, 16, 32, 32, this);
+    ElaIconButton* iconButton2 = new ElaIconButton(ElaIconType::Heart, 16, 32, 32, this);
+    ElaIconButton* iconButton3 = new ElaIconButton(ElaIconType::GearComplex, 16, 32, 32, this);
+    ElaScrollPageArea* iconButtonArea = new ElaScrollPageArea(this);
+    QHBoxLayout* iconButtonLayout = new QHBoxLayout(iconButtonArea);
+    ElaText* iconButtonText = new ElaText("ElaIconButton", this);
+    iconButtonText->setTextPixelSize(15);
+    iconButtonLayout->addWidget(iconButtonText);
+    iconButtonLayout->addWidget(iconButton1);
+    iconButtonLayout->addWidget(iconButton2);
+    iconButtonLayout->addWidget(iconButton3);
+    iconButtonLayout->addStretch();
+
     _slider = new ElaSlider(this);
     ElaScrollPageArea* sliderArea = new ElaScrollPageArea(this);
     QHBoxLayout* sliderLayout = new QHBoxLayout(sliderArea);
@@ -280,6 +317,8 @@ T_BaseComponents::T_BaseComponents(QWidget* parent)
     centerLayout->addWidget(messageButtonArea);
     centerLayout->addWidget(checkBoxArea);
     centerLayout->addWidget(spinBoxArea);
+    centerLayout->addWidget(doubleSpinBoxArea);
+    centerLayout->addWidget(iconButtonArea);
     centerLayout->addWidget(sliderArea);
     centerLayout->addWidget(radioButtonArea);
     centerLayout->addWidget(progressBarArea);
