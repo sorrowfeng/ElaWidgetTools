@@ -1,4 +1,4 @@
-﻿#include "ElaContentDialog.h"
+#include "ElaContentDialog.h"
 
 #include <ElaPushButton.h>
 
@@ -45,11 +45,9 @@ ElaContentDialog::ElaContentDialog(QWidget* parent)
     d->_leftButton->setLightHoverColor(ElaThemeColor(ElaThemeType::Light, BasicHover));
     d->_leftButton->setLightPressColor(ElaThemeColor(ElaThemeType::Light, BasicPress));
     connect(d->_leftButton, &ElaPushButton::clicked, this, [=]() {
+        Q_EMIT leftButtonClicked();
         onLeftButtonClicked();
         d->_doCloseAnimation(false);
-        QTimer::singleShot(0, nullptr, [=]() {
-            Q_EMIT leftButtonClicked();
-        });
     });
     d->_leftButton->setMinimumSize(0, 0);
     d->_leftButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
@@ -60,10 +58,8 @@ ElaContentDialog::ElaContentDialog(QWidget* parent)
     d->_middleButton->setLightHoverColor(ElaThemeColor(ElaThemeType::Light, BasicHover));
     d->_middleButton->setLightPressColor(ElaThemeColor(ElaThemeType::Light, BasicPress));
     connect(d->_middleButton, &ElaPushButton::clicked, this, [=]() {
+        Q_EMIT middleButtonClicked();
         onMiddleButtonClicked();
-        QTimer::singleShot(0, nullptr, [=]() {
-            Q_EMIT middleButtonClicked();
-        });
     });
     d->_middleButton->setMinimumSize(0, 0);
     d->_middleButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
@@ -71,11 +67,9 @@ ElaContentDialog::ElaContentDialog(QWidget* parent)
     d->_middleButton->setBorderRadius(6);
     d->_rightButton = new ElaPushButton("exit", this);
     connect(d->_rightButton, &ElaPushButton::clicked, this, [=]() {
+        Q_EMIT rightButtonClicked();
         onRightButtonClicked();
         d->_doCloseAnimation(true);
-        QTimer::singleShot(0, nullptr, [=]() {
-            Q_EMIT rightButtonClicked();
-        });
     });
     d->_rightButton->setLightDefaultColor(ElaThemeColor(ElaThemeType::Light, PrimaryNormal));
     d->_rightButton->setLightHoverColor(ElaThemeColor(ElaThemeType::Light, PrimaryHover));
