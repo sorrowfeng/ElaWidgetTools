@@ -39,6 +39,11 @@ void ElaAppBarPrivate::onMinButtonClicked()
 void ElaAppBarPrivate::onMaxButtonClicked()
 {
     Q_Q(ElaAppBar);
+    // 固定尺寸窗口跳过最大化,避免与 min/max 尺寸约束冲突导致绘制异常
+    if (_pIsFixedSize)
+    {
+        return;
+    }
     bool isMaximized = q->window()->isMaximized();
     isMaximized ? q->window()->showNormal() : q->window()->showMaximized();
 #ifndef Q_OS_WIM
