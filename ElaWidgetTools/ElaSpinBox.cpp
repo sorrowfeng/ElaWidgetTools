@@ -158,3 +158,24 @@ void ElaSpinBox::contextMenuEvent(QContextMenuEvent* event)
     }
     event->accept();
 }
+
+// 实例级自定义背景色转发(存于样式对象)
+#define ELASPINBOX_FORWARD_COLOR(M)                               \
+    void ElaSpinBox::set##M(const QColor& color)                  \
+    {                                                             \
+        Q_D(ElaSpinBox);                                          \
+        d->_style->set##M(color);                                 \
+        update();                                                 \
+    }                                                             \
+    QColor ElaSpinBox::get##M() const                             \
+    {                                                             \
+        Q_D(const ElaSpinBox);                                    \
+        return d->_style->get##M();                               \
+    }
+
+ELASPINBOX_FORWARD_COLOR(LightDefaultColor)
+ELASPINBOX_FORWARD_COLOR(LightHoverColor)
+ELASPINBOX_FORWARD_COLOR(LightPressColor)
+ELASPINBOX_FORWARD_COLOR(DarkDefaultColor)
+ELASPINBOX_FORWARD_COLOR(DarkHoverColor)
+ELASPINBOX_FORWARD_COLOR(DarkPressColor)

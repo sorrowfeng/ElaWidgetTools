@@ -138,9 +138,7 @@ void ElaThemePrivate::_initBlueThemeColor()
     _blueThemeColorList[ElaThemeType::BasicPress] = QColor(0x6E, 0xA6, 0xF5);
     _blueThemeColorList[ElaThemeType::BasicHoverAlpha] = QColor(0x84, 0xB5, 0xFF, 70);
     _blueThemeColorList[ElaThemeType::BasicPressAlpha] = QColor(0x6E, 0xA6, 0xF5, 40);
-    // 输入框
-    _blueThemeColorList[ElaThemeType::InputBase] = QColor(0x9A, 0xC4, 0xFF);
-    _blueThemeColorList[ElaThemeType::InputFocus] = QColor(0x84, 0xB5, 0xFF);
+    // 输入框(ComboBox/SpinBox/TextEdit 等)背景保持 Light 配色,不变蓝
     // 选中态
     _blueThemeColorList[ElaThemeType::BasicSelectedAlpha] = QColor(0x9A, 0xC4, 0xFF, 110);
     _blueThemeColorList[ElaThemeType::BasicSelectedHoverAlpha] = QColor(0x6E, 0xA6, 0xF5, 80);

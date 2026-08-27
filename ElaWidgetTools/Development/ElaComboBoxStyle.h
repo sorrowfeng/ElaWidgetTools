@@ -1,6 +1,7 @@
 #ifndef ELAWORKSPACE_ELAWIDGETTOOLS_DEVELOPERCOMPONENTS_ELACOMBOBOXSTYLE_H_
 #define ELAWORKSPACE_ELAWIDGETTOOLS_DEVELOPERCOMPONENTS_ELACOMBOBOXSTYLE_H_
 
+#include <QColor>
 #include <QProxyStyle>
 
 #include "ElaWidgetToolsDef.h"
@@ -9,6 +10,13 @@ class ElaComboBoxStyle : public QProxyStyle
     Q_OBJECT
     Q_PROPERTY_CREATE(qreal, ExpandIconRotate)
     Q_PROPERTY_CREATE(qreal, ExpandMarkWidth)
+    // 实例级自定义框体背景色(默认无效值=跟随主题;设置后优先生效)
+    Q_PRIVATE_CREATE(QColor, LightDefaultColor)
+    Q_PRIVATE_CREATE(QColor, LightHoverColor)
+    Q_PRIVATE_CREATE(QColor, LightPressColor)
+    Q_PRIVATE_CREATE(QColor, DarkDefaultColor)
+    Q_PRIVATE_CREATE(QColor, DarkHoverColor)
+    Q_PRIVATE_CREATE(QColor, DarkPressColor)
 public:
     explicit ElaComboBoxStyle(QStyle* style = nullptr);
     ~ElaComboBoxStyle() override;

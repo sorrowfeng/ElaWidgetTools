@@ -39,6 +39,11 @@ ElaContentDialog::ElaContentDialog(QWidget* parent)
     createWinId();
 #endif
     d->_leftButton = new ElaPushButton("cancel", this);
+    // 显式指定浅色配色(白底):Blue 主题下按钮默认落入蓝色调,
+    // 设置自定义色后即走自定义通道,不受主题蓝色影响;仅右按钮保持强调蓝
+    d->_leftButton->setLightDefaultColor(Qt::white);
+    d->_leftButton->setLightHoverColor(ElaThemeColor(ElaThemeType::Light, BasicHover));
+    d->_leftButton->setLightPressColor(ElaThemeColor(ElaThemeType::Light, BasicPress));
     connect(d->_leftButton, &ElaPushButton::clicked, this, [=]() {
         onLeftButtonClicked();
         d->_doCloseAnimation(false);
@@ -51,6 +56,9 @@ ElaContentDialog::ElaContentDialog(QWidget* parent)
     d->_leftButton->setFixedHeight(38);
     d->_leftButton->setBorderRadius(6);
     d->_middleButton = new ElaPushButton("minimum", this);
+    d->_middleButton->setLightDefaultColor(Qt::white);
+    d->_middleButton->setLightHoverColor(ElaThemeColor(ElaThemeType::Light, BasicHover));
+    d->_middleButton->setLightPressColor(ElaThemeColor(ElaThemeType::Light, BasicPress));
     connect(d->_middleButton, &ElaPushButton::clicked, this, [=]() {
         onMiddleButtonClicked();
         QTimer::singleShot(0, nullptr, [=]() {

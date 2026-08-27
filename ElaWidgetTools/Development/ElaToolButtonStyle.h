@@ -1,6 +1,7 @@
 #ifndef ELAWORKSPACE_ELAWIDGETTOOLS_DEVELOPERCOMPONENTS_ELATOOLBUTTONSTYLE_H_
 #define ELAWORKSPACE_ELAWIDGETTOOLS_DEVELOPERCOMPONENTS_ELATOOLBUTTONSTYLE_H_
 
+#include <QColor>
 #include <QProxyStyle>
 
 #include "ElaWidgetToolsDef.h"
@@ -12,6 +13,13 @@ class ElaToolButtonStyle : public QProxyStyle
     Q_PRIVATE_CREATE(int, BorderRadius)
     Q_PROPERTY_CREATE(qreal, ExpandIconRotate)
     Q_PRIVATE_CREATE(bool, IsSelected);
+    // 实例级自定义背景色(默认无效值=跟随主题;设置后在任意主题下优先生效)
+    Q_PRIVATE_CREATE(QColor, LightDefaultColor)
+    Q_PRIVATE_CREATE(QColor, LightHoverColor)
+    Q_PRIVATE_CREATE(QColor, LightPressColor)
+    Q_PRIVATE_CREATE(QColor, DarkDefaultColor)
+    Q_PRIVATE_CREATE(QColor, DarkHoverColor)
+    Q_PRIVATE_CREATE(QColor, DarkPressColor)
 
 public:
     explicit ElaToolButtonStyle(QStyle* style = nullptr);

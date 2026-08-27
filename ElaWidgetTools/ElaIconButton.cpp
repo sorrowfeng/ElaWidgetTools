@@ -172,7 +172,14 @@ bool ElaIconButton::event(QEvent* event)
             });
             alphaAnimation->setDuration(175);
             alphaAnimation->setStartValue(d->_pHoverAlpha);
-            alphaAnimation->setEndValue(!ElaTheme::isDarkTheme(d->_themeMode) ? (d->_themeMode == ElaThemeType::Blue ? ElaThemeColor(d->_themeMode, BasicHoverAlpha) : d->_pLightHoverColor).alpha() : d->_pDarkHoverColor.alpha());
+            // Blue 主题:默认悬停为蓝色调;显式设置了自定义悬停色
+            // (如关闭按钮的红色)时优先使用自定义色
+            const QColor lightHoverColor =
+                (d->_themeMode == ElaThemeType::Blue &&
+                 d->_pLightHoverColor == ElaThemeColor(ElaThemeType::Light, BasicHoverAlpha))
+                    ? ElaThemeColor(d->_themeMode, BasicHoverAlpha)
+                    : d->_pLightHoverColor;
+            alphaAnimation->setEndValue(!ElaTheme::isDarkTheme(d->_themeMode) ? lightHoverColor.alpha() : d->_pDarkHoverColor.alpha());
             alphaAnimation->start(QAbstractAnimation::DeleteWhenStopped);
         }
         break;
@@ -213,7 +220,13 @@ void ElaIconButton::paintEvent(QPaintEvent* event)
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter.setPen(Qt::NoPen);
     const auto lightStyleHoverColor = [=]() {
-        return d->_themeMode == ElaThemeType::Blue ? ElaThemeColor(d->_themeMode, BasicHoverAlpha) : d->_pLightHoverColor;
+        // Blue 主题:默认悬停为蓝色调;显式设置了自定义悬停色
+        // (如关闭按钮的红色)时优先使用自定义色
+        if (d->_themeMode == ElaThemeType::Blue &&
+            d->_pLightHoverColor == ElaThemeColor(ElaThemeType::Light, BasicHoverAlpha)) {
+            return ElaThemeColor(d->_themeMode, BasicHoverAlpha);
+        }
+        return d->_pLightHoverColor;
     };
     if (d->_isAlphaAnimationFinished || d->_pIsSelected)
     {

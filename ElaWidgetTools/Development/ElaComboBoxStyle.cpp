@@ -66,8 +66,11 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
             eTheme->drawEffectShadow(painter, viewRect, _shadowBorderWidth, 6);
             QRect foregroundRect(viewRect.x() + _shadowBorderWidth, viewRect.y(), viewRect.width() - 2 * _shadowBorderWidth, viewRect.height() - _shadowBorderWidth);
-            painter->setPen(ElaThemeColor(_themeMode, PopupBorder));
-            painter->setBrush(ElaThemeColor(_themeMode, PopupBase));
+            // Blue 主题:下拉弹层背景/边框沿用 Light 配色(不变蓝)
+            const ElaThemeType::ThemeMode popupThemeMode =
+                _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
+            painter->setPen(ElaThemeColor(popupThemeMode, PopupBorder));
+            painter->setBrush(ElaThemeColor(popupThemeMode, PopupBase));
             painter->drawRoundedRect(foregroundRect, 3, 3);
             painter->restore();
         }
@@ -91,6 +94,7 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             path.addRoundedRect(optionRect, 5, 5);
             if (option->state & QStyle::State_Selected)
             {
+                // Blue 主题:选中项为定制蓝色样式(底色蓝调 + #1E94D4 选中条)
                 if (option->state & (QStyle::State_MouseOver | QStyle::State_Sunken))
                 {
                     // 选中时覆盖 / 点击
@@ -105,7 +109,9 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
                 }
                 //选中Mark
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
+                painter->setBrush(_themeMode == ElaThemeType::Blue
+                                      ? QColor(0x1E, 0x94, 0xD4)
+                                      : ElaThemeColor(_themeMode, PrimaryNormal));
                 painter->drawRoundedRect(QRectF(optionRect.x() + 3, optionRect.y() + optionRect.height() * 0.2, 3, optionRect.height() - +optionRect.height() * 0.4), 2, 2);
             }
             else
@@ -151,25 +157,33 @@ void ElaComboBoxStyle::drawComplexControl(ComplexControl control, const QStyleOp
             //背景绘制
             bool isEnabled = copt->state.testFlag(QStyle::State_Enabled);
             painter->setPen(ElaThemeColor(_themeMode, BasicBorder));
+            // Blue 主题:下拉框本体背景沿用 Light 配色(不变蓝)
+            const ElaThemeType::ThemeMode boxThemeMode =
+                _themeMode == ElaThemeType::Blue ? ElaThemeType::Light : _themeMode;
+            // 实例自定义色优先;未设置时按主题解析
+            const bool isLightTheme = !ElaTheme::isDarkTheme(_themeMode);
+            const QColor& customDefault = isLightTheme ? _pLightDefaultColor : _pDarkDefaultColor;
+            const QColor& customHover = isLightTheme ? _pLightHoverColor : _pDarkHoverColor;
+            const QColor& customPress = isLightTheme ? _pLightPressColor : _pDarkPressColor;
             if (!isEnabled)
             {
                 painter->setBrush(ElaThemeColor(_themeMode, BasicDisable));
             }
             else if (copt->state.testFlag(QStyle::State_Sunken) || copt->state.testFlag(QStyle::State_On))
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicPress));
+                painter->setBrush(customPress.isValid() ? customPress : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicPress));
             }
             else if (copt->state.testFlag(QStyle::State_HasFocus) && copt->editable)
             {
-                painter->setBrush(ElaThemeColor(_themeMode, InputFocus));
+                painter->setBrush(customHover.isValid() ? customHover : eTheme->getThemeColor(boxThemeMode, ElaThemeType::InputFocus));
             }
             else if (copt->state.testFlag(QStyle::State_MouseOver))
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicHover));
+                painter->setBrush(customHover.isValid() ? customHover : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicHover));
             }
             else
             {
-                painter->setBrush(ElaThemeColor(_themeMode, BasicBase));
+                painter->setBrush(customDefault.isValid() ? customDefault : eTheme->getThemeColor(boxThemeMode, ElaThemeType::BasicBase));
             }
             QRect comboBoxRect = copt->rect;
             comboBoxRect.adjust(_shadowBorderWidth, 1, -_shadowBorderWidth, -1);
