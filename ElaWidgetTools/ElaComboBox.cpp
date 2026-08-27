@@ -210,7 +210,10 @@ void ElaComboBox::hidePopup()
 void ElaComboBox::paintEvent(QPaintEvent* event)
 {
     Q_D(ElaComboBox);
-    if (lineEdit() && lineEdit()->palette().color(QPalette::Text) != ElaThemeColor(d->_themeMode, BasicText))
+    const QColor basicText = ElaThemeColor(d->_themeMode, BasicText);
+    // 编辑态与选择态均需自愈:LineEdit 或控件 palette 的文字色落后于主题时同步刷新
+    if ((lineEdit() && lineEdit()->palette().color(QPalette::Text) != basicText) ||
+        (!lineEdit() && palette().color(QPalette::Text) != basicText))
     {
         d->onThemeChanged(d->_themeMode);
     }
