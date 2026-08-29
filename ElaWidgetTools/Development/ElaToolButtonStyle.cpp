@@ -135,7 +135,9 @@ QSize ElaToolButtonStyle::sizeFromContents(ContentsType type, const QStyleOption
             QSize toolButtonSize = QProxyStyle::sizeFromContents(type, option, size, widget);
             if (bopt->features.testFlag(QStyleOptionToolButton::HasMenu) && !bopt->features.testFlag(QStyleOptionToolButton::MenuButtonPopup))
             {
-                toolButtonSize.setWidth(toolButtonSize.width() + _contentMargin + 0.65 * std::min(bopt->iconSize.width(), bopt->iconSize.height()));
+                // 预留宽度需与 _drawIndicator 的指示器字号(0.75 * 图标边长)一致,
+                // 0.65 倍在图标较大时不足以容纳箭头,会导致图标与箭头重叠
+                toolButtonSize.setWidth(toolButtonSize.width() + _contentMargin + 0.75 * std::min(bopt->iconSize.width(), bopt->iconSize.height()));
             }
             return toolButtonSize;
         }
@@ -197,6 +199,16 @@ void ElaToolButtonStyle::_drawIcon(QPainter* painter, QRectF iconRect, const QSt
     if (bopt->toolButtonStyle != Qt::ToolButtonTextOnly)
     {
         QSize iconSize = bopt->iconSize;
+        // HasMenu(InstantPopup 等,无独立菜单按钮)时右侧需留给展开指示器:
+        // 底层 style 的 SC_ToolButton 内容区仅在 MenuButtonPopup 下才会收缩,
+        // HasMenu 下仍是整个按钮矩形,居中绘制图标会与下拉箭头重叠,
+        // 这里手动扣除指示器区域(与 _drawIndicator 的区域计算保持一致)
+        if (bopt->toolButtonStyle == Qt::ToolButtonIconOnly &&
+            bopt->features.testFlag(QStyleOptionToolButton::HasMenu) &&
+            !bopt->features.testFlag(QStyleOptionToolButton::MenuButtonPopup))
+        {
+            iconRect.setRight(iconRect.right() - _contentMargin - _calculateExpandIndicatorWidth(bopt, painter));
+        }
         if (widget->property("ElaIconType").toString().isEmpty())
         {
             // 绘制QIcon
