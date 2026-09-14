@@ -254,8 +254,27 @@ void ElaTabBar::resizeEvent(QResizeEvent* event)
 void ElaTabBar::paintEvent(QPaintEvent* event)
 {
     Q_D(ElaTabBar);
-    // 兜底同步: Qt 内部(moveTab/makeVisible 等)可能已修改 scrollOffset
-    d->setScrollOffset(d->_tabBarPrivate->scrollOffset);
+    // 兜底同步: Qt 内部(moveTab/makeVisible 等)可能已修改 scrollOffset。
+    //
+    // 这里必须带"值不同才写"的守卫, 否则会退化成 0 延迟自激重绘:
+    //   setScrollOffset() 由 Q_PROPERTY_CREATE 宏生成, 是"无条件 Q_EMIT"的;
+    //   而本类对 pScrollOffsetChanged 的处理器会调用 update()。Qt 在 paintEvent
+    //   内部遇到 update() 时会改为投递 QEvent::UpdateLater(见 qwidget.cpp 的
+    //   QWidgetPrivate::update(): WA_WState_InPaintEvent 为真时 postEvent
+    //   QUpdateLaterEvent), 于是形成闭环:
+    //     paintEvent -> setScrollOffset() -> pScrollOffsetChanged -> update()
+    //       -> UpdateLater -> update() -> markDirty -> paintEvent -> ...
+    //   实测约 2800 次/秒, 且每一轮都把整个窗口重绘一遍(含 DirectWrite 文字布局),
+    //   GUI 线程被占满 ~0.9 核。它的迷惑性在于: Windows 消息队列始终为空
+    //   (Qt 的 posted event 被即时消费、不产生 Win32 消息), Resize/Move 也几乎
+    //   为零, 所以从"消息洪水/重绘活锁"或"几何抖动"两个方向都查不出来。
+    //   QTabBarPrivate::scrollOffset 是 int, 信号处理器正是把它写成
+    //   qRound(getScrollOffset()), 因此按同一口径比较即可: 相等就说明已经同步,
+    //   不需要再发一次信号。
+    if (qRound(d->getScrollOffset()) != d->_tabBarPrivate->scrollOffset)
+    {
+        d->setScrollOffset(qreal(d->_tabBarPrivate->scrollOffset));
+    }
     QSize tabSize = d->_style->getTabSize();
     for (int i = 0; i < d->_tabBarPrivate->tabList.size(); i++)
     {
