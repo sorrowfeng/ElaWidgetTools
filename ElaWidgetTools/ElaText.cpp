@@ -181,7 +181,10 @@ void ElaText::paintEvent(QPaintEvent* event)
             painter.save();
             painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
             painter.setPen(ElaThemeColor(d->_themeMode, BasicText));
-            painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap | Qt::TextWrapAnywhere, text());
+            // 保留控件自身对齐方式: 此前硬编码 AlignLeft, 使换行场景下
+            // setAlignment(AlignCenter/AlignRight) 完全失效。
+            // QLabel 默认 alignment 为 AlignLeft|AlignVCenter, 行为与旧版一致。
+            painter.drawText(rect(), alignment() | Qt::TextWordWrap | Qt::TextWrapAnywhere, text());
             painter.restore();
         }
         else
