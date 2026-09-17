@@ -239,7 +239,13 @@ QRect ElaComboBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionComp
         case QStyle::SC_ScrollBarSubLine:
         {
             //文字区域
+#ifdef Q_OS_MACOS
+            // QMacStyle 对 SC_ScrollBarSubLine 的语义与 Windows/Linux 不同,
+            // 直接基于控件矩形计算,保证 macOS 与 Windows 布局一致。
+            QRect textRect = opt->rect;
+#else
             QRect textRect = QProxyStyle::subControlRect(cc, opt, sc, widget);
+#endif
             textRect.setLeft(16);
             textRect.setRight(textRect.right() - 15);
             return textRect;
@@ -247,8 +253,17 @@ QRect ElaComboBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionComp
         case QStyle::SC_ScrollBarAddPage:
         {
             //展开图标区域
+#ifdef Q_OS_MACOS
+            // 右侧固定大小的方形区域,垂直居中
+            QRect expandIconRect = opt->rect;
+            const int side = qMin(expandIconRect.height(), 24);
+            expandIconRect.setLeft(expandIconRect.right() - side - 6);
+            expandIconRect.setTop(expandIconRect.top() + (expandIconRect.height() - side) / 2);
+            expandIconRect.setHeight(side);
+#else
             QRect expandIconRect = QProxyStyle::subControlRect(cc, opt, sc, widget);
             expandIconRect.setLeft(expandIconRect.left() - 25);
+#endif
             return expandIconRect;
         }
         default:

@@ -26,7 +26,11 @@ ElaMessageBar::ElaMessageBar(ElaMessageBarType::PositionPolicy policy, ElaMessag
     setFixedHeight(60);
     setMouseTracking(true);
     d->_pOpacity = 1;
+#ifdef Q_OS_MACOS
+    setFont(QFont("PingFang SC"));
+#else
     setFont(QFont("微软雅黑"));
+#endif
     parent->installEventFilter(this);
     d->_closeButton = new ElaIconButton(ElaIconType::Xmark, 17, d->_closeButtonWidth, 30, this);
     switch (d->_messageMode)

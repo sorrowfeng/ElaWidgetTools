@@ -100,7 +100,12 @@ void ElaComboBox::showPopup()
                 containerHeight = count() * 35 + 8;
             }
             view()->resize(view()->width(), containerHeight - 8);
+#ifdef Q_OS_MACOS
+            // QMacStyle 下基类给出的 container 坐标会错位,按控件自身位置锚定到下方
+            container->move(mapToGlobal(QPoint(0, height() + 3)));
+#else
             container->move(container->x(), container->y() + 3);
+#endif
             QLayout* layout = container->layout();
             while (layout->count())
             {

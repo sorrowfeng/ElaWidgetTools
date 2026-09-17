@@ -9,6 +9,22 @@
 #include <QLineEdit>
 #include <QPainter>
 #include <QPropertyAnimation>
+
+namespace {
+// macOS 的 QMacStyle 会给带样式表的 QLineEdit 仍画一层原生边框,显式去掉;
+// 其它平台保持原样式。
+QString lineEditStyleSheet(bool withLeftPadding)
+{
+#ifdef Q_OS_MACOS
+    const QString base = QStringLiteral("background-color:transparent;border:none;");
+#else
+    const QString base = QStringLiteral("background-color:transparent;");
+#endif
+    return withLeftPadding ? base + QStringLiteral("padding-left:10px;padding-bottom:3px;")
+                           : base + QStringLiteral("padding-bottom:3px;");
+}
+}  // namespace
+
 ElaSpinBox::ElaSpinBox(QWidget* parent)
     : QSpinBox(parent), d_ptr(new ElaSpinBoxPrivate())
 {
@@ -19,7 +35,7 @@ ElaSpinBox::ElaSpinBox(QWidget* parent)
     d->_style = new ElaSpinBoxStyle(style());
     setStyle(d->_style);
     lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    lineEdit()->setStyleSheet("background-color:transparent;padding-left:10px;padding-bottom:3px;");
+    lineEdit()->setStyleSheet(lineEditStyleSheet(true));
     d->onThemeChanged(eTheme->getThemeMode());
     connect(eTheme, &ElaTheme::themeModeChanged, d, &ElaSpinBoxPrivate::onThemeChanged);
 }
@@ -43,7 +59,7 @@ void ElaSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
     case ElaSpinBoxType::Inline:
     {
         lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        lineEdit()->setStyleSheet("background-color:transparent;padding-left:10px;padding-bottom:3px;");
+        lineEdit()->setStyleSheet(lineEditStyleSheet(true));
         break;
     }
     case ElaSpinBoxType::Compact:
@@ -51,7 +67,7 @@ void ElaSpinBox::setButtonMode(ElaSpinBoxType::ButtonMode buttonMode)
     case ElaSpinBoxType::PMSide:
     {
         lineEdit()->setAlignment(Qt::AlignCenter);
-        lineEdit()->setStyleSheet("background-color:transparent;padding-bottom:3px;");
+        lineEdit()->setStyleSheet(lineEditStyleSheet(false));
         break;
     }
     case ElaSpinBoxType::NoButtons:

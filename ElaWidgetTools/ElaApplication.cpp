@@ -113,8 +113,13 @@ void ElaApplication::init()
     //默认字体
     QFont font = qApp->font();
     font.setPixelSize(d->_pFontPixelSize);
-    // 按优先级提供跨平台字体回退：Windows / Linux / 通用
+    // 按优先级提供跨平台字体回退
+#ifdef Q_OS_MACOS
+    // macOS 常用中文字体:苹方 / 冬青黑体,西文走 Helvetica Neue / 系统 UI 字体
+    font.setFamilies({"PingFang SC", "Hiragino Sans GB", "Helvetica Neue", ".AppleSystemUIFont", "sans-serif"});
+#else
     font.setFamilies({"Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "sans-serif"});
+#endif
     font.setHintingPreference(QFont::PreferNoHinting);
     qApp->setFont(font);
 #ifdef Q_OS_WIN

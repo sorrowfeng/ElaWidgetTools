@@ -119,6 +119,56 @@ void ElaScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleO
     QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
+QRect ElaScrollBarStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* option, SubControl subControl, const QWidget* widget) const
+{
+#ifdef Q_OS_MACOS
+    // macOS 的 QMacStyle 滚动条没有两端箭头按钮,SC_ScrollBarSubLine/AddLine
+    // 会返回空矩形,导致 Ela 展开态的上下指示三角与滑块位置错乱;这里按控件
+    // 自身矩形计算,保证与 Windows/Linux 一致。
+    if (control == QStyle::CC_ScrollBar)
+    {
+        if (const QStyleOptionSlider* sopt = qstyleoption_cast<const QStyleOptionSlider*>(option))
+        {
+            const QRect r = sopt->rect;
+            const bool horizontal = sopt->orientation == Qt::Horizontal;
+            const int extent = horizontal ? r.height() : r.width();
+            const int line = qMin(extent, 8);
+            switch (subControl)
+            {
+            case QStyle::SC_ScrollBarSubLine:
+                return horizontal ? QRect(r.left(), r.top(), line, r.height())
+                                  : QRect(r.left(), r.top(), r.width(), line);
+            case QStyle::SC_ScrollBarAddLine:
+                return horizontal ? QRect(r.right() - line + 1, r.top(), line, r.height())
+                                  : QRect(r.left(), r.bottom() - line + 1, r.width(), line);
+            case QStyle::SC_ScrollBarSlider:
+            {
+                QRect sr = QProxyStyle::subControlRect(control, option, subControl, widget);
+                if (!sr.isValid())
+                {
+                    sr = r;
+                }
+                if (horizontal)
+                {
+                    sr.setTop(r.top());
+                    sr.setBottom(r.bottom());
+                }
+                else
+                {
+                    sr.setLeft(r.left());
+                    sr.setRight(r.right());
+                }
+                return sr;
+            }
+            default:
+                break;
+            }
+        }
+    }
+#endif
+    return QProxyStyle::subControlRect(control, option, subControl, widget);
+}
+
 int ElaScrollBarStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QWidget* widget) const
 {
     // qDebug() << metric << QProxyStyle::pixelMetric(metric, option, widget);

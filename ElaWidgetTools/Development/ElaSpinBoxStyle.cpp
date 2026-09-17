@@ -140,12 +140,19 @@ QRect ElaSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionCompl
     {
     case CC_SpinBox:
     {
+        // macOS 的 QMacStyle 对 SC_SpinBoxFrame 的度量与 Windows/Linux 不同,
+        // 直接用控件矩形作为基准,保证各平台按钮位置一致。
+#ifdef Q_OS_MACOS
+        const QRect baseFrame = opt->rect;
+#else
+        const QRect baseFrame = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget);
+#endif
         switch (sc)
         {
         case SC_ScrollBarAddLine:
         {
             //增加按钮
-            QRect spinBoxRect = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget).adjusted(1, 1, -1, -1);
+            QRect spinBoxRect = baseFrame.adjusted(1, 1, -1, -1);
             switch (_pButtonMode)
             {
             case ElaSpinBoxType::Inline:
@@ -170,7 +177,7 @@ QRect ElaSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionCompl
         case SC_ScrollBarSubLine:
         {
             //减少按钮
-            QRect spinBoxRect = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget).adjusted(1, 1, -1, -1);
+            QRect spinBoxRect = baseFrame.adjusted(1, 1, -1, -1);
             switch (_pButtonMode)
             {
             case ElaSpinBoxType::Inline:
@@ -194,7 +201,7 @@ QRect ElaSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionCompl
         }
         case SC_SpinBoxEditField:
         {
-            QRect spinBoxRect = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget);
+            QRect spinBoxRect = baseFrame;
             switch (_pButtonMode)
             {
             case ElaSpinBoxType::Inline:

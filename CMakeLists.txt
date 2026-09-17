@@ -38,7 +38,7 @@ if (${QT_VERSION} VERSION_GREATER_EQUAL 6.5.3 AND ${QT_VERSION} VERSION_LESS_EQU
     message(FATAL_ERROR "The QT version you are currently using is not recommended! It may cause exceptions or crashes during operation. The recommended QT versions are QT5.15.2, QT6.6.2, and QT6.6.3! Please be advised")
 endif ()
 
-if (NOT WIN32)
+if (NOT WIN32 AND NOT APPLE)
     add_link_options(-Wl,--disable-new-dtags)
     set(CMAKE_SKIP_INSTALL_RPATH FALSE)
     set(CMAKE_INSTALL_RPATH "${QT_SDK_DIR}/lib:${CMAKE_INSTALL_PREFIX}/ElaWidgetTools/lib")
