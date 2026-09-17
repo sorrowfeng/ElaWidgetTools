@@ -76,6 +76,11 @@ public:
     void setRouteBackButtonEnable(bool isEnable);
     void setRouteForwardButtonEnable(bool isEnable);
 
+    // macOS:该窗口是否使用系统原生标题栏(默认 true)。
+    // 需要自绘圆角弹窗的窗口(ElaDialog/ElaContentDialog)传 false 切回无边框。
+    void setUseNativeTitleBar(bool isUse);
+    bool getUseNativeTitleBar() const;
+
 #ifdef Q_OS_WIN
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     int takeOverNativeEvent(const QByteArray& eventType, void* message, qintptr* result);

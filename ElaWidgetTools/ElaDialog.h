@@ -35,6 +35,7 @@ Q_SIGNALS:
 
 protected:
     virtual void paintEvent(QPaintEvent* event) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
 };
 
 #endif //ELAWORKSPACE_ELAWIDGETTOOLS_ELADIALOG_H_

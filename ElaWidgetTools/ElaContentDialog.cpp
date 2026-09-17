@@ -12,6 +12,9 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QPainterPath>
+#include <QRegion>
+#include <QResizeEvent>
 #include <QScreen>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -34,6 +37,11 @@ ElaContentDialog::ElaContentDialog(QWidget* parent)
     d->_appBar->setWindowButtonFlags(ElaAppBarType::NoneButtonHint);
     d->_appBar->setIsFixedSize(true);
     d->_appBar->setAppBarHeight(0);
+#ifdef Q_OS_MACOS
+    // macOS:该弹窗为自绘圆角无边框卡片(见 paintEvent/resizeEvent)
+    d->_appBar->setUseNativeTitleBar(false);
+    setAttribute(Qt::WA_TranslucentBackground);
+#endif
 #ifdef Q_OS_WIN
     // 防止意外拉伸
     createWinId();
@@ -220,6 +228,12 @@ void ElaContentDialog::paintEvent(QPaintEvent* event)
     painter.save();
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter.setPen(Qt::NoPen);
+#ifdef Q_OS_MACOS
+    // macOS:裁剪到圆角矩形,背景与底部按钮栏一起呈现圆角
+    QPainterPath clip;
+    clip.addRoundedRect(QRectF(rect()), 10, 10);
+    painter.setClipPath(clip);
+#endif
     painter.setBrush(ElaThemeColor(d->_themeMode, DialogBase));
     // 背景绘制
     painter.drawRect(rect());
@@ -227,6 +241,17 @@ void ElaContentDialog::paintEvent(QPaintEvent* event)
     painter.setBrush(ElaThemeColor(d->_themeMode, DialogLayoutArea));
     painter.drawRoundedRect(QRectF(0, height() - 60, width(), 60), 8, 8);
     painter.restore();
+}
+
+void ElaContentDialog::resizeEvent(QResizeEvent* event)
+{
+#ifdef Q_OS_MACOS
+    // 圆角裁剪,避免四角出现直角残影
+    QPainterPath path;
+    path.addRoundedRect(QRectF(rect()), 10, 10);
+    setMask(QRegion(path.toFillPolygon().toPolygon()));
+#endif
+    QDialog::resizeEvent(event);
 }
 
 void ElaContentDialog::keyPressEvent(QKeyEvent* event)

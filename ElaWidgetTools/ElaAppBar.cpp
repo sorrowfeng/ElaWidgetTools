@@ -230,6 +230,11 @@ ElaAppBar::ElaAppBar(QWidget* parent)
         d->_themeMode = themeMode;
         update();
     });
+#ifdef Q_OS_MACOS
+    // macOS 默认使用系统原生标题栏(见 setUseNativeTitleBar);
+    // ElaDialog/ElaContentDialog 等需要自绘圆角弹窗的会显式切回无边框。
+    setUseNativeTitleBar(true);
+#endif
 }
 
 ElaAppBar::~ElaAppBar()
@@ -240,8 +245,22 @@ void ElaAppBar::setAppBarHeight(int height)
 {
     Q_D(ElaAppBar);
     d->_pAppBarHeight = height;
+#ifdef Q_OS_MACOS
+    if (d->_useNativeTitleBar)
+    {
+        // 原生标题栏:自绘 AppBar 不参与布局,窗口顶部不留空
+        setFixedHeight(0);
+        window()->setContentsMargins(0, 0, 0, 0);
+    }
+    else
+    {
+        setFixedHeight(d->_pAppBarHeight);
+        window()->setContentsMargins(0, d->_pAppBarHeight + d->_pRibbonHeight, 0, 0);
+    }
+#else
     setFixedHeight(d->_pAppBarHeight);
     window()->setContentsMargins(0, d->_pAppBarHeight + d->_pRibbonHeight, 0, 0);
+#endif
     Q_EMIT pAppBarHeightChanged();
 }
 
@@ -249,6 +268,42 @@ int ElaAppBar::getAppBarHeight() const
 {
     Q_D(const ElaAppBar);
     return d->_pAppBarHeight;
+}
+
+void ElaAppBar::setUseNativeTitleBar(bool isUse)
+{
+    Q_D(ElaAppBar);
+    d->_useNativeTitleBar = isUse;
+#ifdef Q_OS_MACOS
+    if (isUse)
+    {
+        // 系统原生标题栏:去掉无边框,隐藏自绘标题栏并清掉占位
+        window()->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint);
+        window()->setContentsMargins(0, 0, 0, 0);
+        setFixedHeight(0);
+        hide();
+    }
+    else
+    {
+        // 自绘标题栏(弹窗圆角方案):恢复无边框并显示
+        window()->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::FramelessWindowHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint);
+        setFixedHeight(d->_pAppBarHeight);
+        window()->setContentsMargins(0, d->_pAppBarHeight + d->_pRibbonHeight, 0, 0);
+        show();
+    }
+    if (window()->isVisible())
+    {
+        window()->hide();
+        window()->show();
+    }
+#else
+    Q_UNUSED(isUse);
+#endif
+}
+
+bool ElaAppBar::getUseNativeTitleBar() const
+{
+    return d_ptr->_useNativeTitleBar;
 }
 
 void ElaAppBar::setRibbonHeight(int height)

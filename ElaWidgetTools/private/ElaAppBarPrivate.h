@@ -58,6 +58,7 @@ private:
     int _margins{8};
     bool _isHoverMaxButton{false};
     int _win7Margins{0};
+    bool _useNativeTitleBar{true};
     void _changeMaxButtonAwesome(bool isMaximized);
     void _showAppBarMenu(QPoint point);
     void _updateCursor(int edges);
