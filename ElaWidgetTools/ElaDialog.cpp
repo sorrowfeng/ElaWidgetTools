@@ -6,9 +6,6 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QPainter>
-#include <QPainterPath>
-#include <QRegion>
-#include <QResizeEvent>
 #include <QScreen>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -35,12 +32,6 @@ ElaDialog::ElaDialog(QWidget* parent)
     connect(d->_appBar, &ElaAppBar::navigationButtonClicked, this, &ElaDialog::navigationButtonClicked);
     connect(d->_appBar, &ElaAppBar::themeChangeButtonClicked, this, &ElaDialog::themeChangeButtonClicked);
     connect(d->_appBar, &ElaAppBar::closeButtonClicked, this, &ElaDialog::closeButtonClicked);
-#ifdef Q_OS_MACOS
-    // macOS:该弹窗使用自绘圆角无边框(见 paintEvent/resizeEvent),
-    // 不采用系统原生标题栏。
-    d->_appBar->setUseNativeTitleBar(false);
-    setAttribute(Qt::WA_TranslucentBackground);
-#endif
 
     // 创建主容器，用户可以在其中设置自己的布局
     d->_mainContainer = new QWidget(this);
@@ -169,24 +160,8 @@ void ElaDialog::paintEvent(QPaintEvent* event)
         painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
         painter.setPen(Qt::NoPen);
         painter.setBrush(ElaThemeColor(d->_themeMode, DialogBase));
-#ifdef Q_OS_MACOS
-        // macOS:无边框弹窗绘制圆角,配合 WA_TranslucentBackground 透出四角
-        painter.drawRoundedRect(QRectF(rect()), 10, 10);
-#else
         painter.drawRect(rect());
-#endif
         painter.restore();
     }
     QWidget::paintEvent(event);
-}
-
-void ElaDialog::resizeEvent(QResizeEvent* event)
-{
-#ifdef Q_OS_MACOS
-    // 用圆角区域裁剪窗口,避免四角出现直角残影
-    QPainterPath path;
-    path.addRoundedRect(QRectF(rect()), 10, 10);
-    setMask(QRegion(path.toFillPolygon().toPolygon()));
-#endif
-    QDialog::resizeEvent(event);
 }
