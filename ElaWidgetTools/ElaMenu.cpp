@@ -135,11 +135,6 @@ void ElaMenu::showEvent(QShowEvent* event)
 {
     Q_EMIT menuShow();
     Q_D(ElaMenu);
-#ifdef Q_OS_MACOS
-    // macOS 首次弹出时基类可能用未 polish 的尺寸,先按 sizeHint 定尺
-    ensurePolished();
-    resize(sizeHint());
-#endif
     //消除阴影偏移
     move(this->pos().x() - 6, this->pos().y());
     updateGeometry();
