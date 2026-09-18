@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPropertyAnimation>
+#include <QStyleOption>
 #include <QVBoxLayout>
 
 #include "ElaMenuStyle.h"
@@ -187,6 +188,13 @@ void ElaMenu::paintEvent(QPaintEvent* event)
     painter.setRenderHints(QPainter::Antialiasing);
     if (!d->_animationPix.isNull())
     {
+#ifdef Q_OS_MACOS
+        // 动画期间只画了滑动的抓帧图,空隙会透出后面的窗口(表现为大片空白)。
+        // 先铺满菜单背景,再绘制抓帧图。
+        QStyleOption opt;
+        opt.initFrom(this);
+        style()->drawPrimitive(QStyle::PE_PanelMenu, &opt, &painter, this);
+#endif
         painter.drawPixmap(QRect(0, d->_pAnimationImagePosY, width(), height()), d->_animationPix);
     }
     else

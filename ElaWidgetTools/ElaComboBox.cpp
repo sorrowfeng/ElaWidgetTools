@@ -171,8 +171,14 @@ void ElaComboBox::hidePopup()
                 layout->addWidget(view());
                 QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
                 QApplication::sendEvent(parentWidget(), &focusEvent);
+#ifdef Q_OS_MACOS
+                // macOS:先恢复容器高度再隐藏,避免隐藏后撑高导致弹层再闪一帧
+                container->setFixedHeight(containerHeight);
+                QComboBox::hidePopup();
+#else
                 QComboBox::hidePopup();
                 container->setFixedHeight(containerHeight);
+#endif
             });
             QPoint viewPos = view()->pos();
             connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() {
