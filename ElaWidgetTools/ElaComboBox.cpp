@@ -109,6 +109,19 @@ void ElaComboBox::showPopup()
     qApp->setEffectEnabled(Qt::UI_AnimateCombo, false);
     QComboBox::showPopup();
     qApp->setEffectEnabled(Qt::UI_AnimateCombo, oldAnimationEffects);
+    // 隐藏 QComboBox 私有的上下滚动按钮(QComboBoxPrivateScroller):
+    // 在 Ela 自绘弹层里它位置/样式错乱,表现为顶部的"白色方块 + 箭头"。
+    if (QWidget* container = this->findChild<QFrame*>())
+    {
+        const auto children = container->findChildren<QWidget*>();
+        for (QWidget* w : children)
+        {
+            if (w->inherits("QComboBoxPrivateScroller"))
+            {
+                w->hide();
+            }
+        }
+    }
     if (count() > 0)
     {
         QWidget* container = this->findChild<QFrame*>();
