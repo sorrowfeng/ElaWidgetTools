@@ -169,13 +169,31 @@ void ElaComboBox::showPopup()
 
 void ElaComboBox::hidePopup()
 {
+    Q_D(ElaComboBox);
 #ifdef Q_OS_MACOS
-    // macOS:自定义收起动画(视图上移+容器压扁)在收起后会把弹层再闪一次,
-    // 这里直接走基类收起;弹出定位仍由 showPopup 的自定义逻辑负责。
+    if (d->_isAllowHidePopup)
+    {
+        QWidget* container = this->findChild<QFrame*>();
+        if (container)
+        {
+            // 视图重新入布局并复原容器高度,避免下次弹出出现白色残块
+            QLayout* layout = container->layout();
+            while (layout->count())
+                layout->takeAt(0);
+            layout->addWidget(view());
+            container->setMinimumHeight(0);
+            container->setMaximumHeight(QWIDGETSIZE_MAX);
+        }
+        // 复位指示器动画状态(蓝色横条 + 箭头旋转),否则选中后横条不消失
+        d->_comboBoxStyle->setExpandIconRotate(0);
+        d->_comboBoxStyle->setExpandMarkWidth(0);
+        update();
+        d->_isAllowHidePopup = false;
+    }
+    // 不再走自定义收起动画(视图上移+容器压扁会在收起后二次闪现)
     QComboBox::hidePopup();
     return;
 #endif
-    Q_D(ElaComboBox);
     if (d->_isAllowHidePopup)
     {
         QWidget* container = this->findChild<QFrame*>();
