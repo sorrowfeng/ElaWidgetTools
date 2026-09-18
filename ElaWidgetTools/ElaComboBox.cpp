@@ -6,10 +6,12 @@
 #include "private/ElaComboBoxPrivate.h"
 #include <QAbstractItemView>
 #include <QApplication>
+#include <QFrame>
 #include <QLayout>
 #include <QLineEdit>
 #include <QListView>
 #include <QMouseEvent>
+#include <QPalette>
 #include <QPropertyAnimation>
 Q_PROPERTY_CREATE_Q_CPP(ElaComboBox, int, BorderRadius)
 ElaComboBox::ElaComboBox(QWidget* parent)
@@ -35,7 +37,20 @@ ElaComboBox::ElaComboBox(QWidget* parent)
     comboBoxView->setAutoScroll(false);
     comboBoxView->setSelectionMode(QAbstractItemView::NoSelection);
     comboBoxView->setObjectName("ElaComboBoxView");
+#ifdef Q_OS_MACOS
+    // macOS:不要给下拉视图设样式表——否则整棵子树被 QStyleSheetStyle 接管,
+    // 下拉右侧的 ElaScrollBar 会退化成系统默认滚动条(带箭头,与 ScrollPage 不一致)。
+    // 改用调色板把视图背景设为透明。
+    comboBoxView->setFrameShape(QFrame::NoFrame);
+    comboBoxView->viewport()->setAutoFillBackground(false);
+    {
+        QPalette vp = comboBoxView->palette();
+        vp.setColor(QPalette::Base, Qt::transparent);
+        comboBoxView->setPalette(vp);
+    }
+#else
     comboBoxView->setStyleSheet("#ElaComboBoxView{background-color:transparent;}");
+#endif
     comboBoxView->setStyle(d->_comboBoxStyle);
     QWidget* container = this->findChild<QFrame*>();
     if (container)
@@ -51,7 +66,7 @@ ElaComboBox::ElaComboBox(QWidget* parent)
         }
         layout->addWidget(view());
         layout->setContentsMargins(6, 0, 6, 6);
-#ifndef Q_OS_WIN
+#if !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         container->setStyleSheet("background-color:transparent;");
 #endif
