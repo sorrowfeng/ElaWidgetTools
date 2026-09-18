@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QPainterPath>
 #include <QScopedPointer>
 #include <QScreen>
 #include <QTimer>
@@ -44,6 +45,10 @@ ElaInputDialog::ElaInputDialog(QWidget* parent)
 #endif
 #else
     window()->setWindowFlags((window()->windowFlags()) | Qt::FramelessWindowHint);
+#endif
+#ifdef Q_OS_MACOS
+    // macOS:无边框弹窗,开启半透明以便绘制圆角
+    setAttribute(Qt::WA_TranslucentBackground);
 #endif
     d->_leftButton = new ElaPushButton("cancel", this);
     connect(d->_leftButton, &ElaPushButton::clicked, this, [=]()
@@ -592,6 +597,12 @@ void ElaInputDialog::paintEvent(QPaintEvent* event)
     painter.save();
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter.setPen(Qt::NoPen);
+#ifdef Q_OS_MACOS
+    // macOS:裁剪到圆角矩形,背景与底部按钮栏一起呈现抗锯齿圆角
+    QPainterPath clip;
+    clip.addRoundedRect(QRectF(rect()), 10, 10);
+    painter.setClipPath(clip);
+#endif
     painter.setBrush(ElaThemeColor(d->_themeMode, DialogBase));
     // 背景绘制
     painter.drawRect(rect());
