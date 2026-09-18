@@ -80,6 +80,12 @@ void ElaComboBox::setEditable(bool editable)
 
 void ElaComboBox::showPopup()
 {
+#ifdef Q_OS_MACOS
+    // macOS:自定义弹出动画会在收起后再次闪现弹层,直接走基类(样式仍由
+    // ElaComboBoxStyle/ElaScrollBar 提供)
+    QComboBox::showPopup();
+    return;
+#endif
     Q_D(ElaComboBox);
     bool oldAnimationEffects = qApp->isEffectEnabled(Qt::UI_AnimateCombo);
     qApp->setEffectEnabled(Qt::UI_AnimateCombo, false);
@@ -154,6 +160,11 @@ void ElaComboBox::showPopup()
 
 void ElaComboBox::hidePopup()
 {
+#ifdef Q_OS_MACOS
+    // macOS:与 showPopup 对应,直接走基类收起
+    QComboBox::hidePopup();
+    return;
+#endif
     Q_D(ElaComboBox);
     if (d->_isAllowHidePopup)
     {

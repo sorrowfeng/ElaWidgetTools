@@ -135,6 +135,13 @@ void ElaMenu::showEvent(QShowEvent* event)
 {
     Q_EMIT menuShow();
     Q_D(ElaMenu);
+#ifdef Q_OS_MACOS
+    // macOS:Ela 的抓帧+滑动动画在弹出菜单上会留下大片空白/残影,并影响尺寸观感。
+    // 这里直接走基类显示,绘制交给 ElaMenuStyle(圆角/主题/阴影)。
+    d->_animationPix = QPixmap();
+    QMenu::showEvent(event);
+    return;
+#endif
     //消除阴影偏移
     move(this->pos().x() - 6, this->pos().y());
     updateGeometry();
