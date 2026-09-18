@@ -154,6 +154,12 @@ void ElaComboBox::showPopup()
 
 void ElaComboBox::hidePopup()
 {
+#ifdef Q_OS_MACOS
+    // macOS:自定义收起动画(视图上移+容器压扁)在收起后会把弹层再闪一次,
+    // 这里直接走基类收起;弹出定位仍由 showPopup 的自定义逻辑负责。
+    QComboBox::hidePopup();
+    return;
+#endif
     Q_D(ElaComboBox);
     if (d->_isAllowHidePopup)
     {
@@ -171,14 +177,8 @@ void ElaComboBox::hidePopup()
                 layout->addWidget(view());
                 QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
                 QApplication::sendEvent(parentWidget(), &focusEvent);
-#ifdef Q_OS_MACOS
-                // macOS:先恢复容器高度再隐藏,避免隐藏后撑高导致弹层再闪一帧
-                container->setFixedHeight(containerHeight);
-                QComboBox::hidePopup();
-#else
                 QComboBox::hidePopup();
                 container->setFixedHeight(containerHeight);
-#endif
             });
             QPoint viewPos = view()->pos();
             connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() {

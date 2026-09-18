@@ -37,6 +37,7 @@ void ElaScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleO
             QRect scrollBarRect = sopt->rect;
             if (_pIsExpand)
             {
+#ifndef Q_OS_MACOS
                 // 背景绘制
                 painter->setOpacity(_pOpacity);
                 painter->setPen(Qt::NoPen);
@@ -93,6 +94,7 @@ void ElaScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleO
                     downPath.closeSubpath();
                     painter->drawPath(downPath);
                 }
+#endif
             }
             painter->setOpacity(1);
             //滑块绘制

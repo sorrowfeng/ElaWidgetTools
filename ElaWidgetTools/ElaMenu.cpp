@@ -136,6 +136,20 @@ void ElaMenu::showEvent(QShowEvent* event)
 {
     Q_EMIT menuShow();
     Q_D(ElaMenu);
+#ifdef Q_OS_MACOS
+    // macOS:抓帧+上下滑动动画在滑动期间只露出背景,观感像"大片空白/尺寸异常"。
+    // 改为窗口透明度淡入:保留弹出动画,且弹出即为最终尺寸。
+    d->_animationPix = QPixmap();
+    setWindowOpacity(0.0);
+    QMenu::showEvent(event);
+    QPropertyAnimation* fadeAnimation = new QPropertyAnimation(this, "windowOpacity");
+    fadeAnimation->setEasingCurve(QEasingCurve::OutCubic);
+    fadeAnimation->setDuration(130);
+    fadeAnimation->setStartValue(0.0);
+    fadeAnimation->setEndValue(1.0);
+    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+    return;
+#endif
     //消除阴影偏移
     move(this->pos().x() - 6, this->pos().y());
     updateGeometry();
