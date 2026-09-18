@@ -97,6 +97,9 @@ void ElaToolButton::setMenu(ElaMenu* menu)
     }
     menu->setMenuItemHeight(27);
     QToolButton::setMenu(menu);
+    // 预 polish:让菜单在首次弹出前完成字体/尺寸计算,避免首帧尺寸异常
+    // (macOS 上表现为第一次弹出偏大,第二次才正常)
+    menu->ensurePolished();
     menu->installEventFilter(this);
 }
 
