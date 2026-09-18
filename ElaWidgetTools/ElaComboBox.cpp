@@ -184,10 +184,27 @@ void ElaComboBox::hidePopup()
             container->setMinimumHeight(0);
             container->setMaximumHeight(QWIDGETSIZE_MAX);
         }
-        // 复位指示器动画状态(蓝色横条 + 箭头旋转),否则选中后横条不消失
-        d->_comboBoxStyle->setExpandIconRotate(0);
-        d->_comboBoxStyle->setExpandMarkWidth(0);
-        update();
+        // 指示器复位动画(蓝色横条 + 箭头旋转),保留原 300ms 缓动
+        QPropertyAnimation* rotateAnimation =
+            new QPropertyAnimation(d->_comboBoxStyle, "pExpandIconRotate");
+        connect(rotateAnimation, &QPropertyAnimation::valueChanged, this,
+                [=](const QVariant&) { update(); });
+        rotateAnimation->setDuration(300);
+        rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
+        rotateAnimation->setStartValue(d->_comboBoxStyle->getExpandIconRotate());
+        rotateAnimation->setEndValue(0);
+        rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+
+        QPropertyAnimation* markAnimation =
+            new QPropertyAnimation(d->_comboBoxStyle, "pExpandMarkWidth");
+        connect(markAnimation, &QPropertyAnimation::valueChanged, this,
+                [=](const QVariant&) { update(); });
+        markAnimation->setDuration(300);
+        markAnimation->setEasingCurve(QEasingCurve::InOutSine);
+        markAnimation->setStartValue(d->_comboBoxStyle->getExpandMarkWidth());
+        markAnimation->setEndValue(0);
+        markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+
         d->_isAllowHidePopup = false;
     }
     // 不再走自定义收起动画(视图上移+容器压扁会在收起后二次闪现)
