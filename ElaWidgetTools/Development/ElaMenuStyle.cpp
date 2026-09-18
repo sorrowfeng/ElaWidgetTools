@@ -2,6 +2,7 @@
 
 #include "ElaApplication.h"
 #include <QDebug>
+#include <QFontMetrics>
 #include <QPainter>
 #include <QPainterPath>
 #include <QStyleOption>
@@ -74,8 +75,13 @@ void ElaMenuStyle::drawControl(ControlElement element, const QStyleOption* optio
             else
             {
                 QRect menuRect = mopt->rect;
-                qreal contentPadding = menuRect.width() * 0.055;
                 qreal textLeftSpacing = 8;
+#ifdef Q_OS_MACOS
+                // macOS:固定左右内边距,避免文字左侧留白远大于右侧
+                qreal contentPadding = 12;
+#else
+                qreal contentPadding = menuRect.width() * 0.055;
+#endif
                 painter->save();
                 painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
                 //覆盖效果
@@ -139,7 +145,12 @@ void ElaMenuStyle::drawControl(ControlElement element, const QStyleOption* optio
                     painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : !ElaTheme::isDarkTheme(_themeMode) ? Qt::black
                                                                                                                                 : Qt::white);
 
+#ifdef Q_OS_MACOS
+                    // macOS:左侧只预留 12 + (有图标时)图标区,右侧同样留 12
+                    painter->drawText(QRectF(menuRect.x() + contentPadding + (_isAnyoneItemHasIcon ? _iconWidth + textLeftSpacing : 0), menuRect.y(), menuRect.width(), menuRect.height()), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, textList[0]);
+#else
                     painter->drawText(QRectF(menuRect.x() + (_isAnyoneItemHasIcon ? contentPadding + textLeftSpacing : 0) + _iconWidth, menuRect.y(), menuRect.width(), menuRect.height()), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, textList[0]);
+#endif
                     if (textList.count() > 1)
                     {
                         painter->drawText(QRectF(menuRect.x() + contentPadding + _iconWidth + textLeftSpacing, menuRect.y(), menuRect.width() - (contentPadding * 2 + _iconWidth + textLeftSpacing), menuRect.height()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, textList[1]);
@@ -216,6 +227,23 @@ QSize ElaMenuStyle::sizeFromContents(ContentsType type, const QStyleOption* opti
             {
                 _isAnyoneItemHasIcon = true;
             }
+#ifdef Q_OS_MACOS
+            // macOS:自行计算宽度,左右各留 12(与绘制一致),保证文字两侧留白对称
+            {
+                const bool hasIcon = menu->isHasIcon() || mopt->menuHasCheckableItems;
+                const int pad = 12;
+                const int gap = 8;
+                const QFontMetrics fm(mopt->font);
+                const QString text = mopt->text.split(QLatin1Char('\t')).value(0);
+                int w = pad + (hasIcon ? _iconWidth + gap : 0) +
+                        fm.horizontalAdvance(text) + pad;
+                if (menu->isHasChildMenu())
+                {
+                    w += 20;
+                }
+                return QSize(w, _pMenuItemHeight);
+            }
+#else
             if (menu->isHasChildMenu())
             {
                 return QSize(menuItemSize.width() + 20, _pMenuItemHeight);
@@ -224,6 +252,7 @@ QSize ElaMenuStyle::sizeFromContents(ContentsType type, const QStyleOption* opti
             {
                 return QSize(menuItemSize.width(), _pMenuItemHeight);
             }
+#endif
         }
     }
     default:

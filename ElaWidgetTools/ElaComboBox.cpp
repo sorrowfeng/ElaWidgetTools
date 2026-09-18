@@ -65,7 +65,12 @@ ElaComboBox::ElaComboBox(QWidget* parent)
             layout->takeAt(0);
         }
         layout->addWidget(view());
+#ifdef Q_OS_MACOS
+        // macOS:顶部边距与底部一致(原来顶部为 0,视觉上偏上)
+        layout->setContentsMargins(6, 6, 6, 6);
+#else
         layout->setContentsMargins(6, 0, 6, 6);
+#endif
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         container->setStyleSheet("background-color:transparent;");
