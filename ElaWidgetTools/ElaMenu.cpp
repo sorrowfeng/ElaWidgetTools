@@ -137,17 +137,19 @@ void ElaMenu::showEvent(QShowEvent* event)
     Q_EMIT menuShow();
     Q_D(ElaMenu);
 #ifdef Q_OS_MACOS
-    // macOS:抓帧+上下滑动动画在滑动期间只露出背景,观感像"大片空白/尺寸异常"。
-    // 改为窗口透明度淡入:保留弹出动画,且弹出即为最终尺寸。
+    // macOS:Qt::Popup 窗口通常不支持 windowOpacity,淡入看不到效果;
+    // 改为弹出时从下方轻微上滑(动画窗口位置),保证有可见的弹出动画。
     d->_animationPix = QPixmap();
-    setWindowOpacity(0.0);
     QMenu::showEvent(event);
-    QPropertyAnimation* fadeAnimation = new QPropertyAnimation(this, "windowOpacity");
-    fadeAnimation->setEasingCurve(QEasingCurve::OutCubic);
-    fadeAnimation->setDuration(130);
-    fadeAnimation->setStartValue(0.0);
-    fadeAnimation->setEndValue(1.0);
-    fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+    const QPoint finalPos = pos();
+    const int offsetY = 10;
+    move(finalPos.x(), finalPos.y() + offsetY);
+    QPropertyAnimation* slideAnimation = new QPropertyAnimation(this, "pos");
+    slideAnimation->setEasingCurve(QEasingCurve::OutCubic);
+    slideAnimation->setDuration(150);
+    slideAnimation->setStartValue(QPoint(finalPos.x(), finalPos.y() + offsetY));
+    slideAnimation->setEndValue(finalPos);
+    slideAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     return;
 #endif
     //消除阴影偏移

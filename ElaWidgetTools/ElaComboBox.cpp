@@ -42,11 +42,14 @@ ElaComboBox::ElaComboBox(QWidget* parent)
     // 下拉右侧的 ElaScrollBar 会退化成系统默认滚动条(带箭头,与 ScrollPage 不一致)。
     // 改用调色板把视图背景设为透明。
     comboBoxView->setFrameShape(QFrame::NoFrame);
+    comboBoxView->setAutoFillBackground(false);
     comboBoxView->viewport()->setAutoFillBackground(false);
     {
         QPalette vp = comboBoxView->palette();
         vp.setColor(QPalette::Base, Qt::transparent);
+        vp.setColor(QPalette::Window, Qt::transparent);
         comboBoxView->setPalette(vp);
+        comboBoxView->viewport()->setPalette(vp);
     }
 #else
     comboBoxView->setStyleSheet("#ElaComboBoxView{background-color:transparent;}");
@@ -57,6 +60,7 @@ ElaComboBox::ElaComboBox(QWidget* parent)
     {
         container->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
         container->setAttribute(Qt::WA_TranslucentBackground);
+        container->setAutoFillBackground(false);
         container->setObjectName("ElaComboBoxContainer");
         container->setStyle(d->_comboBoxStyle);
         QLayout* layout = container->layout();
