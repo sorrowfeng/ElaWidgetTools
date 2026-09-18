@@ -113,13 +113,16 @@ void ElaApplication::init()
     //默认字体
     QFont font = qApp->font();
     font.setPixelSize(d->_pFontPixelSize);
-    // 按优先级提供跨平台字体回退
+    // 按优先级提供跨平台字体回退。
+    // 不用 "sans-serif" 作为 family:Qt 会把它当成缺失字体名去构建别名表,
+    // 触发 "Populating font family aliases ..." 警告;改用 styleHint 指定通用无衬线。
 #ifdef Q_OS_MACOS
     // macOS 常用中文字体:苹方 / 冬青黑体,西文走 Helvetica Neue / 系统 UI 字体
-    font.setFamilies({"PingFang SC", "Hiragino Sans GB", "Helvetica Neue", ".AppleSystemUIFont", "sans-serif"});
+    font.setFamilies({"PingFang SC", "Hiragino Sans GB", "Helvetica Neue", ".AppleSystemUIFont"});
 #else
-    font.setFamilies({"Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "sans-serif"});
+    font.setFamilies({"Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei"});
 #endif
+    font.setStyleHint(QFont::SansSerif);
     font.setHintingPreference(QFont::PreferNoHinting);
     qApp->setFont(font);
 #ifdef Q_OS_WIN
