@@ -35,6 +35,12 @@ ElaSpinBox::ElaSpinBox(QWidget* parent)
     d->_style = new ElaSpinBoxStyle(style());
     setStyle(d->_style);
     lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+#ifdef Q_OS_MACOS
+    // macOS 获得焦点时会画一层原生蓝色 focus ring,样式表 border 去不掉,
+    // 显式关闭控件与内部 QLineEdit 的 focus rect。
+    lineEdit()->setAttribute(Qt::WA_MacShowFocusRect, false);
+    setAttribute(Qt::WA_MacShowFocusRect, false);
+#endif
     lineEdit()->setStyleSheet(lineEditStyleSheet(true));
     d->onThemeChanged(eTheme->getThemeMode());
     connect(eTheme, &ElaTheme::themeModeChanged, d, &ElaSpinBoxPrivate::onThemeChanged);
