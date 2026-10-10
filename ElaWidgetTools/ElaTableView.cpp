@@ -30,7 +30,15 @@ ElaTableView::ElaTableView(QWidget* parent)
 ElaTableView::~ElaTableView()
 {
     Q_D(ElaTableView);
-    delete d->_tableViewStyle;
+    // 本控件自持样式,而应用/父级带样式表时 QWidget::setStyle 会用 QStyleSheetStyle
+    // 代理包装它,并把本样式作为代理的 baseStyle 引用;~QWidget 期间的 clearFocus()
+    // 仍会经由该代理访问样式对象,若在此处直接 delete 即访问已释放内存而崩溃,
+    // 因此延后到事件循环、待代理释放后再销毁。
+    if (d->_tableViewStyle)
+    {
+        d->_tableViewStyle->deleteLater();
+        d->_tableViewStyle = nullptr;
+    }
 }
 
 void ElaTableView::setHeaderMargin(int headerMargin)
